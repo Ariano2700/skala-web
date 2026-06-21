@@ -1,0 +1,39 @@
+---
+import { processSteps } from "../../data/skala";
+---
+
+<section
+  class="mx-auto flex w-full max-w-360 flex-col gap-7 px-5 py-24 md:px-12"
+  id="proceso"
+>
+  <h2
+    class="m-0 max-w-[15ch] font-display text-[clamp(2.4rem,4.8vw,5rem)] leading-[0.94] tracking-[-0.065em] text-wrap:balance"
+    data-reveal
+  >
+    Del brief al resultado en cinco pasos con ritmo de producción.
+  </h2>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+    {
+      processSteps.map((step, index) => (
+        <article
+          class="group rounded-[28px] border border-skala-border bg-[linear-gradient(180deg,rgba(8,24,52,0.95),rgba(4,20,46,0.97))] p-5 shadow-(--shadow) transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 hover:bg-skala-accent/5"
+          data-reveal
+          style={`--reveal-delay: ${index * 90}ms;`}
+        >
+          <div class="mb-5 inline-flex h-13 w-13 items-center justify-center rounded-full border border-skala-accent/24 bg-skala-accent/8 font-display text-[0.72rem] tracking-[0.14em] text-skala-accent shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-300 group-hover:scale-105">
+            0{index + 1}
+          </div>
+          <step.icon
+            className="mb-5 h-6 w-6 text-skala-accent transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+            aria-hidden="true"
+          />
+          <h3 class="mb-2 font-display text-[0.95rem] leading-[1.4] tracking-[-0.04em]">
+            {step.name}
+          </h3>
+          <p class="m-0 leading-7 text-skala-muted">{step.description}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>

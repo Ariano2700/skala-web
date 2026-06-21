@@ -1,0 +1,11 @@
+---
+const { label } = Astro.props as { label: string };
+---
+
+<div
+  class="mb-7 inline-flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.28em] text-skala-accent"
+  data-reveal
+>
+  <span class="h-px w-6 bg-current/80"></span>
+  <span>{label}</span>
+</div>

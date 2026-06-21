@@ -1,0 +1,284 @@
+---
+import { FiArrowUpRight, FiMenu, FiX } from "react-icons/fi";
+import { navLinks } from "../../data/skala";
+import Logotype from "../../icons/Logotype.astro";
+import { CONTACT_DATA } from "../../data/contact_data";
+---
+
+<header
+  class="fixed inset-x-0 top-0 z-50 transition-colors duration-300"
+  data-reveal
+  data-scrolled
+>
+  <div
+    class="site-nav-bg pointer-events-none absolute inset-x-0 top-0 h-16 border-b border-transparent transition-colors duration-300"
+  >
+  </div>
+
+  <div
+    class="relative mx-auto flex h-16 items-center justify-between md:justify-around gap-3 px-4 md:px-12"
+  >
+    <a
+      href="#top"
+      target="_blank"
+      rel="noopener noreferrer"
+      title="Ir al inicio"
+      aria-label="Ir al inicio"
+      class="group inline-flex min-h-12 items-center gap-3 rounded-full px-3 py-2 outline-none transition duration-200 hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+      aria-label="Ir al inicio"
+    >
+      <span
+        class="text-skala-accent! hover:text-skala-text! shadow transition-colors duration-200"
+      >
+        <Logotype class="size-24" />
+      </span>
+    </a>
+
+    <nav
+      class="hidden items-center gap-1 rounded-full border border-white/8 bg-[rgba(4,20,46,0.72)] p-1 xl:inline-flex"
+      aria-label="Secciones principales"
+    >
+      {
+        navLinks.map((item) => (
+          <a
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={item.label}
+            aria-label={item.label}
+            class="group relative rounded-full px-4 py-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-skala-muted transition duration-200 hover:bg-white/06 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+          >
+            {item.label}
+            <span class="absolute inset-x-4 bottom-1.5 h-px scale-x-0 bg-skala-accent transition-transform duration-300 group-hover:scale-x-100" />
+          </a>
+        ))
+      }
+    </nav>
+
+    <a
+      href={CONTACT_DATA.WHATSAPP_LINK(
+        "Hola, quiero saber más sobre sus servicios de agencia y productora.",
+      )}
+      title="Contáctanos por WhatsApp"
+      aria-label="Contáctanos por WhatsApp"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group hidden items-center gap-2 rounded-full border border-skala-border-strong bg-skala-accent px-4 py-3 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-skala-text-secondary! shadow-[0_14px_32px_rgba(92,216,252,0.18)] transition duration-200 hover:-translate-y-px hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px xl:inline-flex"
+    >
+      Agenda <FiArrowUpRight
+        aria-hidden="true"
+        className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 size-4"
+      />
+    </a>
+
+    <button
+      type="button"
+      class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[rgba(4,20,46,0.72)] text-skala-text transition duration-200 hover:-translate-y-px hover:border-skala-accent/40 hover:bg-skala-accent/8 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px xl:hidden"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      data-nav-toggle
+    >
+      <FiMenu className="h-5 w-5" aria-hidden="true" />
+    </button>
+  </div>
+
+  <div
+    id="mobile-nav"
+    class="fixed inset-x-4 top-19 z-50 hidden overflow-hidden rounded-4xl border border-white/12 bg-[#04142e]/96 p-3 shadow-[0_28px_80px_rgba(0,0,0,0.38)]"
+    data-mobile-nav
+  >
+    <div class="mobile-nav-panel">
+      <div
+        class="flex items-center justify-between border-b border-white/8 px-3 pb-3"
+      >
+        <div>
+          <p
+            class="font-display text-sm font-black tracking-[-0.04em] text-skala-text"
+          >
+            Navegación
+          </p>
+          <p class="text-xs text-skala-muted">Explora la experiencia Skala</p>
+        </div>
+        <button
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-skala-text transition duration-200 hover:bg-skala-accent/8 focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+          aria-label="Cerrar menú"
+          data-nav-close
+        >
+          <FiX className="h-5 w-5" aria-hidden="true" />
+        </button>
+      </div>
+
+      <nav
+        class="mobile-nav-links grid gap-2 p-3"
+        aria-label="Secciones principales en móvil"
+      >
+        {
+          navLinks.map((item) => (
+            <a
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={item.label}
+              aria-label={item.label}
+              class="group flex items-center justify-between rounded-2xl border border-transparent bg-white/3 px-4 py-4 text-skala-muted transition duration-200 hover:-translate-x-0.5 hover:border-skala-accent/24 hover:bg-skala-accent/6 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-x-0"
+            >
+              <span class="text-sm font-bold tracking-[0.08em]">
+                {item.label}
+              </span>
+              <FiArrowUpRight
+                className="h-4 w-4 opacity-0 transition duration-200 group-hover:translate-x-0.5 group-hover:translate-y-[-0.5px] group-hover:opacity-100"
+                aria-hidden="true"
+              />
+            </a>
+          ))
+        }
+      </nav>
+
+      <a
+        href="#contacto"
+        title="Contáctanos por WhatsApp"
+        aria-label="Contáctanos por WhatsApp"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-skala-text-secondary! mobile-nav-cta group mx-3 mb-3 flex items-center justify-center gap-2 rounded-full bg-skala-accent px-4 py-4 text-[0.72rem] font-black uppercase tracking-[0.16em] transition duration-200 hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+      >
+        Agenda <FiArrowUpRight
+          aria-hidden="true"
+          className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+        />
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-nav-bg[data-scrolled] {
+    background: rgba(4, 20, 46, 0.52);
+    border-color: rgba(174, 224, 255, 0.08);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+  }
+
+  .mobile-nav-panel,
+  .mobile-nav-links > a,
+  .mobile-nav-cta {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+</style>
+
+<script>
+  (() => {
+    const toggleButton = document.querySelector("[data-nav-toggle]");
+    const closeButton = document.querySelector("[data-nav-close]");
+    const mobileNav = document.querySelector("[data-mobile-nav]");
+    const mobileLinks = mobileNav?.querySelectorAll<HTMLElement>(
+      ".mobile-nav-links > a",
+    );
+    const mobileCta = mobileNav?.querySelector<HTMLElement>(".mobile-nav-cta");
+
+    if (!toggleButton || !mobileNav) {
+      return;
+    }
+
+    let closeTimeout = 0;
+
+    const setMenuState = (open: boolean) => {
+      window.clearTimeout(closeTimeout);
+      mobileNav.classList.toggle("hidden", false);
+
+      if (open) {
+        mobileNav.classList.remove("animate-[mobileNavOut_180ms_ease-in_both]");
+        mobileNav.classList.add("animate-[mobileNavIn_220ms_ease-out_both]");
+        mobileNav.querySelector<HTMLElement>(".mobile-nav-panel")?.animate(
+          [
+            { opacity: 0, transform: "translate3d(0, 12px, 0) scale(0.98)" },
+            { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" },
+          ],
+          {
+            duration: 220,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            fill: "forwards",
+          },
+        );
+
+        mobileLinks?.forEach((link, index) => {
+          link.animate(
+            [
+              { opacity: 0, transform: "translate3d(0, 10px, 0)" },
+              { opacity: 1, transform: "translate3d(0, 0, 0)" },
+            ],
+            {
+              duration: 260,
+              delay: 90 + index * 45,
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+              fill: "forwards",
+            },
+          );
+        });
+
+        mobileCta?.animate(
+          [
+            { opacity: 0, transform: "translate3d(0, 10px, 0)" },
+            { opacity: 1, transform: "translate3d(0, 0, 0)" },
+          ],
+          {
+            duration: 260,
+            delay: 90 + (mobileLinks?.length ?? 0) * 45,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            fill: "forwards",
+          },
+        );
+      } else {
+        mobileNav.classList.remove("animate-[mobileNavIn_220ms_ease-out_both]");
+        mobileNav.classList.add("animate-[mobileNavOut_180ms_ease-in_both]");
+        mobileNav.querySelector<HTMLElement>(".mobile-nav-panel")?.animate(
+          [
+            { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" },
+            { opacity: 0, transform: "translate3d(0, 8px, 0) scale(0.98)" },
+          ],
+          {
+            duration: 180,
+            easing: "cubic-bezier(0.55, 0, 0.2, 1)",
+            fill: "forwards",
+          },
+        );
+
+        closeTimeout = window.setTimeout(() => {
+          mobileNav.classList.add("hidden");
+        }, 190);
+      }
+
+      document.body.classList.toggle("overflow-hidden", open);
+      toggleButton.setAttribute("aria-expanded", String(open));
+      toggleButton.setAttribute(
+        "aria-label",
+        open ? "Cerrar menú" : "Abrir menú",
+      );
+    };
+
+    const nav = document.querySelector<HTMLElement>("[data-reveal]");
+    const navBackground = nav?.querySelector<HTMLElement>(".site-nav-bg");
+    const updateNavBackground = () => {
+      navBackground?.toggleAttribute("data-scrolled", window.scrollY > 12);
+    };
+
+    updateNavBackground();
+    window.addEventListener("scroll", updateNavBackground, { passive: true });
+
+    toggleButton.addEventListener("click", () => {
+      setMenuState(mobileNav.classList.contains("hidden"));
+    });
+
+    closeButton?.addEventListener("click", () => setMenuState(false));
+
+    mobileNav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setMenuState(false));
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setMenuState(false);
+    });
+  })();
+</script>

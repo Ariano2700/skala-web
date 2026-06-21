@@ -1,0 +1,84 @@
+---
+import { aboutPills } from "../../data/skala";
+import SectionLabel from "./SectionLabel.astro";
+---
+
+<section
+  class="mx-auto grid w-full max-w-360 gap-14 px-5 py-28 md:px-12 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:items-center"
+  id="about"
+>
+  <div class="flex flex-col gap-6">
+    <h2
+      class="m-0 max-w-[12ch] font-display text-[clamp(2rem,3.9vw,4.1rem)] leading-[0.96] tracking-[-0.06em]"
+      data-reveal
+    >
+      No somos solo una agencia. No somos solo una productora.
+      <span class="text-skala-accent">Somos las dos cosas al mismo tiempo.</span
+      >
+    </h2>
+    <p
+      class="max-w-[54ch] text-[1.05rem] leading-8 text-skala-muted"
+      data-reveal
+      style="--reveal-delay: 120ms;"
+    >
+      En Skala entendemos que una marca no es un logo bonito ni un video viral
+      aislado. Es una experiencia completa que necesita coherencia en cada punto
+      de contacto.
+    </p>
+
+    <div
+      class="grid grid-cols-1 gap-4 md:grid-cols-2"
+      data-reveal
+      style="--reveal-delay: 180ms;"
+    >
+      <article
+        class="group rounded-[28px] border border-skala-border bg-white/5 p-6 shadow-(--shadow) transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 hover:bg-skala-accent/5"
+      >
+        <div class="mb-3 h-px w-14 bg-skala-accent/70"></div>
+        <strong
+          class="mb-2 block font-display text-[2.55rem] leading-none text-skala-accent"
+          >100%</strong
+        >
+        <span
+          class="text-[0.68rem] uppercase tracking-[0.18em] text-skala-muted"
+          >Servicio integral</span
+        >
+      </article>
+      <article
+        class="group rounded-[28px] border border-skala-border bg-white/5 p-6 shadow-(--shadow) transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 hover:bg-skala-accent/5"
+      >
+        <div class="mb-3 h-px w-14 bg-skala-accent/70"></div>
+        <strong
+          class="mb-2 block font-display text-[2.55rem] leading-none text-skala-accent"
+          >360°</strong
+        >
+        <span
+          class="text-[0.68rem] uppercase tracking-[0.18em] text-skala-muted"
+          >Visión de marca</span
+        >
+      </article>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    {
+      aboutPills.map((pill, index) => (
+        <article
+          class="group grid grid-cols-[auto_1fr] gap-5 rounded-[28px] border border-skala-border bg-[linear-gradient(180deg,rgba(8,24,52,0.94),rgba(4,20,46,0.96))] p-6 shadow-(--shadow) transition duration-300 hover:-translate-y-1 hover:border-skala-accent/40 hover:bg-skala-accent/5"
+          data-reveal
+          style={`--reveal-delay: ${index * 90}ms;`}
+        >
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl border border-skala-accent/24 bg-skala-accent/8 text-skala-accent shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-300 group-hover:scale-110">
+            <pill.icon className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div>
+            <h3 class="mb-2 font-display text-[0.95rem] leading-[1.4] tracking-[-0.04em]">
+              {pill.title}
+            </h3>
+            <p class="m-0 leading-7 text-skala-muted">{pill.description}</p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,98 @@
+---
+import SectionLabel from "../landing/SectionLabel.astro";
+import SkalaWordmark from "../shared/SkalaWordmark";
+import { portfolioProjects } from "./portfolio-data";
+import PortfolioHeroVisual from "./PortfolioHeroVisual.astro";
+
+const totalProjects = portfolioProjects.length;
+---
+
+<section id="portafolio" class="relative z-10 overflow-hidden py-20 md:py-36">
+  <div class="mx-auto max-w-360 px-5 md:px-12">
+    <div class="relative grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
+      <div data-reveal>
+        <SectionLabel label="Portfolio" />
+        <h1
+          class="m-0 max-w-[12ch] font-display text-[clamp(3.4rem,7vw,7.7rem)] font-black leading-[0.88] tracking-[-0.065em] text-skala-text text-wrap:balance"
+        >
+          Nuestro trabajo habla por <span class="sr-only">Skala</span>
+          <SkalaWordmark client:load />
+        </h1>
+      </div>
+
+      <div class="relative flex flex-col gap-6" data-reveal style="--reveal-delay: 120ms;">
+        <PortfolioHeroVisual />
+
+        <div class="flex flex-col gap-4">
+          <p
+            class="relative z-10 m-0 max-w-[58ch] text-base leading-8 text-skala-muted md:text-lg"
+          >
+            Cada proyecto es una colaboración. Mostramos branding, fotografía,
+            audiovisual y social media cuando una marca confía en nosotros de
+            verdad.
+          </p>
+
+          <div
+            class="relative z-10 mt-8 grid grid-cols-1 gap-3 rounded-4xl border border-skala-border bg-white/[0.035] p-5 shadow-[0_24px_70px_rgba(0,22,52,0.22)] md:grid-cols-3"
+            aria-label="Resumen de portafolio"
+          >
+            <div>
+              <p
+                class="font-display text-3xl font-black tracking-[-0.06em] text-skala-text"
+              >
+                {totalProjects}
+              </p>
+              <p class="text-xs uppercase tracking-[0.16em] text-skala-muted">
+                Casos
+              </p>
+            </div>
+            <div>
+              <p
+                class="font-display text-3xl font-black tracking-[-0.06em] text-skala-text"
+              >
+                4
+              </p>
+              <p class="text-xs uppercase tracking-[0.16em] text-skala-muted">
+                Disciplinas
+              </p>
+            </div>
+            <div>
+              <p
+                class="font-display text-3xl font-black tracking-[-0.06em] text-skala-text"
+              >
+                360°
+              </p>
+              <p class="text-xs uppercase tracking-[0.16em] text-skala-muted">
+                Marca + contenido
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="mt-10 flex flex-col gap-4 border-t border-skala-border/80 pt-8 md:flex-row md:items-center md:justify-between"
+      data-reveal
+      style="--reveal-delay: 180ms;"
+    >
+      <div class="flex flex-wrap gap-3">
+        <span
+          class="inline-flex items-center rounded-full border border-skala-accent/35 bg-skala-accent/10 px-4 py-2 text-[0.72rem] font-black uppercase tracking-[0.16em] text-skala-text"
+        >
+          {totalProjects} proyectos
+        </span>
+        <span
+          class="inline-flex items-center rounded-full border border-skala-border px-4 py-2 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-skala-muted"
+        >
+          Trabajos seleccionados
+        </span>
+      </div>
+
+      <p class="m-0 text-sm text-skala-muted">
+        Filtra por disciplina y conoce piezas reales de marca, contenido y
+        producción.
+      </p>
+    </div>
+  </div>
+</section>

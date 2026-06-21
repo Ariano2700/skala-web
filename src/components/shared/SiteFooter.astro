@@ -1,0 +1,154 @@
+---
+import { FiArrowUpRight, FiMail, FiSend } from "react-icons/fi";
+import { ctaLinks, marqueeItems, navLinks } from "../../data/skala";
+import Logotype from "../../icons/Logotype.astro";
+import { CONTACT_DATA } from "../../data/contact_data";
+---
+
+<footer
+  class="relative mx-auto mt-20 w-full max-w-360 px-5 pb-10 pt-20 md:px-12"
+>
+  <div
+    class="absolute inset-x-5 top-0 h-px bg-linear-to-r from-transparent via-skala-accent/45 to-transparent"
+  >
+  </div>
+
+  <div class="grid gap-10 lg:grid-cols-[1.2fr_0.72fr_1fr] lg:gap-14">
+    <section class="space-y-6">
+      <a
+        href="#top"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Ir al inicio"
+        aria-label="Ir al inicio"
+        class="group inline-flex items-center gap-3 rounded-full px-3 py-2 outline-none focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+      >
+        <span
+          class="text-skala-accent! hover:text-skala-text! shadow transition-colors duration-200"
+        >
+          <Logotype class="size-24" />
+        </span>
+      </a>
+
+      <p class="max-w-[54ch] leading-8 text-skala-muted">
+        Agencia y productora para marcas que quieren verse mejor, sonar mejor y
+        sostener presencia con contenido estratégico, identidad visual y
+        producción audiovisual.
+      </p>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:max-w-105">
+        {
+          ctaLinks.map((action) => (
+            <a
+              href={action.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={action.label}
+              aria-label={action.label}
+              class="group inline-flex items-center justify-between gap-3 rounded-2xl border border-skala-border bg-white/[0.035] px-4 py-4 text-sm text-skala-muted transition duration-200 hover:-translate-y-px hover:border-skala-accent/35 hover:bg-skala-accent/55 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+            >
+              <span class="inline-flex items-center gap-3">
+                <action.icon
+                  className="h-5 w-5 text-skala-accent!"
+                  aria-hidden="true"
+                />
+                {action.label}
+              </span>
+              <FiArrowUpRight
+                className="h-4 w-4 opacity-0 transition duration-200 group-hover:translate-x-0.5 group-hover:translate-y-[-0.5px] group-hover:opacity-100"
+                aria-hidden="true"
+              />
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2
+        class="mb-5 text-[0.72rem] font-display font-black uppercase tracking-[0.22em] text-skala-accent"
+      >
+        Explorar
+      </h2>
+      <div class="grid gap-2">
+        {
+          navLinks.map((item) => (
+            <a
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={item.label}
+              aria-label={item.label}
+              class="group flex items-center justify-between rounded-2xl px-4 py-3 text-sm text-skala-muted transition duration-200 hover:-translate-x-1 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+            >
+              <span>{item.label}</span>
+              <FiArrowUpRight
+                className="h-4 w-4 opacity-0 transition duration-200 group-hover:translate-x-0.5 group-hover:translate-y-[-0.5px] group-hover:opacity-100"
+                aria-hidden="true"
+              />
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="space-y-6">
+      <div>
+        <h2
+          class="mb-5 text-[0.72rem] font-display font-black uppercase tracking-[0.22em] text-skala-accent"
+        >
+          Contacto
+        </h2>
+        <a
+          href={`mailto:${CONTACT_DATA.EMAIL_ADDRESS}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`Enviar correo a ${CONTACT_DATA.EMAIL_ADDRESS}`}
+          aria-label={`Enviar correo a ${CONTACT_DATA.EMAIL_ADDRESS}`}
+          class="group inline-flex w-full items-center justify-between rounded-2xl border border-skala-border bg-white/[0.035] px-5 py-4 text-sm text-skala-muted transition duration-200 hover:-translate-y-px hover:border-skala-accent/35 hover:bg-skala-accent/55 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+        >
+          <span class="inline-flex items-center gap-3">
+            <FiMail className="h-5 w-5 text-skala-accent" aria-hidden="true" />
+            {CONTACT_DATA.EMAIL_ADDRESS}
+          </span>
+          <FiSend
+            className="h-4 w-4 opacity-0 transition duration-200 group-hover:translate-x-0.5 group-hover:translate-y-[-0.5px] group-hover:opacity-100"
+            aria-hidden="true"
+          />
+        </a>
+      </div>
+
+      <div>
+        <h3
+          class="mb-3 font-display text-sm font-black tracking-[-0.03em] text-skala-text"
+        >
+          Especialidades
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          {
+            marqueeItems
+              .slice(0, 9)
+              .map((item) => (
+                <span class="rounded-full border border-white/8 bg-white/3 px-3 py-1.5 text-xs text-skala-muted">
+                  {item}
+                </span>
+              ))
+          }
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div
+    class="mt-14 flex flex-col gap-4 border-t border-white/8 pt-6 text-sm text-skala-muted md:flex-row md:items-center md:justify-between"
+  >
+    <p>© 2026 Skala. Agencia &amp; Productora.</p>
+    <p class="flex flex-wrap gap-3">
+      <span>Estrategia</span>
+      <span aria-hidden="true">/</span>
+      <span>Identidad</span>
+      <span aria-hidden="true">/</span>
+      <span>Contenido</span>
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,106 @@
+---
+import { FiArrowUpRight, FiCheckCircle, FiStar } from "react-icons/fi";
+import SectionLabel from "./SectionLabel.astro";
+import { plans } from "../../data/skala";
+import { CONTACT_DATA } from "../../data/contact_data";
+---
+
+<section
+  class="mx-auto flex w-full max-w-360 flex-col gap-7 px-5 py-28 md:px-12"
+  id="planes"
+>
+  <SectionLabel label="Nuestros planes" />
+  <div class="flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
+    <h2
+      class="m-0 max-w-[12ch] font-display text-[clamp(2.4rem,4.8vw,5rem)] leading-[0.94] tracking-[-0.065em] text-wrap:balance"
+      data-reveal
+    >
+      Elige el plan que mueve tu marca.
+    </h2>
+    <p
+      class="max-w-[54ch] text-[1.05rem] leading-8 text-skala-muted xl:text-right"
+      data-reveal
+      style="--reveal-delay: 120ms;"
+    >
+      O cuéntanos qué necesitas y armamos una propuesta a la medida.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+    {
+      plans.map((plan, index) => (
+        <article
+          class:list={[
+            "group relative flex flex-col gap-5 rounded-[30px] border p-7 shadow-(--shadow) transition duration-300 hover:-translate-y-1.5 hover:border-skala-accent/35",
+            plan.featured
+              ? "border-skala-accent/50 bg-[linear-gradient(180deg,rgba(92,216,252,0.12),rgba(4,20,46,0.97))] before:absolute before:inset-0 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_top_right,rgba(92,216,252,0.18),transparent_42%)] before:opacity-80"
+              : "border-skala-border bg-[linear-gradient(180deg,rgba(8,24,52,0.95),rgba(4,20,46,0.98))] before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(180deg,rgba(92,216,252,0.05),transparent_46%)] before:opacity-0 before:transition-opacity before:duration-300 group-hover:before:opacity-100",
+          ]}
+          data-reveal
+          style={`--reveal-delay: ${index * 90}ms;`}
+        >
+          {plan.featured && (
+            <div class="absolute -top-3 left-5 inline-flex items-center gap-2 rounded-full bg-skala-accent px-3 py-2 font-display text-[0.62rem] uppercase tracking-[0.16em] text-[#04142e] shadow-[0_12px_24px_rgba(92,216,252,0.2)]">
+              <FiStar aria-hidden="true" />
+              {plan.badge}
+            </div>
+          )}
+
+          <h3 class="relative m-0 pt-1 font-display text-[1.05rem] leading-[1.35] tracking-[-0.04em]">
+            {plan.name}
+          </h3>
+          <p class="relative m-0 leading-7 text-skala-muted">{plan.tagline}</p>
+
+          <div class="flex flex-col gap-1">
+            <strong class="font-display text-[1.85rem] tracking-[-0.06em]">
+              {plan.price}
+            </strong>
+            <span class="text-[0.66rem] uppercase tracking-[0.18em] text-skala-muted">
+              {plan.period}
+            </span>
+          </div>
+
+          <ul class="m-0 flex list-none flex-col gap-2 p-0">
+            {plan.features.map((feature) => (
+              <li
+                class:list={[
+                  "grid grid-cols-[auto_1fr] items-start gap-2 leading-[1.55] text-skala-muted",
+                  !feature.included && "opacity-45",
+                ]}
+              >
+                <FiCheckCircle
+                  class:list={[
+                    "mt-0.5 h-4.5 w-4.5 shrink-0 text-skala-accent",
+                    !feature.included && "text-white/30",
+                  ]}
+                  aria-hidden="true"
+                />
+                <span>{feature.label}</span>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={CONTACT_DATA.WHATSAPP_LINK(plan.cta_link_message)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={plan.cta}
+            aria-label={plan.cta}
+            class:list={[
+              "group mt-auto inline-flex items-center justify-center gap-3 rounded-full border px-6 py-4 font-display text-[0.74rem] font-black uppercase tracking-[0.16em] shadow-lg transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px",
+              plan.featured
+                ? "border-transparent bg-skala-accent text-[#04142e]! shadow-[0_18px_36px_rgba(92,216,252,0.26)] before:absolute before:inset-0 before:rounded-full before:bg-[linear-gradient(135deg,rgba(255,255,255,0.42),transparent_42%)] before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100"
+                : "border-skala-accent/24 bg-skala-accent/8 text-[#04142e] shadow-[0_14px_32px_rgba(92,216,252,0.14)] hover:border-skala-accent/45 hover:bg-skala-accent/14 hover:text-skala-text",
+            ]}
+          >
+            <span>{plan.cta}</span>
+            <FiArrowUpRight
+              aria-hidden="true"
+              className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </a>
+        </article>
+      ))
+    }
+  </div>
+</section>

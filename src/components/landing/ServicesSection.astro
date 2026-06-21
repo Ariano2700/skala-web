@@ -1,0 +1,48 @@
+---
+import { services } from "../../data/skala";
+---
+
+<section class="relative mx-auto w-full max-w-360 px-5 md:px-12" id="servicios">
+  <h2
+    class="m-0 max-w-[15ch] font-display text-[clamp(2.2rem,4.4vw,4.8rem)] leading-[0.96] tracking-[-0.06em]"
+    data-reveal
+  >
+    Servicios diseñados para escalar tu marca con contenido y criterio.
+  </h2>
+
+  <div class="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    {
+      services.map((service, index) => (
+        <article
+          class="group relative overflow-hidden rounded-[30px] border border-skala-border bg-[linear-gradient(180deg,rgba(8,24,52,0.95),rgba(4,20,46,0.97))] p-7 shadow-(--shadow) transition duration-300 hover:-translate-y-1.5 hover:border-skala-accent/35 hover:bg-skala-accent/4"
+          data-reveal
+          style={`--reveal-delay: ${index * 90}ms;`}
+        >
+          <div class="pointer-events-none absolute inset-0 rounded-[inherit] bg-[linear-gradient(180deg,rgba(92,216,252,0.06),transparent_48%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-skala-accent/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div class="relative mb-6 flex items-center justify-between">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-skala-accent/24 bg-skala-accent/8 text-skala-accent shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-300 group-hover:scale-110">
+              <service.icon className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <span class="font-display text-[0.72rem] uppercase tracking-[0.2em] text-skala-muted">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+          <h3 class="relative mb-3 font-display text-[1.05rem] leading-[1.35] tracking-[-0.04em]">
+            {service.title}
+          </h3>
+          <p class="relative m-0 leading-7 text-skala-muted">
+            {service.description}
+          </p>
+          <div class="relative mt-6 flex flex-wrap gap-2">
+            {service.tags.map((tag) => (
+              <span class="rounded-full border border-skala-border bg-white/3 px-2.5 py-1 text-[0.64rem] uppercase tracking-[0.14em] text-skala-muted transition duration-300 group-hover:border-skala-accent/35 group-hover:text-skala-text">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,33 @@
+---
+import { marqueeItems } from "../../data/skala";
+---
+
+<div
+  class="relative overflow-hidden border-y border-skala-border bg-[linear-gradient(90deg,rgba(92,216,252,0.92),rgba(30,163,232,0.72))] text-[#04142e] shadow-[0_18px_50px_rgba(30,163,232,0.16)]"
+  aria-label="Servicios destacados"
+  data-reveal
+>
+  <div
+    class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent)] opacity-35 animate-[shineSweep_5s_ease-in-out_infinite]"
+  >
+  </div>
+  <div
+    class="inline-flex min-w-max items-center gap-6 py-4 animate-[marquee_28s_linear_infinite]"
+  >
+    {
+      [...marqueeItems, ...marqueeItems].map((item) => (
+        <span class="inline-flex items-center gap-6 font-display text-[0.72rem] font-bold uppercase tracking-[0.18em] after:content-['•'] after:opacity-50">
+          {item}
+        </span>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    [class*="animate-"] {
+      animation: none;
+    }
+  }
+</style>

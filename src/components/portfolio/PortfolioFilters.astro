@@ -1,0 +1,38 @@
+---
+import { portfolioFilters, portfolioProjects } from "./portfolio-data";
+---
+
+<div
+  class="portfolio-filters sticky top-18 z-40 border-y border-skala-border bg-[#04142e]/94 py-4 backdrop-blur-xl"
+  aria-label="Filtros de portafolio"
+>
+  <div
+    class="mx-auto flex max-w-360 flex-wrap items-center gap-3 px-5 md:px-12"
+  >
+    {
+      portfolioFilters.map((filter, index) => (
+        <button
+          type="button"
+          title={`Filtrar por ${filter.label}`}
+          aria-label={`Filtrar por ${filter.label}`}
+          class={`portfolio-filter group rounded-full border px-4 py-2.5 text-[0.7rem] font-black uppercase tracking-[0.14em] transition duration-200 focus-visible:ring-2 focus-visible:ring-skala-accent/60 ${
+            index === 0
+              ? "border-skala-accent bg-skala-accent text-skala-text-secondary"
+              : "border-skala-border text-skala-muted hover:border-skala-accent/40 hover:text-skala-text"
+          }`}
+          data-filter={filter.value}
+          aria-pressed={index === 0 ? "true" : "false"}
+        >
+          {filter.label}
+        </button>
+      ))
+    }
+
+    <span
+      class="ml-auto text-xs font-medium uppercase tracking-[0.16em] text-skala-muted"
+      data-filter-count
+    >
+      {`${portfolioProjects.length} proyectos`}
+    </span>
+  </div>
+</div>

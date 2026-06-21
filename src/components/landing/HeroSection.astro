@@ -1,0 +1,250 @@
+---
+import { heroActions, heroSignals } from "../../data/skala";
+import SkalaWordmark from "../shared/SkalaWordmark.tsx";
+---
+
+<section
+  class="relative mx-auto grid min-h-svh w-full max-w-360 grid-cols-1 gap-10 px-5 pb-10 pt-24 md:px-12 xl:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] xl:items-center xl:gap-16"
+  id="top"
+>
+  <div class="relative">
+    <div
+      class="absolute inset-x-0 top-0 hidden h-px bg-[linear-gradient(90deg,transparent,rgba(92,216,252,0.42),transparent)] xl:block"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="flex flex-col gap-6">
+      <h1
+        class="relative m-0 max-w-[10ch] font-display text-[clamp(3.4rem,7vw,7.7rem)] font-black leading-[0.86] tracking-[-0.08em] text-wrap:balance"
+        data-reveal
+        style="--reveal-delay: 120ms;"
+      >
+        Tu marca,
+        <br />
+        en otra <span class="sr-only">Skala</span>
+        <SkalaWordmark client:load />
+      </h1>
+
+      <p
+        class="max-w-[58ch] text-[1.08rem] leading-8 text-skala-muted"
+        data-reveal
+        style="--reveal-delay: 220ms;"
+      >
+        Estrategia, identidad y producción en un mismo equipo para marcas que
+        quieren crecer y Skalar.
+      </p>
+
+      <div
+        class="flex flex-wrap gap-3"
+        data-reveal
+        style="--reveal-delay: 300ms;"
+      >
+        {
+          heroActions.map((action) => (
+            <a
+              href={action.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={action.label}
+              aria-label={action.label}
+              class:list={[
+                "group inline-flex items-center justify-center gap-3 rounded-full px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px",
+                action.variant === "primary"
+                  ? "bg-skala-accent text-skala-text-secondary! shadow-[0_18px_35px_rgba(92,216,252,0.22)]"
+                  : "border border-skala-border-strong bg-white/3 text-skala-text shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:border-skala-accent/40 hover:bg-white/5",
+              ]}
+            >
+              <span>{action.label}</span>
+              <action.icon
+                aria-hidden="true"
+                className="transition-transform size-4 duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="hero-showcase relative grid min-h-155 items-stretch overflow-hidden rounded-[42px] xl:min-h-170"
+    data-reveal
+    style="--reveal-delay: 180ms;"
+  >
+    <div
+      class="absolute inset-0 overflow-hidden rounded-[inherit] border border-skala-border bg-skala-bg shadow-(--shadow) contain-[layout_paint]"
+      aria-hidden="true"
+    >
+      <video
+        data-hero-video
+        class="absolute inset-0 h-full w-full object-cover object-center opacity-55 xl:opacity-50"
+        src="/video_hero.mp4"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        disablepictureinpicture
+        disableRemotePlayback
+        aria-hidden="true"></video>
+
+      <div
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(92,216,252,0.22),transparent_34%),radial-gradient(circle_at_82%_78%,rgba(30,163,232,0.13),transparent_42%),linear-gradient(180deg,rgba(4,20,46,0.02),rgba(4,20,46,0.78))]"
+      >
+      </div>
+
+      <div
+        class="pointer-events-none absolute inset-x-6 top-6 h-px bg-linear-to-r from-transparent via-skala-accent/45 to-transparent opacity-70"
+      >
+      </div>
+
+      <div
+        class="pointer-events-none absolute inset-6 rounded-[30px] border border-white/8 opacity-70"
+      >
+      </div>
+    </div>
+
+    <div
+      class="relative z-10 flex h-full flex-col justify-between p-5 sm:p-7 xl:p-8"
+    >
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <span
+            class="mb-4 inline-flex text-[0.66rem] uppercase tracking-[0.22em] text-skala-accent"
+          >
+            Showreel Skala
+          </span>
+          <strong
+            class="block max-w-[14ch] font-display text-[clamp(1.35rem,2.6vw,2.65rem)] leading-[1.04] tracking-[-0.055em] xl:max-w-[17ch] xl:text-[3.15rem]"
+          >
+            De idea a pantalla, con estrategia y ritmo mensual.
+          </strong>
+        </div>
+      </div>
+
+      <div class="max-w-[42ch] xl:mb-12">
+        <p class="m-0 leading-7 text-skala-text/80">
+          Brand films, campañas y piezas sociales pensadas para sostener la
+          presencia de tu marca.
+        </p>
+      </div>
+
+      <div
+        class="grid grid-cols-1 gap-3 sm:grid-cols-3 xl:grid-cols-3 xl:max-w-2xl"
+      >
+        {
+          heroSignals.map((signal, index) => (
+            <article
+              class="group flex min-h-38 flex-col justify-between gap-3 rounded-[26px] border border-white/10 bg-[rgba(8,24,52,0.68)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 hover:bg-skala-accent/55"
+              style={`--reveal-delay: ${index * 110}ms;`}
+              data-reveal
+            >
+              <signal.icon
+                className="h-6 w-6 shrink-0 text-skala-accent transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+                aria-hidden="true"
+              />
+              <span class="text-[0.64rem] uppercase tracking-[0.18em] text-skala-muted">
+                {signal.label}
+              </span>
+              <strong class="font-display text-[0.94rem] leading-normal">
+                {signal.value}
+              </strong>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-showcase {
+    animation: heroShowcaseIn 0.72s ease both;
+  }
+
+  .hero-showcase::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+      linear-gradient(120deg, transparent 0%, rgba(92, 216, 252, 0.18) 42%, transparent 58%);
+    opacity: 0;
+    transform: translateX(-18%);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  .hero-showcase:hover::before {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-showcase,
+    .hero-showcase::before {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @keyframes heroShowcaseIn {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    const video = document.querySelector<HTMLVideoElement>("[data-hero-video]");
+    if (!video) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (reduceMotion.matches) {
+      video.removeAttribute("autoplay");
+      video.pause();
+      return;
+    }
+
+    const setVideoState = (visible: boolean) => {
+      if (!visible) {
+        video.pause();
+        return;
+      }
+
+      void video.play().catch(() => {});
+    };
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        ([entry]) => setVideoState(Boolean(entry?.isIntersecting)),
+        { threshold: 0.05 },
+      );
+
+      observer.observe(video);
+    } else {
+      const updateByScroll = () => {
+        const rect = video.getBoundingClientRect();
+        setVideoState(rect.bottom > 0 && rect.top < window.innerHeight);
+      };
+
+      const handleScroll: EventListener = updateByScroll;
+
+      updateByScroll();
+      (window as Window).addEventListener("scroll", handleScroll, {
+        passive: true,
+      });
+    }
+
+    window.addEventListener("pagehide", () => video.pause());
+  })();
+</script>
