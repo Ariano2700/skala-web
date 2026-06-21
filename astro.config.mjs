@@ -12,7 +12,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  site: "https://skala.netlify.app",
+  site: "https://skalaagencia.netlify.app",
   output: "static",
   integrations: [react(), icon()],
 });

@@ -31,7 +31,7 @@ ${pages
 `;
 
 export const GET: APIRoute = ({ site }) => {
-  const baseUrl = site ? new URL(site) : new URL("https://skala.netlify.app");
+  const baseUrl = site ? new URL(site) : new URL("https://skalaagencia.netlify.app");
   return new Response(getSiteMap(baseUrl), {
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
