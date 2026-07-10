@@ -1,0 +1,15 @@
+export const marqueeItems = [
+  "Branding",
+  "Producción audiovisual",
+  "Social content",
+  "Sesiones de foto",
+  "Identidad visual",
+  "Edición de video",
+  "Marketing digital",
+  "Campañas",
+  "Estrategia",
+  "Community management",
+  "Coberturas",
+  "Motion graphics",
+  "Sitios web",
+] as const;

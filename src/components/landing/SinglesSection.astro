@@ -1,7 +1,7 @@
 ---
-import { FiArrowUpRight } from "react-icons/fi";
+import { FiArrowUpRight, FiX, FiUser, FiMessageSquare, FiSend } from "react-icons/fi";
 import { CONTACT_DATA } from "../../data/contact_data";
-import { singleServices } from "../../data/skala";
+import { singleServices } from "../../data/services";
 ---
 
 <section
@@ -57,13 +57,13 @@ import { singleServices } from "../../data/skala";
             </p>
           </div>
 
-          <a
-            href={CONTACT_DATA.WHATSAPP_LINK(service.cta_message)}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Contactar por este servicio"
-            aria-label="Contactar por este servicio"
-            class="group/cotizar relative mt-6 flex items-center justify-between overflow-hidden rounded-2xl border border-skala-accent/20 bg-skala-accent/8 px-4 py-3 text-skala-text hover:text-skala-text-secondary! transition duration-300 hover:-translate-y-0.5 hover:border-skala-accent/45 hover:bg-skala-accent hover:shadow-[0_18px_36px_rgba(92,216,252,0.2)] active:translate-y-0"
+          <button
+            type="button"
+            data-open-service-modal
+            data-service-name={service.label}
+            title="Cotizar este servicio"
+            aria-label="Cotizar este servicio"
+            class="group/cotizar relative mt-6 flex w-full items-center justify-between overflow-hidden rounded-2xl border border-skala-accent/20 bg-skala-accent/8 px-4 py-3 text-skala-text hover:text-skala-text-secondary! transition duration-300 hover:-translate-y-0.5 hover:border-skala-accent/45 hover:bg-skala-accent hover:shadow-[0_18px_36px_rgba(92,216,252,0.2)] active:translate-y-0"
           >
             <span class="relative z-10 text-[0.66rem] font-black uppercase tracking-[0.16em]">
               Cotizar
@@ -72,9 +72,165 @@ import { singleServices } from "../../data/skala";
               aria-hidden="true"
               className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover/cotizar:translate-x-0.5 group-hover/cotizar:-translate-y-0.5"
             />
-          </a>
+          </button>
         </article>
       ))
     }
   </div>
 </section>
+
+<!-- Modal de cotización para servicios unitarios -->
+<div
+  id="service-modal"
+  class="fixed inset-0 z-60 hidden items-center justify-center p-4"
+  data-service-modal
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="service-modal-title"
+>
+  <div
+    class="absolute inset-0 bg-[#020a1a]/80 backdrop-blur-sm"
+    data-service-modal-close
+  >
+  </div>
+
+  <div
+    class="relative w-full max-w-md rounded-4xl border border-skala-border bg-skala-surface-strong p-6 shadow-[0_28px_80px_rgba(0,0,0,0.45)]"
+    data-service-modal-panel
+  >
+    <button
+      type="button"
+      data-service-modal-close
+      aria-label="Cerrar"
+      class="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-skala-text transition duration-200 hover:bg-skala-accent/10 focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+    >
+      <FiX className="h-4 w-4" aria-hidden="true" />
+    </button>
+
+    <p class="text-xs font-bold uppercase tracking-[0.18em] text-skala-accent">
+      Cotizar servicio
+    </p>
+    <h3
+      id="service-modal-title"
+      class="mt-1 font-display text-xl font-black tracking-[-0.04em] text-skala-text"
+      data-service-modal-name
+    >
+    </h3>
+
+    <form id="service-modal-form" class="mt-5 flex flex-col gap-4">
+      <div class="relative">
+        <FiUser
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+          aria-hidden="true"
+        />
+        <input
+          type="text"
+          name="name"
+          placeholder="Tu nombre"
+          required
+          class="w-full rounded-2xl border border-skala-border bg-skala-surface px-12 py-3.5 text-sm font-medium text-skala-text placeholder:text-skala-muted focus:outline-none focus:ring-2 focus:ring-skala-accent/50"
+        />
+      </div>
+
+      <div class="relative">
+        <FiMessageSquare
+          className="absolute left-4 top-4 h-5 w-5 text-skala-accent"
+          aria-hidden="true"
+        />
+        <textarea
+          name="message"
+          placeholder="Cuéntanos los detalles (opcional)..."
+          rows={4}
+          class="w-full rounded-2xl border border-skala-border bg-skala-surface px-12 py-3.5 text-sm font-medium text-skala-text placeholder:text-skala-muted focus:outline-none focus:ring-2 focus:ring-skala-accent/50 resize-none"
+        ></textarea>
+      </div>
+
+      <button
+        type="submit"
+        class="inline-flex items-center justify-center gap-2 rounded-full bg-skala-accent px-8 py-3.5 font-display text-[0.74rem] font-bold uppercase tracking-[0.16em] text-skala-text-secondary transition duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-skala-accent/70"
+      >
+        <FiSend className="h-5 w-5" />
+        Enviar por WhatsApp
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  import { CONTACT_DATA } from "../../data/contact_data";
+
+  const modal = document.querySelector<HTMLElement>("[data-service-modal]");
+  const modalName = modal?.querySelector<HTMLElement>(
+    "[data-service-modal-name]",
+  );
+  const modalForm = document.getElementById(
+    "service-modal-form",
+  ) as HTMLFormElement | null;
+  const openButtons = document.querySelectorAll<HTMLElement>(
+    "[data-open-service-modal]",
+  );
+  const closeTriggers = modal?.querySelectorAll<HTMLElement>(
+    "[data-service-modal-close]",
+  );
+
+  let selectedService = "";
+
+  const openModal = (serviceName: string) => {
+    if (!modal || !modalName) return;
+    selectedService = serviceName;
+    modalName.textContent = serviceName;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+    modalForm?.querySelector<HTMLInputElement>("input[name='name']")?.focus();
+  };
+
+  const closeModal = () => {
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+    modalForm?.reset();
+  };
+
+  openButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const name = btn.getAttribute("data-service-name") ?? "";
+      openModal(name);
+    });
+  });
+
+  closeTriggers?.forEach((trigger) =>
+    trigger.addEventListener("click", closeModal),
+  );
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
+
+  modalForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = new FormData(modalForm);
+    const name = (data.get("name") as string)?.trim() || "";
+    const message = (data.get("message") as string)?.trim() || "";
+
+    const lines: string[] = [];
+    lines.push("*Cotización de servicio · Skala*");
+    lines.push("");
+    lines.push(`*Servicio:* ${selectedService}`);
+    lines.push(`*Nombre:* ${name}`);
+    if (message) {
+      lines.push("");
+      lines.push("*Detalles:*");
+      lines.push(message);
+    }
+    lines.push("");
+    lines.push("_Enviado desde el formulario web de Skala._");
+
+    const whatsappUrl = CONTACT_DATA.WHATSAPP_LINK(lines.join("\n"));
+    window.open(whatsappUrl, "_blank", "noopener");
+    closeModal();
+  });
+</script>

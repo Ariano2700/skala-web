@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
+import { portfolioProjects } from "../components/portfolio/portfolio-data";
 
-const pages = [
+const staticPages = [
   {
     loc: "/",
     lastmod: "2026-06-20",
@@ -14,6 +15,15 @@ const pages = [
     priority: 0.9,
   },
 ];
+
+const projectPages = portfolioProjects.map((project) => ({
+  loc: `/proyecto/${project.id}/`,
+  lastmod: "2026-06-20",
+  changefreq: "monthly" as const,
+  priority: 0.8,
+}));
+
+const pages = [...staticPages, ...projectPages];
 
 const getSiteMap = (siteUrl: URL) => `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

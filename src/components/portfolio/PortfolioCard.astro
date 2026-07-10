@@ -2,100 +2,73 @@
 import {
   getPortfolioAccentClass,
   getPortfolioGridClass,
-  type PortfolioProject,
+  type PortfolioProjectItem,
 } from "./portfolio-data";
 
 interface Props {
-  project: PortfolioProject;
+  project: PortfolioProjectItem;
   index: number;
 }
 
 const { project, index } = Astro.props as Props;
-
-const visualLabel = project.visual.label;
 ---
 
-<article
-  class={`portfolio-card portfolio-card--${
-    project.layout.replaceAll(" ", "-")
-  } group relative isolate overflow-hidden rounded-4xl border border-skala-border bg-[#181816] shadow-[0_24px_70px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 ${getPortfolioGridClass(
-    project,
-  )}`}
+<a
+  href={`/proyecto/${project.id}/`}
+  class={`portfolio-card portfolio-card--${project.layout.replaceAll(" ", "-")} group relative isolate block overflow-hidden rounded-4xl border border-skala-border bg-[#181816] shadow-[0_24px_70px_rgba(0,0,0,0.22)] transition duration-300 ${getPortfolioGridClass(project)}`}
   data-project-card
   data-category={project.category}
   data-reveal
   data-reveal-variant={index % 3}
   style={`--reveal-delay: ${Math.min(index * 42, 360)}ms;`}
 >
-  <div
-    class="relative block aspect-16/10 overflow-hidden bg-skala-surface"
-    aria-hidden="true"
-  >
+  <div class="relative aspect-16/10 overflow-hidden bg-skala-surface">
     <div
-      class="absolute inset-0 transition duration-500 group-hover:scale-105"
+      class="portfolio-image-container absolute inset-0 transition duration-700"
       style={`background: ${project.visual.gradient};`}
     >
     </div>
 
-    <div
-      class="absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,rgba(8,8,8,0.72)_100%)] opacity-70"
-    >
-    </div>
+    <div class="portfolio-gradient-overlay absolute inset-0 bg-[linear-gradient(180deg,rgba(8,8,8,0.08)_0%,rgba(8,8,8,0.36)_46%,rgba(8,8,8,0.86)_100%)] opacity-90 transition-opacity duration-300" />
+
+    <div class="portfolio-shine absolute -inset-x-8 -top-2 h-16 w-20 -rotate-45 bg-linear-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity duration-500" />
 
     <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6 lg:p-8">
       <span class={`mb-3 inline-flex h-2 w-10 rounded-full ${getPortfolioAccentClass(project)}`}></span>
-      <p
-        class="m-0 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent"
-      >
+      <p class="m-0 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent">
         {project.categoryLabel}
       </p>
-      <h3
-        class="mt-3 max-w-[18ch] font-display text-2xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-3xl"
-      >
+      <h3 class="mt-3 max-w-[18ch] font-display text-2xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-3xl">
         {project.title}
       </h3>
     </div>
 
-    <span
-      class="portfolio-badge absolute right-5 top-5 inline-flex rounded-full border border-white/10 bg-white/8 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-skala-muted opacity-0 transition duration-300 group-hover:-translate-y-0.5 group-hover:opacity-100"
-    >
-      {visualLabel}
+    <span class="portfolio-badge absolute right-5 top-5 inline-flex rounded-full border border-white/10 bg-white/8 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-skala-muted opacity-0 transition duration-300">
+      {project.visual.label}
     </span>
   </div>
 
-  <div
-    class="flex items-center justify-between gap-4 border-t border-white/8 p-4 sm:p-5"
-  >
+  <div class="flex items-center justify-between gap-4 border-t border-white/8 p-4 sm:p-5">
     <span class="min-w-0 text-sm text-skala-muted">
       {project.title} · {project.client}
     </span>
     <span class={`h-2 w-2 shrink-0 rounded-full ${getPortfolioAccentClass(project)}`}></span>
   </div>
 
-  <a
-    href={`#${project.id}`}
-    class="portfolio-overlay absolute inset-0 z-10 flex flex-col justify-end bg-[rgba(8,8,8,0.9)] p-5 opacity-0 transition duration-300 focus-visible:ring-2 focus-visible:ring-skala-accent/70 group-hover:opacity-100 sm:p-6 lg:p-8"
-    aria-label={`Abrir caso: ${project.title}`}
-  >
-    <p
-      class="mb-3 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent"
-    >
+  <div class="portfolio-overlay absolute inset-0 z-10 flex flex-col justify-end bg-[rgba(8,8,8,0.9)] p-5 opacity-0 transition duration-300 focus-visible:ring-2 focus-visible:ring-skala-accent/70 sm:p-6 lg:p-8">
+    <p class="mb-3 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent">
       {project.categoryLabel}
     </p>
-    <h3
-      class="mb-2 font-display text-2xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-3xl"
-    >
+    <h3 class="mb-2 font-display text-2xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-3xl">
       {project.title}
     </h3>
     <p class="mb-6 text-sm text-skala-muted">Cliente: {project.client}</p>
-    <span
-      class="inline-flex w-fit items-center gap-2 text-[0.72rem] font-black uppercase tracking-[0.14em] text-skala-accent"
-    >
+    <span class="inline-flex w-fit items-center gap-2 text-[0.72rem] font-black uppercase tracking-[0.14em] text-skala-accent">
       {project.overlay}
       <span aria-hidden="true">→</span>
     </span>
-  </a>
-</article>
+  </div>
+</a>
 
 <style>
   .portfolio-card {
@@ -128,6 +101,39 @@ const visualLabel = project.visual.label;
     backdrop-filter: blur(12px);
   }
 
+  .portfolio-shine {
+    pointer-events: none;
+  }
+
+  /* Scoped Hover Effects: Applied ONLY on hoverable devices (Desktops/Laptops) */
+  @media (hover: hover) {
+    .portfolio-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(92, 216, 252, 0.35);
+    }
+
+    .portfolio-card:hover .portfolio-image-container {
+      transform: scale(1.035);
+    }
+
+    .portfolio-card:hover .portfolio-gradient-overlay {
+      opacity: 1;
+    }
+
+    .portfolio-card:hover .portfolio-shine {
+      opacity: 1;
+    }
+
+    .portfolio-card:hover .portfolio-badge {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+
+    .portfolio-card:hover .portfolio-overlay {
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .portfolio-card,
     .portfolio-card > *,
@@ -138,58 +144,117 @@ const visualLabel = project.visual.label;
     }
   }
 
+  /* Responsive animations (Simplified 2D for mobile to maintain 60 FPS) */
   @keyframes portfolioFadeIn {
     from {
       opacity: 0;
-      transform: translate3d(0, 22px, 0) scale(0.985);
+      transform: translateY(16px);
     }
     to {
       opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
+      transform: translateY(0);
     }
   }
 
   @keyframes portfolioFadeInLeft {
     from {
       opacity: 0;
-      transform: translate3d(-24px, 20px, 0) scale(0.985);
+      transform: translate3d(-16px, 12px, 0);
     }
     to {
       opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
+      transform: translate3d(0, 0, 0);
     }
   }
 
   @keyframes portfolioFadeInRight {
     from {
       opacity: 0;
-      transform: translate3d(24px, 20px, 0) scale(0.985);
+      transform: translate3d(16px, 12px, 0);
     }
     to {
       opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
+      transform: translate3d(0, 0, 0);
     }
   }
 
   @keyframes portfolioFadeInWide {
     from {
       opacity: 0;
-      transform: translate3d(0, 28px, 0) scale(0.97);
+      transform: translateY(20px);
     }
     to {
       opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
+      transform: translateY(0);
     }
   }
 
   @keyframes portfolioFadeInTall {
     from {
       opacity: 0;
-      transform: translate3d(0, 26px, 0) scaleY(0.965);
+      transform: translateY(18px);
     }
     to {
       opacity: 1;
-      transform: translate3d(0, 0, 0) scaleY(1);
+      transform: translateY(0);
+    }
+  }
+
+  /* Complex 3D & Scaling animations on screens where performance is robust */
+  @media (min-width: 768px) {
+    @keyframes portfolioFadeIn {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 22px, 0) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    @keyframes portfolioFadeInLeft {
+      from {
+        opacity: 0;
+        transform: translate3d(-24px, 20px, 0) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    @keyframes portfolioFadeInRight {
+      from {
+        opacity: 0;
+        transform: translate3d(24px, 20px, 0) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    @keyframes portfolioFadeInWide {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 28px, 0) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    @keyframes portfolioFadeInTall {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 26px, 0) scaleY(0.965);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scaleY(1);
+      }
     }
   }
 </style>

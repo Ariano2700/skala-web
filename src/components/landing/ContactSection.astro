@@ -1,0 +1,300 @@
+---
+import SectionLabel from "./SectionLabel.astro";
+import { CONTACT_DATA } from "../../data/contact_data";
+import { plans } from "../../data/plans";
+import { singleServices } from "../../data/services";
+import {
+  FiSend,
+  FiMail,
+  FiUser,
+  FiSearch,
+  FiMessageSquare,
+  FiCheck,
+} from "react-icons/fi";
+---
+
+<section
+  id="contacto"
+  class="relative z-10 mx-auto w-full max-w-360 px-5 py-20 md:px-12"
+  aria-labelledby="contacto-title"
+>
+  <div class="mx-auto max-w-360">
+    <div class="mb-12 text-center" data-reveal>
+      <SectionLabel label="Contacto" />
+      <h2
+        id="contacto-title"
+        class="mt-4 font-display text-[clamp(2.5rem,5vw,4rem)] font-black leading-[0.95] tracking-[-0.06em] text-skala-text"
+      >
+        Hablemos de tu proyecto
+      </h2>
+      <p class="mt-4 max-w-[50ch] mx-auto text-skala-muted">
+        Cuéntanos qué necesitas y te armamos una propuesta creativa en 24 horas.
+      </p>
+    </div>
+
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div class="space-y-6" data-reveal style="--reveal-delay: 120ms;">
+        <div
+          class="rounded-4xl border border-skala-border bg-white/[0.035] p-5 md:p-7"
+        >
+          <form id="contact-form" class="flex flex-col gap-5">
+            <!-- Datos de contacto -->
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="relative">
+                <FiUser
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+                  aria-hidden="true"
+                />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Tu nombre"
+                  required
+                  class="w-full rounded-2xl border border-skala-border bg-skala-surface px-12 py-3.5 text-sm font-medium text-skala-text placeholder:text-skala-muted focus:outline-none focus:ring-2 focus:ring-skala-accent/50"
+                />
+              </div>
+              <div class="relative">
+                <FiMail
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+                  aria-hidden="true"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Tu email (opcional)"
+                  class="w-full rounded-2xl border border-skala-border bg-skala-surface px-12 py-3.5 text-sm font-medium text-skala-text placeholder:text-skala-muted focus:outline-none focus:ring-2 focus:ring-skala-accent/50"
+                />
+              </div>
+            </div>
+
+            <div class="relative">
+              <FiUser
+                className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+                aria-hidden="true"
+              />
+              <input
+                type="text"
+                name="company"
+                placeholder="Empresa (opcional)"
+                  class="w-full rounded-2xl border border-skala-border bg-skala-surface px-12 py-3.5 text-sm font-medium text-skala-text placeholder:text-skala-muted focus:outline-none focus:ring-2 focus:ring-skala-accent/50"
+              />
+            </div>
+
+            <!-- Planes -->
+            <fieldset class="border-0 p-0 m-0">
+              <legend class="mb-2.5 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-skala-accent">
+                <span class="h-px w-6 bg-skala-accent/50"></span>
+                Planes
+              </legend>
+              <div class="grid grid-cols-2 gap-2.5" data-plan-options>
+                {
+                  plans.map((plan) => (
+                    <label
+                      class="group relative flex cursor-pointer items-start gap-2.5 rounded-2xl border border-skala-border bg-skala-surface px-3 py-3 transition duration-200 hover:border-skala-accent/40 has-checked:border-skala-accent/70 has-checked:bg-skala-accent-soft"
+                    >
+                      <input
+                        type="radio"
+                        name="plan"
+                        value={plan.name}
+                        class="peer sr-only"
+                      />
+                      <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-skala-border-strong text-skala-accent transition duration-200 peer-checked:border-skala-accent peer-checked:bg-skala-accent peer-checked:text-skala-text-secondary">
+                        <FiCheck className="h-3 w-3 opacity-0 transition-opacity duration-200 peer-checked:opacity-100" />
+                      </span>
+                      <span class="min-w-0">
+                        <span class="block text-sm font-bold text-skala-text">
+                          {plan.name}
+                        </span>
+                        <span class="block truncate text-xs text-skala-muted">
+                          {plan.tagline}
+                        </span>
+                      </span>
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+
+            <!-- Servicios unitarios -->
+            <fieldset class="border-0 p-0 m-0">
+              <legend class="mb-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold uppercase tracking-[0.18em] text-skala-accent">
+                <span class="h-px w-6 bg-skala-accent/50"></span>
+                Servicios unitarios
+                <span class="font-normal normal-case tracking-normal text-skala-muted">
+                  (puedes elegir varios)
+                </span>
+              </legend>
+
+              <div class="relative mb-2.5">
+                <FiSearch
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-muted"
+                  aria-hidden="true"
+                />
+                <input
+                  type="text"
+                  data-service-search
+                  placeholder="Buscar servicio..."
+                  class="w-full rounded-2xl border border-skala-border bg-skala-surface px-12 py-3 text-sm font-medium text-skala-text placeholder:text-skala-muted focus:outline-none focus:ring-2 focus:ring-skala-accent/50"
+                />
+              </div>
+
+              <div class="flex flex-wrap gap-1.5" data-service-options>
+                {
+                  singleServices.map((service) => (
+                    <label
+                      class="group inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-skala-border bg-skala-surface px-3.5 py-2 text-sm font-medium text-skala-muted transition duration-200 hover:border-skala-accent/40 hover:text-skala-text has-checked:border-skala-accent/70 has-checked:bg-skala-accent-soft has-checked:text-skala-text"
+                      data-service-label
+                    >
+                      <input
+                        type="checkbox"
+                        name="services"
+                        value={service.label}
+                        class="peer sr-only"
+                      />
+                      <FiCheck className="h-3.5 w-3.5 opacity-0 transition-opacity duration-200 peer-checked:opacity-100" />
+                      <span>{service.label}</span>
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+
+            <!-- Mensaje -->
+            <div class="relative">
+              <FiMessageSquare
+                className="absolute left-4 top-4 h-5 w-5 text-skala-accent"
+                aria-hidden="true"
+              />
+              <textarea
+                name="message"
+                placeholder="Cuéntanos tu proyecto..."
+                rows={4}
+                required
+                class="w-full rounded-2xl border border-skala-border bg-skala-surface px-12 py-3.5 text-sm font-medium text-skala-text placeholder:text-skala-muted focus:outline-none focus:ring-2 focus:ring-skala-accent/50 resize-none"
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-full bg-skala-accent px-8 py-3.5 font-display text-[0.74rem] font-bold uppercase tracking-[0.16em] text-skala-text-secondary transition duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-skala-accent/70"
+            >
+              <FiSend className="h-5 w-5" />
+              Enviar por WhatsApp
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="space-y-6" data-reveal style="--reveal-delay: 180ms;">
+        <div
+          class="rounded-4xl border border-skala-border bg-white/[0.035] p-8"
+        >
+          <h3 class="mb-4 font-display text-2xl font-black text-skala-text">
+            ¿Por qué elegir Skala?
+          </h3>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <span class="mt-1.5 h-2 w-2 rounded-full bg-[#f1a135]"></span>
+              <span class="text-sm text-skala-muted">
+                <strong class="text-skala-text">Respuesta rápida</strong> - En menos
+                de 24 horas
+              </span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-1.5 h-2 w-2 rounded-full bg-[#35d9f1]"></span>
+              <span class="text-sm text-skala-muted">
+                <strong class="text-skala-text">Propuesta clara</strong> - Sin costo
+                inicial
+              </span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-1.5 h-2 w-2 rounded-full bg-[#f135a0]"></span>
+              <span class="text-sm text-skala-muted">
+                <strong class="text-skala-text">Equipo experto</strong> - Enfoque
+                360°
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          class="rounded-4xl border border-skala-border bg-white/[0.035] p-8"
+        >
+          <p class="text-sm text-skala-muted">
+            <strong class="text-skala-text">¿Prefieres escribirnos?</strong> Completa
+            el formulario y te llevamos una propuesta armada directo a WhatsApp en
+            segundos.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+import { CONTACT_DATA } from "../../data/contact_data";
+
+  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+  if (form) {
+    const searchInput = form.querySelector<HTMLInputElement>(
+      "[data-service-search]",
+    );
+    const serviceLabels = Array.from(
+      form.querySelectorAll<HTMLElement>("[data-service-label]"),
+    );
+
+    // Filtro en vivo de servicios unitarios
+    searchInput?.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      serviceLabels.forEach((label) => {
+        const text = label.textContent?.toLowerCase() ?? "";
+        label.style.display = text.includes(query) ? "" : "none";
+      });
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const data = new FormData(form);
+      const name = (data.get("name") as string)?.trim() || "";
+      const email = (data.get("email") as string)?.trim() || "";
+      const company = (data.get("company") as string)?.trim() || "";
+      const plan = (data.get("plan") as string) || "";
+      const services = data.getAll("services").map(String);
+      const message = (data.get("message") as string)?.trim() || "";
+
+      // Solo se incluyen las secciones que tienen datos
+      const lines: string[] = [];
+      lines.push("*Nueva solicitud · Skala*");
+      lines.push("");
+      lines.push(`*Nombre:* ${name}`);
+
+      if (email) lines.push(`*Email:* ${email}`);
+      if (company) lines.push(`*Empresa:* ${company}`);
+
+      if (plan) {
+        lines.push("");
+        lines.push("*Plan de interés:*");
+        lines.push(`• ${plan}`);
+      }
+
+      if (services.length) {
+        lines.push("");
+        lines.push("*Servicios unitarios:*");
+        services.forEach((s) => lines.push(`• ${s}`));
+      }
+
+      if (message) {
+        lines.push("");
+        lines.push("*Detalles:*");
+        lines.push(message);
+      }
+
+      lines.push("");
+      lines.push("_Enviado desde el formulario web de Skala._");
+
+      const whatsappUrl = `${CONTACT_DATA.WHATSAPP_LINK(lines.join("\n"))}`;
+      window.open(whatsappUrl, "_blank", "noopener");
+    });
+  }
+</script>

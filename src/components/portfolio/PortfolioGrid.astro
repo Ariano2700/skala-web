@@ -1,9 +1,6 @@
 ---
-import {
-  getPortfolioAccentClass,
-  getPortfolioGridClass,
-  portfolioProjects,
-} from "./portfolio-data";
+import PortfolioCard from "./PortfolioCard.astro";
+import { portfolioProjects } from "./portfolio-data";
 ---
 
 <section
@@ -16,80 +13,7 @@ import {
   <div class="portfolio-grid grid grid-cols-12 gap-4" data-portfolio-grid>
     {
       portfolioProjects.map((project, index) => (
-        <article
-          class={`portfolio-card portfolio-card--${project.layout.replaceAll(
-            " ",
-            "-",
-          )} group relative isolate overflow-hidden rounded-4xl border border-skala-border bg-[#181816] shadow-[0_24px_70px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 ${getPortfolioGridClass(
-            project,
-          )}`}
-          data-project-card
-          data-category={project.category}
-          data-reveal
-          data-reveal-variant={index % 3}
-          style={`--reveal-delay: ${Math.min(index * 42, 360)}ms;`}
-        >
-          <div
-            class="relative block aspect-16/10 overflow-hidden bg-skala-surface"
-            aria-hidden="true"
-          >
-            <div
-              class="portfolio-visual absolute inset-0 transition duration-700 group-hover:scale-[1.035]"
-              style={`background: ${project.visual.gradient};`}
-            />
-
-            <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,8,8,0.08)_0%,rgba(8,8,8,0.36)_46%,rgba(8,8,8,0.86)_100%)] opacity-90 transition-opacity duration-300 group-hover:opacity-100" />
-
-            <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6 lg:p-8">
-              <span
-                class={`mb-3 inline-flex h-2 w-10 rounded-full ${getPortfolioAccentClass(
-                  project,
-                )}`}
-              />
-              <p class="m-0 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent">
-                {project.categoryLabel}
-              </p>
-              <h3 class="mt-3 max-w-[18ch] font-display text-2xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-3xl">
-                {project.title}
-              </h3>
-            </div>
-
-            <span class="portfolio-badge absolute right-5 top-5 inline-flex max-w-[calc(100%-2.5rem)] rounded-full border border-white/12 bg-[#04142e]/94 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-skala-text shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition duration-300 group-hover:-translate-y-0.5">
-              {project.visual.label}
-            </span>
-          </div>
-
-          <div class="flex items-center justify-between gap-4 border-t border-white/8 p-4 sm:p-5">
-            <span class="min-w-0 text-sm text-skala-muted">
-              {project.title} · {project.client}
-            </span>
-            <span
-              class={`h-2 w-2 shrink-0 rounded-full ${getPortfolioAccentClass(
-                project,
-              )}`}
-            />
-          </div>
-
-          <a
-            href={`#${project.id}`}
-            title={`Abrir proyecto: ${project.title}`}
-            aria-label={`Abrir proyecto: ${project.title}`}
-            class="portfolio-overlay absolute inset-0 z-10 flex flex-col justify-end bg-[rgba(4,20,46,0.96)] p-5 opacity-0 transition duration-300 focus-visible:ring-2 focus-visible:ring-skala-accent/70 group-hover:opacity-100 sm:p-6 lg:p-8"
-          >
-            <p class="mb-3 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent">
-              {project.categoryLabel}
-            </p>
-            <h3 class="mb-2 font-display text-2xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-3xl">
-              {project.title}
-            </h3>
-            <p class="mb-6 text-sm text-skala-muted">
-              Cliente: {project.client}
-            </p>
-            <span class="inline-flex w-fit items-center gap-2 text-[0.72rem] font-black uppercase tracking-[0.14em] text-skala-accent">
-              {project.overlay} <span aria-hidden="true">→</span>
-            </span>
-          </a>
-        </article>
+        <PortfolioCard project={project} index={index} />
       ))
     }
   </div>
@@ -137,13 +61,16 @@ import {
       item.classList.toggle("is-active", isActive);
     });
 
+    const isMobile = window.innerWidth < 768;
+    const delayStep = isMobile ? 0.015 : 0.04;
+
     cards.forEach((card, index) => {
       const matches = filter === "all" || card.dataset.category === filter;
 
       if (matches) {
         card.hidden = false;
         card.classList.remove("portfolio-card-hiding");
-        card.style.animationDelay = `${visible * 0.04}s`;
+        card.style.animationDelay = `${visible * delayStep}s`;
         card.style.animation = "none";
         requestAnimationFrame(() => {
           card.style.animation = "";
@@ -174,121 +101,5 @@ import {
     border-color: rgba(92, 216, 252, 1);
     background: rgba(92, 216, 252, 1);
     color: #04142e;
-  }
-
-  .portfolio-card {
-    animation: portfolioFadeIn 0.52s ease both;
-    transform-origin: center;
-  }
-
-  .portfolio-card[data-reveal-variant="1"] {
-    animation-name: portfolioFadeInLeft;
-  }
-
-  .portfolio-card[data-reveal-variant="2"] {
-    animation-name: portfolioFadeInRight;
-  }
-
-  .portfolio-card--full,
-  .portfolio-card--narrow-tall {
-    animation-duration: 0.62s;
-  }
-
-  .portfolio-card--full {
-    animation-name: portfolioFadeInWide;
-  }
-
-  .portfolio-card--narrow-tall {
-    animation-name: portfolioFadeInTall;
-  }
-
-  .portfolio-visual::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(
-        120deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.06) 42%,
-        transparent 58%
-      ),
-      radial-gradient(
-        circle at 18% 22%,
-        rgba(255, 255, 255, 0.14),
-        transparent 34%
-      );
-    opacity: 0.42;
-    mix-blend-mode: screen;
-    pointer-events: none;
-  }
-
-  .portfolio-badge {
-    will-change: transform, opacity;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .portfolio-card,
-    .portfolio-card > *,
-    .portfolio-overlay,
-    .portfolio-visual {
-      animation: none !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-
-  @keyframes portfolioFadeIn {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 22px, 0) scale(0.985);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-  }
-
-  @keyframes portfolioFadeInLeft {
-    from {
-      opacity: 0;
-      transform: translate3d(-24px, 20px, 0) scale(0.985);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-  }
-
-  @keyframes portfolioFadeInRight {
-    from {
-      opacity: 0;
-      transform: translate3d(24px, 20px, 0) scale(0.985);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-  }
-
-  @keyframes portfolioFadeInWide {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 28px, 0) scale(0.97);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-  }
-
-  @keyframes portfolioFadeInTall {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 26px, 0) scaleY(0.965);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0) scaleY(1);
-    }
   }
 </style>

@@ -1,8 +1,19 @@
 ---
 import { FiArrowUpRight, FiCheckCircle, FiStar } from "react-icons/fi";
 import SectionLabel from "./SectionLabel.astro";
-import { plans } from "../../data/skala";
 import { CONTACT_DATA } from "../../data/contact_data";
+import { plans } from "../../data/plans";
+
+/**
+ * Helper: returns true when the plan background is considered "light"
+ * so we can adjust check-icon and muted-text colours for readability.
+ */
+function isLightBg(hex: string): boolean {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return r * 0.299 + g * 0.587 + b * 0.114 > 150;
+}
 ---
 
 <section
@@ -28,79 +39,109 @@ import { CONTACT_DATA } from "../../data/contact_data";
 
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
     {
-      plans.map((plan, index) => (
-        <article
-          class:list={[
-            "group relative flex flex-col gap-5 rounded-[30px] border p-7 shadow-(--shadow) transition duration-300 hover:-translate-y-1.5 hover:border-skala-accent/35",
-            plan.featured
-              ? "border-skala-accent/50 bg-[linear-gradient(180deg,rgba(92,216,252,0.12),rgba(4,20,46,0.97))] before:absolute before:inset-0 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_top_right,rgba(92,216,252,0.18),transparent_42%)] before:opacity-80"
-              : "border-skala-border bg-[linear-gradient(180deg,rgba(8,24,52,0.95),rgba(4,20,46,0.98))] before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(180deg,rgba(92,216,252,0.05),transparent_46%)] before:opacity-0 before:transition-opacity before:duration-300 group-hover:before:opacity-100",
-          ]}
-          data-reveal
-          style={`--reveal-delay: ${index * 90}ms;`}
-        >
-          {plan.featured && (
-            <div class="absolute -top-3 left-5 inline-flex items-center gap-2 rounded-full bg-skala-accent px-3 py-2 font-display text-[0.62rem] uppercase tracking-[0.16em] text-[#04142e] shadow-[0_12px_24px_rgba(92,216,252,0.2)]">
-              <FiStar aria-hidden="true" />
-              {plan.badge}
-            </div>
-          )}
+      plans.map((plan, index) => {
+        const light = isLightBg(plan.colors.bg);
+        const mutedColor = light
+          ? `${plan.colors.text}b3` /* 70 % opacity */
+          : `${plan.colors.text}99`; /* 60 % opacity */
+        const checkColor = plan.colors.text;
+        const disabledCheck = light
+          ? `${plan.colors.text}40`
+          : `${plan.colors.text}30`;
+        const borderColor = light
+          ? `${plan.colors.text}1a`
+          : `${plan.colors.text}22`;
 
-          <h3 class="relative m-0 pt-1 font-display text-[1.05rem] leading-[1.35] tracking-[-0.04em]">
-            {plan.name}
-          </h3>
-          <p class="relative m-0 leading-7 text-skala-muted">{plan.tagline}</p>
-
-          <div class="flex flex-col gap-1">
-            <strong class="font-display text-[1.85rem] tracking-[-0.06em]">
-              {plan.price}
-            </strong>
-            <span class="text-[0.66rem] uppercase tracking-[0.18em] text-skala-muted">
-              {plan.period}
-            </span>
-          </div>
-
-          <ul class="m-0 flex list-none flex-col gap-2 p-0">
-            {plan.features.map((feature) => (
-              <li
-                class:list={[
-                  "grid grid-cols-[auto_1fr] items-start gap-2 leading-[1.55] text-skala-muted",
-                  !feature.included && "opacity-45",
-                ]}
-              >
-                <FiCheckCircle
-                  class:list={[
-                    "mt-0.5 h-4.5 w-4.5 shrink-0 text-skala-accent",
-                    !feature.included && "text-white/30",
-                  ]}
-                  aria-hidden="true"
-                />
-                <span>{feature.label}</span>
-              </li>
-            ))}
-          </ul>
-
-          <a
-            href={CONTACT_DATA.WHATSAPP_LINK(plan.cta_link_message)}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={plan.cta}
-            aria-label={plan.cta}
-            class:list={[
-              "group mt-auto inline-flex items-center justify-center gap-3 rounded-full border px-6 py-4 font-display text-[0.74rem] font-black uppercase tracking-[0.16em] shadow-lg transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px",
-              plan.featured
-                ? "border-transparent bg-skala-accent text-[#04142e]! shadow-[0_18px_36px_rgba(92,216,252,0.26)] before:absolute before:inset-0 before:rounded-full before:bg-[linear-gradient(135deg,rgba(255,255,255,0.42),transparent_42%)] before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100"
-                : "border-skala-accent/24 bg-skala-accent/8 text-[#04142e] shadow-[0_14px_32px_rgba(92,216,252,0.14)] hover:border-skala-accent/45 hover:bg-skala-accent/14 hover:text-skala-text",
-            ]}
+        return (
+          <article
+            class="plan-card group relative flex flex-col gap-5 rounded-[30px] border p-7 shadow-(--shadow) transition duration-300 hover:-translate-y-1.5"
+            data-reveal
+            style={`
+              --plan-bg: ${plan.colors.bg};
+              --plan-text: ${plan.colors.text};
+              --plan-muted: ${mutedColor};
+              --plan-check: ${checkColor};
+              --plan-check-disabled: ${disabledCheck};
+              --plan-border: ${borderColor};
+              --reveal-delay: ${index * 90}ms;
+              background-color: var(--plan-bg);
+              color: var(--plan-text);
+              border-color: var(--plan-border);
+            `}
           >
-            <span>{plan.cta}</span>
-            <FiArrowUpRight
-              aria-hidden="true"
-              className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-            />
-          </a>
-        </article>
-      ))
+            {plan.featured && (
+              <div
+                class="absolute -top-3 left-5 inline-flex items-center gap-2 rounded-full px-3 py-2 font-display text-[0.62rem] uppercase tracking-[0.16em] shadow-lg"
+                style={`background-color: ${plan.colors.text}; color: ${plan.colors.bg};`}
+              >
+                <FiStar aria-hidden="true" />
+                {plan.badge}
+              </div>
+            )}
+
+            <h3 class="relative m-0 pt-1 font-display text-[1.05rem] leading-[1.35] tracking-[-0.04em]">
+              {plan.name}
+            </h3>
+            <p class="relative m-0 leading-7" style="color: var(--plan-muted);">
+              {plan.tagline}
+            </p>
+
+            <div class="flex flex-col gap-1">
+              <strong class="font-display text-[1.85rem] tracking-[-0.06em]">
+                {plan.price}
+              </strong>
+              <span
+                class="text-[0.66rem] uppercase tracking-[0.18em]"
+                style="color: var(--plan-muted);"
+              >
+                {plan.period}
+              </span>
+            </div>
+
+            <ul class="m-0 flex list-none flex-col gap-2 p-0">
+              {plan.features.map((feature) => (
+                <li
+                  class:list={[
+                    "grid grid-cols-[auto_1fr] items-start gap-2 leading-[1.55]",
+                    !feature.included && "opacity-45",
+                  ]}
+                  style="color: var(--plan-muted);"
+                >
+                  <FiCheckCircle
+                    className={
+                      feature.included
+                        ? "mt-0.5 h-4.5 w-4.5 shrink-0"
+                        : "mt-0.5 h-4.5 w-4.5 shrink-0 opacity-45"
+                    }
+                    aria-hidden="true"
+                  />
+                  <span>{feature.label}</span>
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href={CONTACT_DATA.WHATSAPP_LINK(plan.cta_link_message)}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={plan.cta}
+              aria-label={plan.cta}
+              class="plan-cta group mt-auto inline-flex items-center justify-center gap-3 rounded-full border px-6 py-4 font-display text-[0.74rem] font-black uppercase tracking-[0.16em] shadow-lg transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 active:translate-y-px"
+              style={`
+                background-color: ${plan.colors.text};
+                color: ${plan.colors.bg};
+                border-color: transparent;
+              `}
+            >
+              <span>{plan.cta}</span>
+              <FiArrowUpRight
+                aria-hidden="true"
+                className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </a>
+          </article>
+        );
+      })
     }
   </div>
 </section>

@@ -1,8 +1,14 @@
 ---
 import { FiArrowUpRight, FiMenu, FiX } from "react-icons/fi";
-import { navLinks } from "../../data/skala";
 import Logotype from "../../icons/Logotype.astro";
 import { CONTACT_DATA } from "../../data/contact_data";
+import { navLinks } from "../../data/navigation";
+
+// En la home las anclas funcionan directo (#servicios). En otras páginas
+// hay que volver a la home y luego hacer scroll a la sección (/#servicios).
+const isHome = Astro.url.pathname === "/";
+const resolveHref = (href: string) =>
+  href.startsWith("#") && !isHome ? `/${href}` : href;
 ---
 
 <header
@@ -19,13 +25,10 @@ import { CONTACT_DATA } from "../../data/contact_data";
     class="relative mx-auto flex h-16 items-center justify-between md:justify-around gap-3 px-4 md:px-12"
   >
     <a
-      href="#top"
-      target="_blank"
-      rel="noopener noreferrer"
+      href={isHome ? "#top" : "/"}
       title="Ir al inicio"
       aria-label="Ir al inicio"
       class="group inline-flex min-h-12 items-center gap-3 rounded-full px-3 py-2 outline-none transition duration-200 hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
-      aria-label="Ir al inicio"
     >
       <span
         class="text-skala-accent! hover:text-skala-text! shadow transition-colors duration-200"
@@ -41,9 +44,7 @@ import { CONTACT_DATA } from "../../data/contact_data";
       {
         navLinks.map((item) => (
           <a
-            href={item.href}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={resolveHref(item.href)}
             title={item.label}
             aria-label={item.label}
             class="group relative rounded-full px-4 py-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-skala-muted transition duration-200 hover:bg-white/06 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
@@ -117,9 +118,7 @@ import { CONTACT_DATA } from "../../data/contact_data";
         {
           navLinks.map((item) => (
             <a
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={resolveHref(item.href)}
               title={item.label}
               aria-label={item.label}
               class="group flex items-center justify-between rounded-2xl border border-transparent bg-white/3 px-4 py-4 text-skala-muted transition duration-200 hover:-translate-x-0.5 hover:border-skala-accent/24 hover:bg-skala-accent/6 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-x-0"
@@ -137,11 +136,9 @@ import { CONTACT_DATA } from "../../data/contact_data";
       </nav>
 
       <a
-        href="#contacto"
+        href={resolveHref("#contacto")}
         title="Contáctanos por WhatsApp"
         aria-label="Contáctanos por WhatsApp"
-        target="_blank"
-        rel="noopener noreferrer"
         class="text-skala-text-secondary! mobile-nav-cta group mx-3 mb-3 flex items-center justify-center gap-2 rounded-full bg-skala-accent px-4 py-4 text-[0.72rem] font-black uppercase tracking-[0.16em] transition duration-200 hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
       >
         Agenda <FiArrowUpRight

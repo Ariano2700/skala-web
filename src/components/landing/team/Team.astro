@@ -1,0 +1,420 @@
+---
+import Image from "astro/components/Image.astro";
+import { TeamData } from "../../../data/team.data";
+import "./team.css";
+---
+
+<section
+  id="equipo"
+  class="relative z-10 mx-auto w-full max-w-360 px-5 py-20 md:px-12"
+  role="region"
+  aria-labelledby="team-heading"
+>
+  <div class="mx-auto max-w-360">
+    <div class="mb-12 text-center" data-reveal>
+      <h2
+        id="team-heading"
+        class="mt-4 font-display text-[clamp(2.5rem,5vw,4rem)] font-black leading-[0.95] tracking-[-0.06em] text-skala-text"
+      >
+        Nuestro Equipo
+      </h2>
+      <p class="mt-4 max-w-[50ch] mx-auto text-skala-muted">
+        <strong class="text-skala-text">Profesionales apasionados</strong> por crear
+        marcas memorables
+      </p>
+    </div>
+
+    <div class="team" role="group" aria-label="Equipo Skala">
+      <div
+        class="profile-images"
+        role="group"
+        aria-label="Fotografías del equipo"
+      >
+        {
+          TeamData.map((member) => (
+            <figure
+              class="img"
+              aria-describedby={`${member.name.toLowerCase()}-info`}
+              aria-label={`Ver información de ${member.name} - ${member.role}`}
+            >
+              <Image
+                src={member.image}
+                width={200}
+                height={200}
+                loading={"lazy"}
+                alt={`${member.name} - ${member.role} de Skala`}
+                title={`${member.name} - ${member.role} de Skala`}
+              />
+            </figure>
+          ))
+        }
+      </div>
+
+      <div
+        class="profile-names"
+        role="group"
+        aria-label="Nombres e información del equipo"
+        aria-live="polite"
+      >
+        <div class="name default" id="default-text">
+          <span aria-label="Texto por defecto"> Integrantes</span>
+        </div>
+        {
+          TeamData.map((member) => (
+            <div
+              class="name"
+              id={`${member.name.toLowerCase()}-info`}
+              aria-labelledby="team-heading"
+            >
+              <span>
+                <strong>{member.name}</strong>
+                <h4 class="sub-name">{member.role}</h4>
+              </span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Datos estructurados JSON-LD para SEO -->
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Skala",
+    description: "Agencia y Productora Audiovisual en Trujillo, Perú",
+    employee: TeamData.map((member) => ({
+      "@type": "Person",
+      name: member.name,
+      jobTitle: member.role,
+      worksFor: {
+        "@type": "Organization",
+        name: "Skala",
+      },
+    })),
+  })}
+/>
+
+<script>
+  import gsap from "gsap";
+  import { SplitText } from "gsap/SplitText";
+
+  gsap.registerPlugin(SplitText);
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const teamSection = document.querySelector(".team");
+    const teamHeader = document.querySelector(".team-header");
+    const profileImagesContainer = document.querySelector(".profile-images");
+    const profileImages = document.querySelectorAll(
+      ".profile-images figure.img",
+    );
+    const profileNamesContainer = document.querySelector(".profile-names");
+    const nameElements = document.querySelectorAll(".profile-names .name");
+    const nameSpans = document.querySelectorAll(".profile-names .name span");
+
+    // Split text into characters
+    nameSpans.forEach((span) => {
+      const split = new SplitText(span, { type: "chars" });
+      split.chars.forEach((char) => {
+        char.classList.add("letter");
+      });
+    });
+
+    // Set initial positions for GSAP animations
+    const defaultLetters = nameElements[0].querySelectorAll(".letter");
+    gsap.set(defaultLetters, { y: "0%" });
+
+    // Hide all other names initially
+    nameElements.forEach((nameEl, index) => {
+      if (index > 0) {
+        const letters = nameEl.querySelectorAll(".letter");
+        gsap.set(letters, { y: "100%" });
+      }
+    });
+
+    // Intersection Observer for entrance animations
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: "0px",
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Animate entrance
+          const tl = gsap.timeline();
+
+          // Header animation
+          tl.to(teamHeader, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+          })
+            // Images animation
+            .to(
+              profileImagesContainer,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power2.out",
+              },
+              "-=0.4",
+            )
+            // Individual images stagger
+            .to(
+              profileImages,
+              {
+                scale: 1,
+                opacity: 1,
+                duration: 0.6,
+                ease: "back.out(1.7)",
+                stagger: 0.1,
+              },
+              "-=0.6",
+            )
+            // Names container animation
+            .to(
+              profileNamesContainer,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power2.out",
+              },
+              "-=0.4",
+            );
+
+          // Disconnect observer after animation
+          observer.disconnect();
+        }
+      });
+    }, observerOptions);
+
+    // Set initial state for images
+    gsap.set(profileImages, {
+      scale: 0.8,
+      opacity: 0,
+    });
+
+    // Start observing
+    if (teamSection) {
+      observer.observe(teamSection);
+    }
+
+    // Hover interactions (desktop) and touch interactions (mobile/tablet)
+    if (window.innerWidth >= 900) {
+      // Desktop interactions
+      profileImages.forEach((img, index) => {
+        const correspondingName = nameElements[index + 1];
+        if (!correspondingName) return;
+
+        const letters = correspondingName.querySelectorAll(".letter");
+
+        img.addEventListener("mouseenter", () => {
+          // Hide default text
+          gsap.to(defaultLetters, {
+            y: "-200%",
+            ease: "power2.out",
+            duration: 0.5,
+            stagger: {
+              each: 0.02,
+              from: "center",
+            },
+          });
+
+          // Show corresponding name
+          gsap.to(letters, {
+            y: "-170%",
+            ease: "power2.out",
+            duration: 0.5,
+            stagger: {
+              each: 0.02,
+              from: "center",
+            },
+          });
+
+          // Scale image & push to front
+          gsap.to(img, {
+            scale: 1.25,
+            zIndex: 10,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        });
+
+        img.addEventListener("mouseleave", () => {
+          // Hide name
+          gsap.to(letters, {
+            y: "100%",
+            ease: "power2.out",
+            duration: 0.5,
+            stagger: {
+              each: 0.02,
+              from: "center",
+            },
+          });
+
+          // Show default text
+          gsap.to(defaultLetters, {
+            y: "0%",
+            ease: "power2.out",
+            duration: 0.5,
+            stagger: {
+              each: 0.02,
+              from: "center",
+            },
+          });
+
+          // Reset image size & zIndex
+          gsap.to(img, {
+            scale: 1,
+            zIndex: 1,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        });
+      });
+    } else {
+      // Mobile and tablet touch interactions
+      let currentActiveImage: HTMLElement | null = null;
+      let currentActiveLetters: NodeListOf<Element> | null = null;
+
+      profileImages.forEach((img, index) => {
+        const correspondingName = nameElements[index + 1];
+        if (!correspondingName) return;
+
+        const letters = correspondingName.querySelectorAll(".letter");
+
+        img.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+
+          // If there's already an active image, reset it first
+          if (currentActiveImage && currentActiveImage !== img) {
+            if (currentActiveLetters) {
+              gsap.to(currentActiveLetters, {
+                y: "100%",
+                ease: "power2.out",
+                duration: 0.3,
+              });
+            }
+            gsap.to(currentActiveImage, {
+              scale: 1,
+              zIndex: 1,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+            gsap.to(defaultLetters, {
+              y: "0%",
+              ease: "power2.out",
+              duration: 0.3,
+            });
+          }
+
+          // If clicking the same image, toggle it off
+          if (currentActiveImage === img) {
+            gsap.to(letters, {
+              y: "100%",
+              ease: "power2.out",
+              duration: 0.5,
+              stagger: {
+                each: 0.02,
+                from: "center",
+              },
+            });
+            gsap.to(defaultLetters, {
+              y: "0%",
+              ease: "power2.out",
+              duration: 0.5,
+              stagger: {
+                each: 0.02,
+                from: "center",
+              },
+            });
+            gsap.to(img, {
+              scale: 1,
+              zIndex: 1,
+              duration: 0.5,
+              ease: "power2.out",
+            });
+            currentActiveImage = null;
+            currentActiveLetters = null;
+            return;
+          }
+
+          // Activate new image
+          currentActiveImage = img as HTMLElement;
+          currentActiveLetters = letters;
+
+          // Hide default text
+          gsap.to(defaultLetters, {
+            y: "-200%",
+            ease: "power2.out",
+            duration: 0.5,
+            stagger: {
+              each: 0.02,
+              from: "center",
+            },
+          });
+
+          // Show corresponding name
+          gsap.to(letters, {
+            y: "-170%",
+            ease: "power2.out",
+            duration: 0.5,
+            stagger: {
+              each: 0.02,
+              from: "center",
+            },
+          });
+
+          // Scale image & push to front
+          gsap.to(img, {
+            scale: 1.25,
+            zIndex: 10,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        });
+      });
+
+      // Reset on touch outside
+      document.addEventListener("touchstart", (e) => {
+        const target = e.target as HTMLElement;
+        const isImageTouch = target?.closest("figure.img");
+        if (!isImageTouch && currentActiveImage && currentActiveLetters) {
+          gsap.to(currentActiveLetters, {
+            y: "100%",
+            ease: "power2.out",
+            duration: 0.5,
+            stagger: {
+              each: 0.02,
+              from: "center",
+            },
+          });
+          gsap.to(defaultLetters, {
+            y: "0%",
+            ease: "power2.out",
+            duration: 0.5,
+            stagger: {
+              each: 0.02,
+              from: "center",
+            },
+          });
+          gsap.to(currentActiveImage, {
+            scale: 1,
+            zIndex: 1,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+          currentActiveImage = null;
+          currentActiveLetters = null;
+        }
+      });
+    }
+  });
+</script>
