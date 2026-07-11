@@ -10,4 +10,6 @@ export const navLinks: NavLink[] = [
   { label: "Contacto", href: "#contacto" },
   { label: "Equipo", href: "#equipo" },
   { label: "Portafolio", href: "/portafolio" },
+  //TEMPORAL
+  { label: "Desfile Canino", href: "/desfile-canino" },
 ];
