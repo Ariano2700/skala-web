@@ -1,0 +1,573 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { CONTACT_DATA } from "../data/contact_data";
+import {
+  FiCalendar,
+  FiMapPin,
+  FiShoppingBag,
+  FiVideo,
+  FiTag,
+  FiPackage,
+  FiGift,
+  FiHeart,
+  FiSmile,
+  FiBriefcase,
+  FiArrowUpRight,
+} from "react-icons/fi";
+import { TbDogBowl } from "react-icons/tb";
+import { PiDog } from "react-icons/pi";
+import { GiDogHouse } from "react-icons/gi";
+import { LuDog } from "react-icons/lu";
+
+const inscripcionLink = CONTACT_DATA.WHATSAPP_LINK(
+  "Hola, quiero inscribirme al Desfile Patriótico Canino 🐾",
+);
+
+// Fecha y hora del evento (Domingo 19 de Julio, 10:00 AM, Perú UTC-5)
+const eventDateISO = "2026-07-19T10:00:00-05:00";
+
+const premios = [
+  { icon: FiShoppingBag, title: "Cartera", sub: "De Marca" },
+  { icon: FiVideo, title: "Video HD", sub: "SKALA" },
+  { icon: FiTag, title: "Ropa", sub: "Para Engreído" },
+  { icon: FiPackage, title: "Comida", sub: "Premium" },
+  { icon: FiGift, title: "Piñata", sub: "Manchas Cakes" },
+];
+
+const actividades = [
+  { icon: FiHeart, label: "Juegos con tu mascota" },
+  { icon: FiSmile, label: "Juegos para niños" },
+  { icon: FiBriefcase, label: "Feria de emprendedores" },
+];
+---
+
+<Layout
+  title="Desfile Patriótico Canino · 19 de Julio · Paseo de Aguas"
+  description="Desfile Patriótico Canino: 'Sobre tu pecho llevo tus colores'. Domingo 19 de Julio en Paseo de Aguas, Víctor Larco. Cancha y manzanas acarameladas GRATIS. ¡No te quedes fuera!"
+  keywords="desfile patriótico canino, perros, fiestas patrias, paseo de aguas, trujillo, skala, manchas cakes"
+  robots="index, follow"
+>
+  <main class="relative overflow-hidden">
+    <!-- Fondo temático Perú -->
+    <div class="pointer-events-none absolute inset-0 -z-10">
+      <div class="absolute inset-0 bg-[#04142e]"></div>
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(214,40,40,0.22),transparent_45%),radial-gradient(circle_at_50%_110%,rgba(255,255,255,0.10),transparent_45%)]"
+      >
+      </div>
+    </div>
+
+    <!-- HERO (estilo página raíz) -->
+    <section
+      class="relative mx-auto grid min-h-svh w-full max-w-360 grid-cols-1 items-center gap-10 px-5 pb-12 pt-28 md:px-12 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:gap-16"
+      id="top"
+    >
+      <div class="relative">
+        <div
+          class="absolute inset-x-0 top-0 hidden h-px bg-[linear-gradient(90deg,transparent,rgba(92,216,252,0.42),transparent)] xl:block"
+          aria-hidden="true"
+        >
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <span
+            class="inline-flex w-fit items-center gap-2 rounded-full border border-[#ff3b3b]/40 bg-[#ff3b3b]/10 px-4 py-2 text-[0.7rem] font-black uppercase tracking-[0.18em] text-[#ff8a8a]"
+          >
+            🇵🇪 Edición Fiestas Patrias
+          </span>
+
+          <h1
+            class="relative m-0 font-display text-[clamp(3rem,7vw,6.5rem)] font-black leading-[0.88] tracking-[-0.06em] text-white"
+            data-reveal
+            style="--reveal-delay: 120ms;"
+          >
+            DESFILE<br />
+            <span class="text-[#ff3b3b]">PATRIÓTICO</span>
+            <span class="text-white"> CANINO</span>
+          </h1>
+
+          <p
+            class="max-w-[52ch] text-[1.08rem] leading-8 text-skala-muted"
+            data-reveal
+            style="--reveal-delay: 220ms;"
+          >
+            "Sobre tu pecho llevo tus colores" ❤️ — Un evento para disfrutar con
+            tu engreído y toda la familia.
+          </p>
+
+          <div
+            class="flex flex-wrap gap-3"
+            data-reveal
+            style="--reveal-delay: 300ms;"
+          >
+            <a
+              href={inscripcionLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group inline-flex items-center justify-center gap-3 rounded-full bg-[#ff3b3b] px-7 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-white shadow-[0_18px_35px_rgba(255,59,59,0.28)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-white/60 active:translate-y-px"
+            >
+              <span>¡Inscríbete!</span>
+              <FiArrowUpRight
+                aria-hidden="true"
+                className="transition-transform size-4 duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </a>
+            <a
+              href="#premios"
+              class="group inline-flex items-center justify-center gap-3 rounded-full border border-skala-border-strong bg-white/3 px-7 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-200 hover:-translate-y-0.5 hover:border-skala-accent/40 hover:bg-white/5"
+            >
+              <span>Ver premios</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Showcase con hero.jpg -->
+      <div
+        class="hero-showcase relative grid min-h-96 items-stretch rounded-full aspect-square xl:min-h-120"
+        data-reveal
+        style="--reveal-delay: 180ms;"
+      >
+        <div
+          class="absolute inset-0 overflow-hidden rounded-[inherit] border border-skala-border bg-skala-bg shadow-(--shadow) contain-[layout_paint]"
+          aria-hidden="true"
+        >
+          <img
+            src="/desfile_canino/hero.jpg"
+            alt="Desfile Patriótico Canino"
+            class="absolute inset-0 h-full w-full object-cover opacity-70"
+          />
+          <div
+            class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(4,20,46,0.55),transparent_70%),linear-gradient(180deg,rgba(4,20,46,0.25)_0%,rgba(4,20,46,0.45)_50%,rgba(4,20,46,0.92)_100%)]"
+          >
+          </div>
+        </div>
+
+        <!-- Iconos flotando alrededor -->
+        <span
+          class="dog-float pointer-events-none absolute -left-3 top-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-skala-accent backdrop-blur"
+          style="animation-delay: 0s;"
+        >
+          <TbDogBowl className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <span
+          class="dog-float pointer-events-none absolute -right-3 top-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-skala-accent backdrop-blur"
+          style="animation-delay: 0.8s;"
+        >
+          <PiDog className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <span
+          class="dog-float pointer-events-none absolute -bottom-3 left-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-skala-accent backdrop-blur"
+          style="animation-delay: 1.6s;"
+        >
+          <GiDogHouse className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <span
+          class="dog-float pointer-events-none absolute -right-2 bottom-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-skala-accent backdrop-blur"
+          style="animation-delay: 2.4s;"
+        >
+          <LuDog className="h-7 w-7" aria-hidden="true" />
+        </span>
+
+        <div class="relative z-10 flex flex-col items-center justify-center p-7 text-center md:p-9">
+          <span
+            class="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/90 backdrop-blur"
+          >
+            🐾 Paseo de Aguas · 19 Jul
+          </span>
+          <p
+            class="mt-4 font-display text-2xl font-black leading-tight tracking-[-0.03em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] md:text-3xl"
+          >
+            Una fiesta inolvidable para tu engreído ❤️
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CUENTA REGRESIVA -->
+    <section class="relative mx-auto mb-5 max-w-360 px-5">
+      <div
+        class="flex flex-col items-center gap-4 rounded-4xl border border-skala-accent/25 bg-skala-accent/8 px-6 py-7 text-center"
+      >
+        <p
+          class="text-[0.7rem] font-black uppercase tracking-[0.2em] text-skala-accent"
+        >
+          Faltan para el evento
+        </p>
+        <div
+          id="countdown"
+          class="flex flex-wrap items-center justify-center gap-3 md:gap-5"
+          data-event-date={eventDateISO}
+        >
+          <div
+            class="flex min-w-20 flex-col items-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+          >
+            <span
+              class="countdown-days font-display text-3xl font-black text-white md:text-4xl"
+              >--</span
+            >
+            <span
+              class="text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/55"
+              >Días</span
+            >
+          </div>
+          <span
+            class="font-display text-3xl font-black text-skala-accent md:text-4xl"
+            >:</span
+          >
+          <div
+            class="flex min-w-20 flex-col items-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+          >
+            <span
+              class="countdown-hours font-display text-3xl font-black text-white md:text-4xl"
+              >--</span
+            >
+            <span
+              class="text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/55"
+              >Horas</span
+            >
+          </div>
+          <span
+            class="font-display text-3xl font-black text-skala-accent md:text-4xl"
+            >:</span
+          >
+          <div
+            class="flex min-w-20 flex-col items-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+          >
+            <span
+              class="countdown-minutes font-display text-3xl font-black text-white md:text-4xl"
+              >--</span
+            >
+            <span
+              class="text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/55"
+              >Min</span
+            >
+          </div>
+          <span
+            class="font-display text-3xl font-black text-skala-accent md:text-4xl"
+            >:</span
+          >
+          <div
+            class="flex min-w-20 flex-col items-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+          >
+            <span
+              class="countdown-seconds font-display text-3xl font-black text-white md:text-4xl"
+              >--</span
+            >
+            <span
+              class="text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/55"
+              >Seg</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- URGENCIA -->
+    <section class="relative mx-auto mb-5 mt-2 max-w-360 px-5">
+      <div
+        class="flex flex-col items-center gap-3 rounded-4xl border border-[#ff3b3b]/40 bg-[#ff3b3b]/10 px-6 py-7 text-center md:flex-row md:justify-between md:text-left"
+      >
+        <div>
+          <p
+            class="font-display text-2xl font-black uppercase tracking-[0.04em] text-[#ff6b6b] md:text-3xl"
+          >
+            ⏰ ÚLTIMAS 24 HORAS
+          </p>
+          <p class="mt-1 text-sm text-white/70">Cerramos inscripciones.</p>
+        </div>
+        <a
+          href={inscripcionLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 font-display text-[0.74rem] font-black uppercase tracking-[0.14em] text-[#ce001d]! transition duration-200 hover:bg-white/90 hover:-translate-y-0.5"
+        >
+          ¡No te quedes fuera! ❤️
+        </a>
+      </div>
+    </section>
+
+    <!-- FECHA, LUGAR Y BENEFICIOS (bento) -->
+    <section class="relative mx-auto mt-10 max-w-360 px-5">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+        <div
+          class="glass-card rounded-4xl border border-skala-border bg-white/4 p-8 md:col-span-7"
+        >
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div>
+              <span
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ff3b3b]/15 text-[#ff6b6b]"
+              >
+                <FiCalendar className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <p
+                class="mt-5 text-[0.66rem] font-black uppercase tracking-[0.18em] text-skala-accent"
+              >
+                ¿Cuándo?
+              </p>
+              <p class="font-display text-xl font-black text-white">
+                Domingo 19 de Julio
+              </p>
+              <p class="mt-2 text-sm text-white/60">
+                ¡Separa la fecha para el evento del año!
+              </p>
+            </div>
+            <div>
+              <span
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ff3b3b]/15 text-[#ff6b6b]"
+              >
+                <FiMapPin className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <p
+                class="mt-5 text-[0.66rem] font-black uppercase tracking-[0.18em] text-skala-accent"
+              >
+                ¿Dónde?
+              </p>
+              <p class="font-display text-xl font-black text-white">
+                Paseo de Aguas
+              </p>
+              <p class="mt-2 text-sm text-white/60">
+                Víctor Larco Herrera, Trujillo
+              </p>
+            </div>
+          </div>
+
+          <!-- Mapa -->
+          <div
+            class="mt-6 h-48 overflow-hidden rounded-2xl border border-white/10"
+          >
+            <iframe
+              title="Ubicación Paseo de Aguas, Víctor Larco"
+              src="https://www.google.com/maps?q=Paseo%20de%20Aguas%20V%C3%ADctor%20Larco%20Herrera&output=embed"
+              class="h-full w-full border-0 grayscale contrast-125 opacity-80"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+
+        <!-- Beneficios -->
+        <div
+          class="relative overflow-hidden rounded-4xl border border-skala-accent/20 bg-skala-accent/10 p-8 md:col-span-5"
+        >
+          <span class="absolute right-6 top-6 opacity-10">
+            <FiGift
+              className="h-24 w-24 text-skala-accent"
+              aria-hidden="true"
+            />
+          </span>
+          <h3
+            class="flex items-center gap-2 font-display text-xl font-black text-skala-accent"
+          >
+            Beneficios Exclusivos
+          </h3>
+          <ul class="mt-6 space-y-5">
+            <li class="flex items-center gap-3">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-skala-accent text-skala-text-secondary"
+              >
+                <FiHeart className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <p class="text-white/85">
+                <span class="font-bold text-skala-accent">Cancha:</span>
+                <span
+                  class="font-extrabold underline decoration-skala-accent decoration-2 underline-offset-4"
+                >
+                  GRATIS</span
+                >
+              </p>
+            </li>
+            <li class="flex items-start gap-3">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-skala-accent text-skala-text-secondary"
+              >
+                <FiHeart className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <div>
+                <p class="text-white/85">
+                  <span class="font-bold text-skala-accent"
+                    >Manzanas Acarameladas:</span
+                  >
+                  <span
+                    class="font-extrabold underline decoration-skala-accent decoration-2 underline-offset-4"
+                  >
+                    GRATIS</span
+                  >
+                </p>
+                <p class="text-xs text-white/55">(¡Hasta agotar stock!)</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PREMIOS -->
+    <section
+      id="premios"
+      class="relative mx-auto mt-16 max-w-360 scroll-mt-24 px-5"
+    >
+      <div class="text-center">
+        <h2
+          class="font-display text-[clamp(2rem,5vw,3.6rem)] font-black tracking-tighter text-white"
+        >
+          PREMIOS Y SORPRESAS
+        </h2>
+        <div class="mx-auto mt-3 h-1 w-24 rounded-full bg-[#ff3b3b]"></div>
+      </div>
+
+      <div class="mt-9 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+        {
+          premios.map((p) => (
+            <article class="glass-card flex flex-col items-center gap-3 rounded-3xl border border-white/10 bg-white/4 p-6 text-center transition duration-300 hover:-translate-y-1 hover:border-skala-accent/40">
+              <span class="flex h-16 w-16 items-center justify-center rounded-full bg-skala-accent/15 text-skala-accent transition duration-300 group-hover:scale-110">
+                <p.icon className="h-7 w-7" aria-hidden="true" />
+              </span>
+              <div>
+                <p class="font-display text-lg font-black text-white">
+                  {p.title}
+                </p>
+                <p class="text-xs uppercase tracking-[0.14em] text-skala-accent">
+                  {p.sub}
+                </p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <p
+        class="mt-10 text-center font-display text-lg font-black tracking-[0.18em] text-[#ff8a8a] animate-pulse"
+      >
+        ★ ¡Y MUCHOS PREMIOS MÁS! ★
+      </p>
+    </section>
+
+    <!-- ORGANIZADOR + ACTIVIDADES -->
+    <section class="relative mx-auto mt-16 max-w-360 px-5">
+      <div
+        class="rounded-4xl border border-white/10 bg-white/4 p-8 text-center"
+      >
+        <p class="text-sm uppercase tracking-[0.18em] text-white/50">
+          Organiza
+        </p>
+        <div class="mt-4 flex flex-col items-center gap-4">
+          <img
+            src="/desfile_canino/manchas.jpg"
+            alt="Manchas Cakes"
+            class="h-20 w-20 rounded-2xl object-cover ring-2 ring-[#ff3b3b]/40"
+          />
+          <div>
+            <p class="font-display text-2xl font-black text-white">
+              Manchas Cakes
+            </p>
+            <p class="mt-1 text-sm text-white/60">
+              Hecho con amor para tu engreído ❤️
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+          {
+            actividades.map((a) => (
+              <span class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80">
+                <a.icon
+                  className="h-4 w-4 text-skala-accent"
+                  aria-hidden="true"
+                />
+                {a.label}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- CIERRE + CTA -->
+    <section class="relative mx-auto mt-14 max-w-360 px-5 pb-24 text-center">
+      <p
+        class="font-display text-[clamp(1.4rem,3.6vw,2.4rem)] font-black tracking-[-0.03em] text-skala-accent"
+      >
+        🐾 ¡Te esperamos para vivir una fiesta inolvidable! ❤️
+      </p>
+      <a
+        href={inscripcionLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group mt-7 inline-flex items-center gap-2 rounded-full bg-[#ff3b3b] px-8 py-4 font-display text-[0.78rem] font-black uppercase tracking-[0.16em] text-white shadow-[0_14px_36px_rgba(255,59,59,0.35)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff5252] focus-visible:ring-2 focus-visible:ring-white/60"
+      >
+        Inscríbete ahora
+        <FiArrowUpRight
+          aria-hidden="true"
+          className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+        />
+      </a>
+    </section>
+  </main>
+
+  <style>
+    .dog-float {
+      animation: dog-float 4s ease-in-out infinite;
+    }
+    @keyframes dog-float {
+      0%,
+      100% {
+        transform: translateY(0) rotate(-5deg);
+      }
+      50% {
+        transform: translateY(-22px) rotate(5deg);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .dog-float {
+        animation: none;
+      }
+    }
+  </style>
+
+  <script>
+    function initCountdown() {
+      const root = document.getElementById("countdown");
+      if (!root) return;
+      const target = new Date(root.dataset.eventDate as string).getTime();
+      const daysEl = root.querySelector(
+        ".countdown-days",
+      ) as HTMLElement | null;
+      const hoursEl = root.querySelector(
+        ".countdown-hours",
+      ) as HTMLElement | null;
+      const minutesEl = root.querySelector(
+        ".countdown-minutes",
+      ) as HTMLElement | null;
+      const secondsEl = root.querySelector(
+        ".countdown-seconds",
+      ) as HTMLElement | null;
+
+      const pad = (n: number) => String(n).padStart(2, "0");
+
+      function tick() {
+        const diff = target - Date.now();
+        if (diff <= 0) {
+          if (daysEl) daysEl.textContent = "0";
+          if (hoursEl) hoursEl.textContent = "00";
+          if (minutesEl) minutesEl.textContent = "00";
+          if (secondsEl) secondsEl.textContent = "00";
+          return;
+        }
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        if (daysEl) daysEl.textContent = String(days);
+        if (hoursEl) hoursEl.textContent = pad(hours);
+        if (minutesEl) minutesEl.textContent = pad(minutes);
+        if (secondsEl) secondsEl.textContent = pad(seconds);
+      }
+
+      tick();
+      window.setInterval(tick, 1000);
+    }
+
+    initCountdown();
+    document.addEventListener("astro:page-load", initCountdown);
+  </script>
+</Layout>

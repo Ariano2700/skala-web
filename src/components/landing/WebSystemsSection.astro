@@ -1,0 +1,100 @@
+---
+import { FiArrowUpRight, FiCode, FiLayout, FiShoppingBag, FiDatabase } from "react-icons/fi";
+import SectionLabel from "./SectionLabel.astro";
+import { CONTACT_DATA } from "../../data/contact_data";
+
+const webServices = [
+  {
+    icon: FiLayout,
+    title: "Páginas web",
+    description: "Sitios a medida, rápidos y pensados para convertir visitas en clientes.",
+    accent: "#5CD8FC",
+  },
+  {
+    icon: FiCode,
+    title: "Sistemas a medida",
+    description: "Aplicaciones y paneles internos que automatizan tu operación.",
+    accent: "#B7E82A",
+  },
+  {
+    icon: FiShoppingBag,
+    title: "Tiendas online",
+    description: "E-commerce funcional para vender tus productos sin complicaciones.",
+    accent: "#F135A0",
+  },
+  {
+    icon: FiDatabase,
+    title: "Integraciones",
+    description: "Conectamos tus herramientas y datos para que todo hable el mismo idioma.",
+    accent: "#F4AC02",
+  },
+];
+---
+
+<section
+  class="mx-auto flex w-full max-w-360 flex-col gap-7 px-5 py-20 md:px-12"
+  id="web-sistemas"
+>
+  <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+    <div>
+      <SectionLabel label="También desarrollamos" />
+      <h2
+        class="m-0 mt-4 max-w-[16ch] font-display text-[clamp(2rem,3.6vw,3.4rem)] leading-[0.98] tracking-[-0.06em] text-skala-text"
+        data-reveal
+      >
+        Páginas y sistemas a la medida.
+      </h2>
+    </div>
+    <p
+      class="max-w-[52ch] text-[1rem] leading-8 text-skala-muted xl:text-right"
+      data-reveal
+      style="--reveal-delay: 120ms;"
+    >
+      Además de los planes, llevamos tu marca al digital con desarrollo propio.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      webServices.map((service, index) => (
+        <article
+          class="group relative flex flex-col gap-4 rounded-3xl border p-6 transition duration-300 hover:-translate-y-1"
+          data-reveal
+          style={`--ws-accent: ${service.accent}; --reveal-delay: ${index * 70}ms; background-color: color-mix(in srgb, var(--ws-accent) 8%, transparent); border-color: color-mix(in srgb, var(--ws-accent) 22%, transparent);`}
+        >
+          <div
+            class="flex h-11 w-11 items-center justify-center rounded-2xl border transition duration-300 group-hover:scale-110"
+            style={`border-color: color-mix(in srgb, var(--ws-accent) 35%, transparent); background-color: color-mix(in srgb, var(--ws-accent) 14%, transparent); color: var(--ws-accent);`}
+          >
+            <service.icon className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div>
+            <h3 class="m-0 font-display text-[1.05rem] tracking-[-0.03em] text-skala-text">
+              {service.title}
+            </h3>
+            <p class="mt-2 text-sm leading-7 text-skala-muted">
+              {service.description}
+            </p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+
+  <div class="flex justify-center" data-reveal style="--reveal-delay: 200ms;">
+    <a
+      href={CONTACT_DATA.WHATSAPP_LINK(
+        "Hola, quiero cotizar una página o sistema a medida con Skala.",
+      )}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group inline-flex items-center gap-2 rounded-full border border-skala-border bg-skala-surface px-6 py-3.5 text-[0.72rem] font-black uppercase tracking-[0.16em] text-skala-text transition duration-200 hover:-translate-y-0.5 hover:border-skala-accent/40 hover:bg-skala-accent/8 focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+    >
+      Cotizar proyecto web
+      <FiArrowUpRight
+        aria-hidden="true"
+        className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      />
+    </a>
+  </div>
+</section>

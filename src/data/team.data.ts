@@ -15,13 +15,13 @@ export const TeamData: TeamMember[] = [
   {
     id: 2,
     name: "Fernando",
-    role: "Content Creator",
+    role: "PROJECT MANAGER",
     image: "/team/fernando.jpeg",
   },
   {
     id: 3,
     name: "Josemiguel",
-    role: "Community Manager", //ESTAFADOR PRO
+    role: "TRAFFICKER DIGITAL", //ESTAFADOR PRO
     image: "/team/josemiguel.jpeg",
   },
   {
@@ -39,13 +39,19 @@ export const TeamData: TeamMember[] = [
   {
     id: 6,
     name: "Juan",
-    role: "Marketing",
+    role: "REALIZADOR AUDIOVISUAL",
     image: "/team/juan.jpeg",
   },
   {
     id: 7,
-    name: "Josehp",
-    role: "Editor de Video",
-    image: "/team/josehp.jpeg",
+    name: "Joseph",
+    role: "REALIZADOR AUDIOVISUAL",
+    image: "/team/joseph.jpeg",
   },
+  {
+    id: 8,
+    name: "Kevin",
+    role: "DIRECTOR DE OPERACIONES",
+    image: "/team/kevin.jpeg",
+  }
 ];

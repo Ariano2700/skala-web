@@ -1,14 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import AmbientBackdrop from "../components/landing/AmbientBackdrop.astro";
-import RevealScript from "../components/landing/RevealScript.astro";
-import SiteFooter from "../components/shared/SiteFooter.astro";
-import SiteNav from "../components/shared/SiteNav.astro";
 import PortfolioCta from "../components/portfolio/PortfolioCta.astro";
 import PortfolioFilters from "../components/portfolio/PortfolioFilters.astro";
 import PortfolioGrid from "../components/portfolio/PortfolioGrid.astro";
 import PortfolioHero from "../components/portfolio/PortfolioHero.astro";
-import { portfolioProjects } from "../components/portfolio/portfolio-data";
+import { portfolioProjects } from "../data/portafolio";
 
 const pageTitle =
   "Portafolio Skala - Agencia & Productora Audiovisual en Trujillo";
@@ -27,8 +23,10 @@ const structuredData = [
     "@type": "ProfessionalService", // El idóneo para una Agencia con sede física
     name: "Skala",
     url: canonicalUrl,
-    image: new URL("/logotype.jpg", Astro.site ?? "https://skalaagencia.netlify.app")
-      .href,
+    image: new URL(
+      "/logotype.jpg",
+      Astro.site ?? "https://skalaagencia.netlify.app",
+    ).href,
     address: {
       "@type": "PostalAddress",
       addressLocality: "Trujillo",
@@ -78,14 +76,10 @@ const structuredData = [
   keywords={portfolioKeywords}
   robots="index, follow"
 >
-  <AmbientBackdrop />
-  <SiteNav />
   <main id="top" class="relative z-10">
     <PortfolioHero />
     <PortfolioFilters />
     <PortfolioGrid />
     <PortfolioCta />
   </main>
-  <SiteFooter />
-  <RevealScript />
 </Layout>

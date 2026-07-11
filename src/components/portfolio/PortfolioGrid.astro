@@ -1,6 +1,6 @@
 ---
+import { portfolioProjects } from "../../data/portafolio";
 import PortfolioCard from "./PortfolioCard.astro";
-import { portfolioProjects } from "./portfolio-data";
 ---
 
 <section
@@ -39,13 +39,105 @@ import { portfolioProjects } from "./portfolio-data";
   </div>
 </section>
 
+<!-- Modal de detalle de proyecto -->
+<div
+  id="project-modal"
+  class="fixed inset-0 z-60 hidden items-center justify-center p-4 mt-10"
+  data-project-modal
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="project-modal-title"
+>
+  <div
+    class="absolute inset-0 bg-[#020a1a]/80 backdrop-blur-sm"
+    data-project-modal-close
+  >
+  </div>
+
+  <div
+    class="project-modal-panel relative flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-4xl border border-skala-border bg-skala-surface-strong shadow-[0_28px_80px_rgba(0,0,0,0.45)]"
+    data-project-modal-panel
+  >
+    <button
+      type="button"
+      data-project-modal-close
+      aria-label="Cerrar"
+      class="cursor-pointer absolute right-4 top-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-skala-text transition duration-200 hover:bg-skala-accent/10 focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-4 w-4"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
+    </button>
+
+    <div class="overflow-y-auto" data-project-modal-scroll>
+      <div
+        class="relative bg-black"
+        data-project-modal-media
+      >
+        <!-- Carrusel inyectado por JS -->
+      </div>
+
+      <div class="p-6 md:p-8">
+        <p
+          class="m-0 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent"
+          data-project-modal-category
+        >
+        </p>
+        <h3
+          id="project-modal-title"
+          class="mt-2 font-display text-2xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-3xl"
+          data-project-modal-title
+        >
+        </h3>
+        <p class="mt-1 text-sm text-skala-muted" data-project-modal-client></p>
+
+        <div data-project-modal-details class="mt-6 flex flex-col gap-5"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+  import { portfolioProjects } from "../../data/portafolio";
+
   const filterButtons =
     document.querySelectorAll<HTMLButtonElement>(".portfolio-filter");
   const grid = document.querySelector<HTMLElement>("[data-portfolio-grid]");
   const empty = document.querySelector<HTMLElement>("[data-portfolio-empty]");
   const count = document.querySelector<HTMLElement>("[data-filter-count]");
   const cards = grid?.querySelectorAll<HTMLElement>("[data-project-card]");
+
+  const modal = document.querySelector<HTMLElement>("[data-project-modal]");
+  const modalMedia = modal?.querySelector<HTMLElement>(
+    "[data-project-modal-media]",
+  );
+  const modalCategory = modal?.querySelector<HTMLElement>(
+    "[data-project-modal-category]",
+  );
+  const modalTitle = modal?.querySelector<HTMLElement>(
+    "[data-project-modal-title]",
+  );
+  const modalClient = modal?.querySelector<HTMLElement>(
+    "[data-project-modal-client]",
+  );
+  const modalDetails = modal?.querySelector<HTMLElement>(
+    "[data-project-modal-details]",
+  );
+  const closeTriggers = modal?.querySelectorAll<HTMLElement>(
+    "[data-project-modal-close]",
+  );
+
+  const byId = new Map(portfolioProjects.map((p) => [p.id, p]));
 
   const pluralize = (amount: number) =>
     `${amount} proyecto${amount !== 1 ? "s" : ""}`;
@@ -90,6 +182,207 @@ import { portfolioProjects } from "./portfolio-data";
       applyFilter(button.dataset.filter ?? "all", button);
     });
   });
+
+  const openModal = (id: string) => {
+    const project = byId.get(id);
+    if (!project || !modal) return;
+
+    if (modalMedia) {
+      const media = project.media;
+      const total = media.length;
+
+      const slidesHtml = media
+        .map((m, i) => {
+          const inner =
+            m.type === "image"
+              ? `<img src="${m.src}" alt="${m.alt ?? project.title}" class="h-full w-full object-contain" loading="lazy" />`
+              : `<div class="relative flex h-full w-full items-center justify-center">
+                  <video src="${m.src}" playsinline preload="metadata" class="h-full w-full object-contain" data-slide-video></video>
+                  <button type="button" data-video-play aria-label="Reproducir video" class="absolute inline-flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-skala-accent/90 text-skala-text-secondary shadow-[0_10px_30px_rgba(92,216,252,0.3)] transition hover:scale-105">
+                    <svg viewBox="0 0 24 24" class="ml-1 h-7 w-7" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>`;
+          return `<div class="project-slide absolute inset-0 ${i === 0 ? "opacity-100" : "opacity-0 pointer-events-none"}" data-slide-index="${i}">${inner}</div>`;
+        })
+        .join("");
+
+      const arrows =
+        total > 1
+          ? `<button type="button" data-carousel-prev aria-label="Anterior" class="absolute left-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur transition hover:bg-skala-accent hover:text-skala-text-secondary">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" data-carousel-next aria-label="Siguiente" class="absolute right-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur transition hover:bg-skala-accent hover:text-skala-text-secondary">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <div class="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5" data-carousel-dots></div>`
+          : "";
+
+      modalMedia.innerHTML = `
+        <div class="relative aspect-square w-full select-none overflow-hidden" data-carousel>
+          ${slidesHtml}
+          ${arrows}
+        </div>`;
+
+      setupCarousel(modalMedia, total);
+    }
+
+    if (modalCategory) modalCategory.textContent = project.categoryLabel;
+    if (modalTitle) modalTitle.textContent = project.title;
+    if (modalClient) modalClient.textContent = `Cliente: ${project.client}`;
+
+    if (modalDetails) {
+      const d = project.details;
+      if (d) {
+        const block = (label: string, value: string) => `
+          <div>
+            <p class="mb-1 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-accent">${label}</p>
+            <p class="m-0 text-sm leading-7 text-skala-muted">${value}</p>
+          </div>`;
+        const results = d.results.length
+          ? `<div>
+              <p class="mb-1 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-accent">Resultados</p>
+              <ul class="m-0 flex flex-col gap-1.5">
+                ${d.results
+                  .map(
+                    (r) =>
+                      `<li class="flex items-start gap-2 text-sm text-skala-muted"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-skala-accent"></span><span>${r}</span></li>`,
+                  )
+                  .join("")}
+              </ul>
+            </div>`
+          : "";
+        const meta = `<div class="flex flex-wrap items-center gap-4 border-t border-white/8 pt-4">
+            <div><p class="mb-1 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-accent">Herramientas</p><p class="m-0 text-sm text-skala-muted">${d.tools.join(", ")}</p></div>
+            <div><p class="mb-1 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-accent">Duración</p><p class="m-0 text-sm text-skala-muted">${d.duration}</p></div>
+          </div>`;
+        modalDetails.innerHTML =
+          block("Descripción", d.description) +
+          block("Desafío", d.challenge) +
+          block("Solución", d.solution) +
+          results +
+          meta;
+      } else {
+        modalDetails.innerHTML = "";
+      }
+    }
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+  };
+
+  const setupCarousel = (root: HTMLElement, total: number) => {
+    const carousel = root.querySelector<HTMLElement>("[data-carousel]");
+    const slides = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-slide-index]"),
+    );
+    const prev = root.querySelector<HTMLButtonElement>("[data-carousel-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-carousel-next]");
+    const dotsWrap = root.querySelector<HTMLElement>("[data-carousel-dots]");
+    let current = 0;
+
+    if (dotsWrap) {
+      dotsWrap.innerHTML = slides
+        .map(
+          (_, i) =>
+            `<button type="button" data-dot="${i}" aria-label="Ir a recurso ${i + 1}" class="h-2 w-2 rounded-full transition ${i === 0 ? "bg-skala-accent" : "bg-white/30"}"></button>`,
+        )
+        .join("");
+    }
+
+    const pauseVideos = () => {
+      root
+        .querySelectorAll<HTMLVideoElement>("[data-slide-video]")
+        .forEach((v) => v.pause());
+      root
+        .querySelectorAll<HTMLElement>("[data-video-play]")
+        .forEach((b) => (b.style.display = ""));
+    };
+
+    const goTo = (index: number) => {
+      current = (index + total) % total;
+      pauseVideos();
+      slides.forEach((s, i) => {
+        const active = i === current;
+        s.classList.toggle("opacity-100", active);
+        s.classList.toggle("opacity-0", !active);
+        s.classList.toggle("pointer-events-none", !active);
+      });
+      dotsWrap?.querySelectorAll<HTMLElement>("[data-dot]").forEach((d, i) => {
+        d.classList.toggle("bg-skala-accent", i === current);
+        d.classList.toggle("bg-white/30", i !== current);
+      });
+    };
+
+    if (total > 1) {
+      prev?.addEventListener("click", () => goTo(current - 1));
+      next?.addEventListener("click", () => goTo(current + 1));
+      dotsWrap
+        ?.querySelectorAll<HTMLButtonElement>("[data-dot]")
+        .forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
+
+      // Swipe en móvil
+      let startX = 0;
+      let dragging = false;
+      carousel?.addEventListener(
+        "touchstart",
+        (e) => {
+          startX = e.touches[0].clientX;
+          dragging = true;
+        },
+        { passive: true },
+      );
+      carousel?.addEventListener(
+        "touchend",
+        (e) => {
+          if (!dragging) return;
+          dragging = false;
+          const diff = e.changedTouches[0].clientX - startX;
+          if (Math.abs(diff) > 40) goTo(current + (diff < 0 ? 1 : -1));
+        },
+        { passive: true },
+      );
+    }
+
+    // Botón de play por video (siempre activo, incluso con 1 solo video)
+    root
+      .querySelectorAll<HTMLButtonElement>("[data-video-play]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const video = btn
+            .closest("[data-slide-index]")
+            ?.querySelector<HTMLVideoElement>("[data-slide-video]");
+          if (video) {
+            video.play();
+            btn.style.display = "none";
+          }
+        });
+      });
+  };
+
+  const closeModal = () => {
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+    if (modalMedia) modalMedia.innerHTML = "";
+  };
+
+  cards?.forEach((card) => {
+    card.addEventListener("click", () => {
+      openModal(card.dataset.projectId ?? "");
+    });
+  });
+
+  closeTriggers?.forEach((trigger) =>
+    trigger.addEventListener("click", closeModal),
+  );
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
 </script>
 
 <style>
@@ -101,5 +394,49 @@ import { portfolioProjects } from "./portfolio-data";
     border-color: rgba(92, 216, 252, 1);
     background: rgba(92, 216, 252, 1);
     color: #04142e;
+  }
+
+  /* Modal */
+  [data-project-modal].flex {
+    display: flex;
+  }
+
+  [data-project-modal] .project-slide {
+    transition: opacity 0.35s var(--ease-out, ease);
+  }
+
+  [data-project-modal] [data-carousel] {
+    touch-action: pan-y;
+  }
+
+  /* El panel captura el scroll para que no se mueva el fondo (desktop) */
+  .project-modal-panel {
+    overscroll-behavior: contain;
+  }
+
+  /* Barra de scroll personalizada del modal */
+  [data-project-modal-scroll] {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(92, 216, 252, 0.5) transparent;
+  }
+  [data-project-modal-scroll]::-webkit-scrollbar {
+    width: 8px;
+  }
+  [data-project-modal-scroll]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  [data-project-modal-scroll]::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      rgba(92, 216, 252, 0.65),
+      rgba(30, 163, 232, 0.45)
+    );
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  [data-project-modal-scroll]::-webkit-scrollbar-thumb:hover {
+    background: rgba(92, 216, 252, 0.85);
+    background-clip: padding-box;
   }
 </style>

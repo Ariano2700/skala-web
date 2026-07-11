@@ -1,10 +1,19 @@
 ---
 import SectionLabel from "../landing/SectionLabel.astro";
 import SkalaWordmark from "../shared/SkalaWordmark";
-import { portfolioProjects } from "./portfolio-data";
+import { portfolioProjects } from "../../data/portafolio";
 import PortfolioHeroVisual from "./PortfolioHeroVisual.astro";
 
 const totalProjects = portfolioProjects.length;
+const totalImages = portfolioProjects.reduce(
+  (acc, p) => acc + p.media.filter((m) => m.type === "image").length,
+  0,
+);
+const totalVideos = portfolioProjects.reduce(
+  (acc, p) => acc + p.media.filter((m) => m.type === "video").length,
+  0,
+);
+const disciplines = new Set(portfolioProjects.map((p) => p.category)).size;
 ---
 
 <section id="portafolio" class="relative z-10 overflow-hidden py-20 md:py-36">
@@ -33,7 +42,7 @@ const totalProjects = portfolioProjects.length;
           </p>
 
           <div
-            class="relative z-10 mt-8 grid grid-cols-1 gap-3 rounded-4xl border border-skala-border bg-white/[0.035] p-5 shadow-[0_24px_70px_rgba(0,22,52,0.22)] md:grid-cols-3"
+            class="relative z-10 mt-8 grid grid-cols-2 gap-3 rounded-4xl border border-skala-border bg-white/[0.035] p-5 shadow-[0_24px_70px_rgba(0,22,52,0.22)] md:grid-cols-4"
             aria-label="Resumen de portafolio"
           >
             <div>
@@ -50,7 +59,7 @@ const totalProjects = portfolioProjects.length;
               <p
                 class="font-display text-3xl font-black tracking-[-0.06em] text-skala-text"
               >
-                4
+                {disciplines}
               </p>
               <p class="text-xs uppercase tracking-[0.16em] text-skala-muted">
                 Disciplinas
@@ -60,10 +69,20 @@ const totalProjects = portfolioProjects.length;
               <p
                 class="font-display text-3xl font-black tracking-[-0.06em] text-skala-text"
               >
-                360°
+                {totalImages}
               </p>
               <p class="text-xs uppercase tracking-[0.16em] text-skala-muted">
-                Marca + contenido
+                Imágenes
+              </p>
+            </div>
+            <div>
+              <p
+                class="font-display text-3xl font-black tracking-[-0.06em] text-skala-text"
+              >
+                {totalVideos}
+              </p>
+              <p class="text-xs uppercase tracking-[0.16em] text-skala-muted">
+                Videos
               </p>
             </div>
           </div>

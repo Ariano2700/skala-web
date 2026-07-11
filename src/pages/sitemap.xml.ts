@@ -4,21 +4,27 @@ import { portfolioProjects } from "../components/portfolio/portfolio-data";
 const staticPages = [
   {
     loc: "/",
-    lastmod: "2026-06-20",
+    lastmod: "2026-07-11",
     changefreq: "monthly" as const,
     priority: 1.0,
   },
   {
     loc: "/portafolio/",
-    lastmod: "2026-06-20",
+    lastmod: "2026-07-11",
     changefreq: "monthly" as const,
     priority: 0.9,
+  },
+  {
+    loc: "/desfile-canino/",
+    lastmod: "2026-07-11",
+    changefreq: "monthly" as const,
+    priority: 0.7,
   },
 ];
 
 const projectPages = portfolioProjects.map((project) => ({
   loc: `/proyecto/${project.id}/`,
-  lastmod: "2026-06-20",
+  lastmod: "2026-07-11",
   changefreq: "monthly" as const,
   priority: 0.8,
 }));
