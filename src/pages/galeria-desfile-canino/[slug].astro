@@ -1,0 +1,448 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SiteNav from "../../components/shared/SiteNav.astro";
+import SiteFooter from "../../components/shared/SiteFooter.astro";
+import SectionLabel from "../../components/landing/SectionLabel.astro";
+import {
+  FiArrowLeft,
+  FiLock,
+  FiDownload,
+  FiImage,
+  FiVideo,
+} from "react-icons/fi";
+
+export async function getStaticPaths() {
+  // Se generan las páginas de las galerías publicadas Y de las que tienen
+  // código de acceso (aunque no estén marcadas como publicadas): así son
+  // alcanzables vía link/QR y se protegen con el gate de código en el cliente.
+  // El acceso se valida en el cliente (no exponemos el código en URL ni HTML).
+  const { getAllGalleries } = await import("../../sanity/gallery/api");
+  const all = await getAllGalleries();
+  return all
+    .filter((g) => g.published || g.accessCode)
+    .map((gallery) => ({
+      params: { slug: gallery.slug },
+      props: { gallery },
+    }));
+}
+
+interface Props {
+  gallery: import("../../sanity/gallery/gallery-mapper").Gallery;
+}
+
+const { gallery } = Astro.props;
+
+const pageTitle = `${gallery.name} · Galería del Desfile Canino · Skala`;
+const pageDescription = `Fotos y videos de ${gallery.name} en el Desfile Patriótico Canino. Ve y descarga los recuerdos.`;
+const canonicalUrl = new URL(
+  `/galeria-desfile-canino/${gallery.slug}/`,
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+
+// ¿La galería está protegida por código? El gate se maneja en el cliente.
+const isProtected = Boolean(gallery.accessCode);
+const media = gallery.gallery;
+const images = media.filter((m) => m.kind === "image");
+const videos = media.filter((m) => m.kind === "video");
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  robots="index, follow"
+>
+  <SiteNav />
+  <main class="relative z-10">
+    <section
+      class="relative mx-auto w-full max-w-360 px-5 py-12 md:px-12 lg:py-20"
+    >
+      <a
+        href="/galeria-desfile-canino"
+        class="mb-8 mt-8 inline-flex items-center gap-2 text-sm font-medium text-skala-muted transition-colors hover:text-skala-accent"
+        aria-label="Volver a las galerías"
+      >
+        <FiArrowLeft className="h-4 w-4" />
+        Volver a las galerías
+      </a>
+
+      <div
+        id="gallery-header"
+        class={`mb-8 flex flex-wrap items-end justify-between gap-4 ${isProtected ? "hidden" : ""}`}
+      >
+        <div>
+          <SectionLabel label="Galería del evento" />
+          <h1
+            class="mt-2 font-display text-4xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-5xl"
+          >
+            {gallery.name}
+          </h1>
+          <p class="mt-2 flex items-center gap-3 text-sm text-skala-muted">
+            <span class="inline-flex items-center gap-1.5">
+              <FiImage className="h-4 w-4" />
+              {images.length} fotos
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <FiVideo className="h-4 w-4" />
+              {videos.length} videos
+            </span>
+          </p>
+        </div>
+
+        <button
+          type="button"
+          id="download-all"
+          class="group inline-flex items-center gap-2 rounded-full bg-skala-accent px-5 py-3 text-[0.72rem] font-black uppercase tracking-[0.14em] text-skala-text-secondary shadow-[0_14px_32px_rgba(92,216,252,0.18)] transition duration-200 hover:-translate-y-px hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+        >
+          <FiDownload className="h-4 w-4" />
+          Descargar todo
+        </button>
+      </div>
+
+      <!-- GATE de código de acceso (fondo negro) -->
+      {
+        isProtected && (
+          <div
+            id="access-gate"
+            class="z-70 flex items-center justify-center p-4"
+          >
+            <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-[#0a0a0a] p-8 text-center">
+              <span class="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-skala-accent">
+                <FiLock className="h-7 w-7" />
+              </span>
+              <h2 class="m-0 font-display text-2xl font-black tracking-[-0.03em] text-white">
+                Galería privada
+              </h2>
+              <p class="mt-2 text-sm text-white/60">
+                Ingresa el código de acceso para ver y descargar las fotos de{" "}
+                {gallery.name}.
+              </p>
+              <form id="access-form" class="mt-6 flex flex-col gap-3">
+                <input
+                  type="text"
+                  id="access-input"
+                  inputmode="text"
+                  autocomplete="off"
+                  placeholder="Código de acceso"
+                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center text-lg font-bold tracking-[0.2em] text-white outline-none transition focus:border-skala-accent/60"
+                  aria-label="Código de acceso"
+                />
+                <p
+                  id="access-error"
+                  class="hidden text-xs font-medium text-[#ff6b6b]"
+                >
+                  Código incorrecto. Inténtalo de nuevo.
+                </p>
+                <button
+                  type="submit"
+                  class="rounded-xl bg-skala-accent px-4 py-3 text-[0.72rem] font-black uppercase tracking-[0.14em] text-skala-text-secondary transition hover:bg-skala-accent/90"
+                >
+                  Desbloquear
+                </button>
+              </form>
+            </div>
+          </div>
+        )
+      }
+
+      <!-- Galería (oculta hasta desbloquear si es privada) -->
+      <div id="gallery-content" class={isProtected ? "hidden" : ""}>
+        {
+          media.length === 0 ? (
+            <div class="rounded-3xl border border-skala-border bg-white/[0.035] p-12 text-center">
+              <p class="font-display text-2xl font-black tracking-[-0.04em] text-skala-text">
+                Esta galería aún no tiene fotos ni videos.
+              </p>
+            </div>
+          ) : (
+            <div
+              class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+              data-gallery-grid
+            >
+              {media.map((item, i) => (
+                <button
+                  type="button"
+                  class="group relative block overflow-hidden rounded-2xl border border-skala-border bg-skala-surface text-left focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+                  data-media-index={i}
+                  data-open-media
+                  aria-label={`Ver ${item.kind === "video" ? "video" : "foto"}: ${item.caption || gallery.name}`}
+                >
+                  {item.kind === "image" ? (
+                    <img
+                      src={item.url}
+                      alt={item.alt || item.caption || gallery.name}
+                      loading="lazy"
+                      class="aspect-square h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <video
+                      src={item.url}
+                      muted
+                      loop
+                      playsinline
+                      preload="metadata"
+                      class="aspect-square h-full w-full bg-black object-cover"
+                    />
+                  )}
+
+                  {item.kind === "video" && (
+                    <span class="absolute inset-0 flex items-center justify-center">
+                      <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur transition group-hover:scale-110">
+                        <FiVideo className="h-5 w-5" />
+                      </span>
+                    </span>
+                  )}
+
+                  <figcaption class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-[linear-gradient(180deg,transparent,rgba(0,0,0,0.8))] p-3 opacity-0 transition duration-300 group-hover:opacity-100">
+                    <span class="truncate text-xs text-white/90">
+                      {item.caption || ""}
+                    </span>
+                    <a
+                      href={item.url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Descargar"
+                      class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-skala-accent/90 text-skala-text-secondary transition hover:bg-skala-accent"
+                      onclick={`event.stopPropagation();`}
+                    >
+                      <FiDownload className="h-4 w-4" />
+                    </a>
+                  </figcaption>
+                </button>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal de visor de medios -->
+  <div
+    id="media-modal"
+    class="fixed inset-0 z-80 hidden items-center justify-center bg-black/30 p-4 backdrop-blur-sm"
+    data-media-modal
+    role="dialog"
+    aria-modal="true"
+    aria-label="Visor de medios"
+  >
+    <button
+      type="button"
+      data-media-close
+      aria-label="Cerrar"
+      class="absolute right-4 top-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:bg-white/10"
+    >
+      <FiArrowLeft className="h-5 w-5 rotate-45" />
+    </button>
+
+    <button
+      type="button"
+      data-media-prev
+      aria-label="Anterior"
+      class="absolute left-3 top-1/2 z-10 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur transition hover:bg-skala-accent hover:text-skala-text-secondary"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        class="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg
+      >
+    </button>
+    <button
+      type="button"
+      data-media-next
+      aria-label="Siguiente"
+      class="absolute right-3 top-1/2 z-10 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur transition hover:bg-skala-accent hover:text-skala-text-secondary"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        class="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg
+      >
+    </button>
+
+    <div
+      class="relative flex max-h-[90vh] w-full max-w-4xl flex-col items-center"
+      data-media-stage
+    >
+      <div
+        class="relative flex w-full items-center justify-center"
+        data-media-frame
+      >
+        <!-- Contenido inyectado por JS -->
+      </div>
+      <p
+        class="mt-3 max-w-2xl text-center text-sm text-white/70"
+        data-media-caption
+      >
+      </p>
+      <div class="mt-3 flex items-center gap-3">
+        <a
+          href="#"
+          download
+          data-media-download
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-full bg-skala-accent px-5 py-2.5 text-[0.7rem] font-black uppercase tracking-[0.14em] text-skala-text-secondary transition hover:bg-skala-accent/90"
+        >
+          <FiDownload className="h-4 w-4" />
+          Descargar
+        </a>
+        <span class="text-xs font-medium text-white/50" data-media-counter
+        ></span>
+      </div>
+    </div>
+  </div>
+
+  <SiteFooter />
+
+  <script
+    is:inline
+    define:vars={{
+      expectedCode: gallery.accessCode ?? "",
+      isProtected,
+      media: media.map((m) => ({
+        kind: m.kind,
+        url: m.url,
+        caption: m.caption || m.alt || "",
+      })),
+    }}
+  >
+    (() => {
+      const gate = document.getElementById("access-gate");
+      const form = document.getElementById("access-form");
+      const input = document.getElementById("access-input");
+      const errorEl = document.getElementById("access-error");
+      const content = document.getElementById("gallery-content");
+      const header = document.getElementById("gallery-header");
+      const downloadAll = document.getElementById("download-all");
+
+      const unlock = () => {
+        gate?.classList.add("hidden");
+        content?.classList.remove("hidden");
+        header?.classList.remove("hidden");
+      };
+
+      if (isProtected && gate && form && input) {
+        // Si ya se desbloqueó en esta sesión, no pedir de nuevo.
+        try {
+          if (sessionStorage.getItem("gallery-unlocked") === "1") {
+            unlock();
+          }
+        } catch (e) {}
+
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const value = input.value.trim();
+          if (value === expectedCode) {
+            try {
+              sessionStorage.setItem("gallery-unlocked", "1");
+            } catch (e) {}
+            unlock();
+          } else {
+            errorEl?.classList.remove("hidden");
+            input.focus();
+          }
+        });
+
+        input.addEventListener("input", () => {
+          errorEl?.classList.add("hidden");
+        });
+      }
+
+      // Descargar todo: dispara la descarga de cada recurso.
+      downloadAll?.addEventListener("click", () => {
+        const links = Array.from(
+          document.querySelectorAll("#gallery-content [data-open-media]"),
+        );
+        if (links.length === 0) return;
+        links.forEach((btn, i) => {
+          const idx = Number(btn.dataset.mediaIndex);
+          const item = media[idx];
+          if (!item) return;
+          setTimeout(() => {
+            const el = document.createElement("a");
+            el.href = item.url;
+            el.download = "";
+            el.target = "_blank";
+            el.rel = "noopener noreferrer";
+            document.body.appendChild(el);
+            el.click();
+            el.remove();
+          }, i * 400);
+        });
+      });
+
+      // ===== Modal de visor de medios =====
+      const modal = document.getElementById("media-modal");
+      const stage = modal?.querySelector("[data-media-stage]");
+      const frame = modal?.querySelector("[data-media-frame]");
+      const captionEl = modal?.querySelector("[data-media-caption]");
+      const counterEl = modal?.querySelector("[data-media-counter]");
+      const downloadEl = modal?.querySelector("[data-media-download]");
+      const prevBtn = modal?.querySelector("[data-media-prev]");
+      const nextBtn = modal?.querySelector("[data-media-next]");
+      const closeBtn = modal?.querySelector("[data-media-close]");
+      let current = 0;
+
+      const render = (index) => {
+        if (!frame || !media[index]) return;
+        current = (index + media.length) % media.length;
+        const item = media[current];
+        frame.innerHTML =
+          item.kind === "video"
+            ? `<video src="${item.url}" controls autoplay playsinline class="max-h-[78vh] w-auto max-w-full rounded-2xl bg-black object-contain"></video>`
+            : `<img src="${item.url}" alt="${item.caption}" class="max-h-[78vh] w-auto max-w-full rounded-2xl object-contain" />`;
+        if (captionEl) captionEl.textContent = item.caption || "";
+        if (counterEl)
+          counterEl.textContent = `${current + 1} / ${media.length}`;
+        if (downloadEl) downloadEl.href = item.url;
+      };
+
+      const openModal = (index) => {
+        if (!modal) return;
+        render(index);
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        document.body.classList.add("overflow-hidden");
+      };
+
+      const closeModal = () => {
+        if (!modal) return;
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        document.body.classList.remove("overflow-hidden");
+        if (frame) frame.innerHTML = "";
+      };
+
+      document.querySelectorAll("[data-open-media]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          openModal(Number(btn.dataset.mediaIndex) || 0);
+        });
+      });
+
+      prevBtn?.addEventListener("click", () => render(current - 1));
+      nextBtn?.addEventListener("click", () => render(current + 1));
+      closeBtn?.addEventListener("click", closeModal);
+      modal?.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (modal?.classList.contains("hidden")) return;
+        if (e.key === "Escape") closeModal();
+        if (e.key === "ArrowLeft") render(current - 1);
+        if (e.key === "ArrowRight") render(current + 1);
+      });
+    })();
+  </script>
+</Layout>

@@ -1,6 +1,12 @@
 ---
-import { portfolioProjects } from "../../data/portafolio";
+import { portfolioProjects, type PortfolioProjectItem } from "../../data/portafolio";
 import PortfolioCard from "./PortfolioCard.astro";
+
+interface Props {
+  projects?: PortfolioProjectItem[];
+}
+
+const { projects = portfolioProjects } = Astro.props;
 ---
 
 <section
@@ -12,7 +18,7 @@ import PortfolioCard from "./PortfolioCard.astro";
 
   <div class="portfolio-grid grid grid-cols-12 gap-4" data-portfolio-grid>
     {
-      portfolioProjects.map((project, index) => (
+      projects.map((project, index) => (
         <PortfolioCard project={project} index={index} />
       ))
     }
@@ -108,10 +114,8 @@ import PortfolioCard from "./PortfolioCard.astro";
 </div>
 
 <script>
-  import { portfolioProjects } from "../../data/portafolio";
-
   const filterButtons =
-    document.querySelectorAll<HTMLButtonElement>(".portfolio-filter");
+    document.querySelectorAll<HTMLAnchorElement>(".portfolio-filter");
   const grid = document.querySelector<HTMLElement>("[data-portfolio-grid]");
   const empty = document.querySelector<HTMLElement>("[data-portfolio-empty]");
   const count = document.querySelector<HTMLElement>("[data-filter-count]");
@@ -137,12 +141,18 @@ import PortfolioCard from "./PortfolioCard.astro";
     "[data-project-modal-close]",
   );
 
-  const byId = new Map(portfolioProjects.map((p) => [p.id, p]));
+  // Mapa de proyectos inyectado desde el servidor (Sanity o data estática).
+  const byId = new Map<string, any>(
+    Array.from(cards ?? []).map((card) => [
+      card.dataset.projectId ?? "",
+      JSON.parse(card.dataset.project ?? "null"),
+    ]),
+  );
 
   const pluralize = (amount: number) =>
     `${amount} proyecto${amount !== 1 ? "s" : ""}`;
 
-  const applyFilter = (filter: string, button: HTMLButtonElement) => {
+  const applyFilter = (filter: string, button: HTMLAnchorElement) => {
     if (!grid || !cards || !empty || !count) return;
 
     let visible = 0;
@@ -157,7 +167,9 @@ import PortfolioCard from "./PortfolioCard.astro";
     const delayStep = isMobile ? 0.015 : 0.04;
 
     cards.forEach((card, index) => {
-      const matches = filter === "all" || card.dataset.category === filter;
+      const cardCategories = (card.dataset.category ?? "").split(" ");
+      const matches =
+        filter === "all" || cardCategories.includes(filter);
 
       if (matches) {
         card.hidden = false;
@@ -178,10 +190,31 @@ import PortfolioCard from "./PortfolioCard.astro";
   };
 
   filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      applyFilter(button.dataset.filter ?? "all", button);
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      const filter = button.dataset.filter ?? "all";
+      applyFilter(filter, button);
+      // Refleja el filtro en la URL (?categoria=) sin recargar la página.
+      const url = new URL(window.location.href);
+      if (filter === "all") {
+        url.searchParams.delete("categoria");
+      } else {
+        url.searchParams.set("categoria", filter);
+      }
+      window.history.replaceState({}, "", url);
     });
   });
+
+  // Aplica el filtro activo desde el query param ?categoria= al cargar.
+  const initialFilter = new URL(window.location.href).searchParams.get(
+    "categoria",
+  );
+  if (initialFilter) {
+    const activeButton = Array.from(filterButtons).find(
+      (b) => b.dataset.filter === initialFilter,
+    );
+    if (activeButton) applyFilter(initialFilter, activeButton);
+  }
 
   const openModal = (id: string) => {
     const project = byId.get(id);
@@ -192,7 +225,7 @@ import PortfolioCard from "./PortfolioCard.astro";
       const total = media.length;
 
       const slidesHtml = media
-        .map((m, i) => {
+        .map((m: { type: string; src: string; alt?: string }, i: number) => {
           const inner =
             m.type === "image"
               ? `<img src="${m.src}" alt="${m.alt ?? project.title}" class="h-full w-full object-contain" loading="lazy" />`
@@ -226,7 +259,12 @@ import PortfolioCard from "./PortfolioCard.astro";
       setupCarousel(modalMedia, total);
     }
 
-    if (modalCategory) modalCategory.textContent = project.categoryLabel;
+      if (modalCategory) {
+        const labels = (project.categories ?? [])
+          .map((c: string) => c)
+          .filter(Boolean);
+        modalCategory.textContent = labels.join(" · ");
+      }
     if (modalTitle) modalTitle.textContent = project.title;
     if (modalClient) modalClient.textContent = `Cliente: ${project.client}`;
 
@@ -244,17 +282,21 @@ import PortfolioCard from "./PortfolioCard.astro";
               <ul class="m-0 flex flex-col gap-1.5">
                 ${d.results
                   .map(
-                    (r) =>
+                    (r: string) =>
                       `<li class="flex items-start gap-2 text-sm text-skala-muted"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-skala-accent"></span><span>${r}</span></li>`,
                   )
                   .join("")}
               </ul>
             </div>`
           : "";
-        const meta = `<div class="flex flex-wrap items-center gap-4 border-t border-white/8 pt-4">
-            <div><p class="mb-1 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-accent">Herramientas</p><p class="m-0 text-sm text-skala-muted">${d.tools.join(", ")}</p></div>
-            <div><p class="mb-1 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-accent">Duración</p><p class="m-0 text-sm text-skala-muted">${d.duration}</p></div>
-          </div>`;
+        const toolsText = (d.tools ?? []).join(", ");
+        const meta =
+          toolsText || d.duration
+            ? `<div class="flex flex-wrap items-center gap-4 border-t border-white/8 pt-4">
+                ${toolsText ? `<div><p class="mb-1 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-accent">Herramientas</p><p class="m-0 text-sm text-skala-muted">${toolsText}</p></div>` : ""}
+                ${d.duration ? `<div><p class="mb-1 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-accent">Duración</p><p class="m-0 text-sm text-skala-muted">${d.duration}</p></div>` : ""}
+              </div>`
+            : "";
         modalDetails.innerHTML =
           block("Descripción", d.description) +
           block("Desafío", d.challenge) +

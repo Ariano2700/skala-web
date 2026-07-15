@@ -12,4 +12,5 @@ export const navLinks: NavLink[] = [
   { label: "Portafolio", href: "/portafolio" },
   //TEMPORAL
   { label: "Desfile Canino", href: "/desfile-canino" },
+  { label: "Galería Canino", href: "/galeria-desfile-canino" },
 ];

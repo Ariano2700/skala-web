@@ -2,7 +2,7 @@
 import {
   countMedia,
   getCoverMedia,
-  getPortfolioAccentClass,
+  getPortfolioAccentStyle,
   getPortfolioGridClass,
   type PortfolioProjectItem,
 } from "../../data/portafolio";
@@ -23,8 +23,9 @@ const hasMultiple = project.media.length > 1;
   type="button"
   class={`cursor-pointer portfolio-card portfolio-card--${project.layout.replaceAll(" ", "-")} group relative isolate block w-full overflow-hidden rounded-4xl border border-skala-border bg-[#181816] text-left shadow-[0_24px_70px_rgba(0,0,0,0.22)] transition duration-300 ${getPortfolioGridClass(project)}`}
   data-project-card
-  data-category={project.category}
+  data-category={project.categories.join(" ")}
   data-project-id={project.id}
+  data-project={JSON.stringify(project)}
   data-open-project
   data-reveal
   data-reveal-variant={index % 3}
@@ -64,7 +65,8 @@ const hasMultiple = project.media.length > 1;
 
     <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6 lg:p-8">
       <span
-        class={`mb-3 inline-flex h-2 w-10 rounded-full ${getPortfolioAccentClass(project)}`}
+        class="mb-3 inline-flex h-2 w-10 rounded-full"
+        style={getPortfolioAccentStyle(project)}
       ></span>
       <p
         class="m-0 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent"
@@ -96,7 +98,8 @@ const hasMultiple = project.media.length > 1;
       {project.title} · {project.client}
     </span>
     <span
-      class={`h-2 w-2 shrink-0 rounded-full ${getPortfolioAccentClass(project)}`}
+      class="h-2 w-2 shrink-0 rounded-full"
+      style={getPortfolioAccentStyle(project)}
     ></span>
   </div>
 

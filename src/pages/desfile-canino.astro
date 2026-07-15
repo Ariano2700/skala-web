@@ -13,18 +13,27 @@ import {
   FiSmile,
   FiBriefcase,
   FiArrowUpRight,
+  FiAward,
+  FiFacebook,
+  FiInstagram,
+  FiMic,
+  FiStar,
+  FiActivity,
+
 } from "react-icons/fi";
+import { FaTiktok } from "react-icons/fa";
 import { TbDogBowl } from "react-icons/tb";
 import { PiDog } from "react-icons/pi";
 import { GiDogHouse } from "react-icons/gi";
 import { LuDog } from "react-icons/lu";
+import { BsFillMegaphoneFill } from "react-icons/bs";
 
 const inscripcionLink = CONTACT_DATA.WHATSAPP_LINK(
   "Hola, quiero inscribirme al Desfile Patriótico Canino 🐾",
 );
 
 // Fecha y hora del evento (Domingo 19 de Julio, 10:00 AM, Perú UTC-5)
-const eventDateISO = "2026-07-19T10:00:00-05:00";
+const eventDateISO = "2026-07-19T09:00:00-05:00";
 
 const premios = [
   { icon: FiShoppingBag, title: "Cartera", sub: "De Marca" },
@@ -38,6 +47,70 @@ const actividades = [
   { icon: FiHeart, label: "Juegos con tu mascota" },
   { icon: FiSmile, label: "Juegos para niños" },
   { icon: FiBriefcase, label: "Feria de emprendedores" },
+];
+
+// Cronograma de actividades del Gran Concurso de Disfraces Peruanos.
+// Cada evento tiene un badge de color cálido distinto y los momentos
+// cumbre (3 p.m. y 4 p.m.) se resaltan con "highlight".
+const cronograma = [
+  {
+    time: "09:00 a.m.",
+    icon: FiShoppingBag,
+    title: "Instalación de las marcas",
+    badge: "border-orange-400/40 bg-orange-500/15 text-orange-300",
+    iconWrap: "bg-orange-500/15 text-orange-300",
+  },
+  {
+    time: "11:00 a.m.",
+    icon: FiActivity,
+    title: "Atención médica",
+    badge: "border-emerald-400/40 bg-emerald-500/15 text-emerald-300",
+    iconWrap: "bg-emerald-500/15 text-emerald-300",
+  },
+  {
+    time: "12:00 p.m.",
+    icon: BsFillMegaphoneFill,
+    title: "Exposición de las marcas",
+    badge: "border-sky-400/40 bg-sky-500/15 text-sky-300",
+    iconWrap: "bg-sky-500/15 text-sky-300",
+  },
+  {
+    time: "01:00 p.m.",
+    icon: FiGift,
+    title: "Juegos y sorteos",
+    badge: "border-violet-400/40 bg-violet-500/15 text-violet-300",
+    iconWrap: "bg-violet-500/15 text-violet-300",
+  },
+  {
+    time: "02:00 p.m.",
+    icon: FiGift,
+    title: "Juegos y sorteos",
+    badge: "border-violet-400/40 bg-violet-500/15 text-violet-300",
+    iconWrap: "bg-violet-500/15 text-violet-300",
+  },
+  {
+    time: "03:00 p.m.",
+    icon: FiMic,
+    title: "Cantante Esaú Pretell",
+    badge: "border-[#ff3b3b]/50 bg-[#ff3b3b]/20 text-[#ff8a8a]",
+    iconWrap: "bg-[#ff3b3b]/20 text-[#ff8a8a]",
+    highlight: true,
+  },
+  {
+    time: "04:00 p.m.",
+    icon: FiAward,
+    title: "Presentación de jurado y el desfile",
+    badge: "border-[#ff3b3b]/50 bg-[#ff3b3b]/20 text-[#ff8a8a]",
+    iconWrap: "bg-[#ff3b3b]/20 text-[#ff8a8a]",
+    highlight: true,
+  },
+  {
+    time: "06:00 p.m.",
+    icon: FiStar,
+    title: "Piñata Patriota",
+    badge: "border-amber-400/40 bg-amber-500/15 text-amber-300",
+    iconWrap: "bg-amber-500/15 text-amber-300",
+  },
 ];
 ---
 
@@ -308,6 +381,9 @@ const actividades = [
               <p class="font-display text-xl font-black text-white">
                 Domingo 19 de Julio
               </p>
+              <p class="mt-1 text-sm font-semibold text-skala-accent">
+                9:00 a.m. – 6:00 p.m.
+              </p>
               <p class="mt-2 text-sm text-white/60">
                 ¡Separa la fecha para el evento del año!
               </p>
@@ -442,6 +518,164 @@ const actividades = [
       </p>
     </section>
 
+    <!-- CRONOGRAMA DE ACTIVIDADES (timeline) -->
+    <section
+      id="cronograma"
+      class="relative mx-auto mt-16 max-w-360 scroll-mt-24 px-5"
+    >
+      <div class="text-center">
+        <h2
+          class="font-display text-[clamp(2rem,5vw,3.6rem)] font-black tracking-tighter text-white"
+        >
+          CRONOGRAMA DE ACTIVIDADES
+        </h2>
+        <div class="mx-auto mt-3 h-1 w-24 rounded-full bg-[#ff3b3b]"></div>
+        <p class="mx-auto mt-4 max-w-[60ch] text-skala-muted">
+          Gran Concurso de Disfraces Peruanos · de 9:00 a.m. a 6:00 p.m.
+        </p>
+      </div>
+
+      <!-- Grid responsive: 1 col (móvil) → 2 col → 4 col (escritorio) -->
+      <ol
+        class="relative mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
+      >
+        {
+          cronograma.map((item) => (
+            <li
+              class:list={[
+                "group relative flex flex-col gap-3 rounded-3xl border p-6 transition duration-300 hover:-translate-y-1",
+                item.highlight
+                  ? "border-[#ff3b3b]/50 bg-[#ff3b3b]/12 shadow-[0_14px_40px_rgba(255,59,59,0.18)]"
+                  : "border-white/10 bg-white/4 hover:border-skala-accent/40",
+              ]}
+            >
+              <span
+                class:list={[
+                  "inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 text-[0.7rem] font-black uppercase tracking-[0.12em]",
+                  item.badge,
+                ]}
+              >
+                {item.time}
+              </span>
+              <span
+                class:list={[
+                  "flex h-12 w-12 items-center justify-center rounded-2xl",
+                  item.iconWrap,
+                ]}
+              >
+                <item.icon className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <div>
+                <p class="font-display text-lg font-black text-white">
+                  {item.title}
+                </p>
+                {
+                  item.highlight && (
+                    <p class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-[#ff8a8a]">
+                      ★ Momento cumbre
+                    </p>
+                  )
+                }
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- PRE-REGISTRO / INVITACIÓN -->
+    <section
+      id="registro"
+      class="relative mx-auto mt-16 max-w-360 scroll-mt-24 px-5"
+    >
+      <div
+        class="overflow-hidden rounded-4xl border border-[#ff3b3b]/40 bg-linear-to-br from-[#ff3b3b]/12 to-[#04142e] p-8 md:p-12"
+      >
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center">
+          <div>
+            <span
+              class="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/90"
+            >
+              🐾 Pre-registro
+            </span>
+            <h2
+              class="mt-4 font-display text-[clamp(1.8rem,4vw,3rem)] font-black leading-[0.95] tracking-[-0.03em] text-white"
+            >
+              ¡Ven con tu disfraz y sé parte de esta gran fiesta!
+            </h2>
+            <p class="mt-3 max-w-[48ch] text-skala-muted">
+              Regístrate gratis y asegura el cupo de tu engreído en el Gran
+              Concurso de Disfraces Peruanos.
+            </p>
+          </div>
+
+          <!-- Formulario de captura de leads (envía a WhatsApp) -->
+          <form
+            id="registro-form"
+            class="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur"
+          >
+            <div class="flex flex-col gap-1.5">
+              <label
+                for="r-nombre"
+                class="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-white/70"
+                >Tu nombre</label
+              >
+              <input
+                id="r-nombre"
+                name="nombre"
+                type="text"
+                required
+                placeholder="Ej. María López"
+                class="rounded-xl border border-white/12 bg-black/30 px-4 py-3 text-white placeholder-white/35 outline-none transition focus:border-skala-accent/60 focus:ring-2 focus:ring-skala-accent/30"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label
+                for="r-mascota"
+                class="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-white/70"
+                >Nombre de la mascota</label
+              >
+              <input
+                id="r-mascota"
+                name="mascota"
+                type="text"
+                required
+                placeholder="Ej. Rocky"
+                class="rounded-xl border border-white/12 bg-black/30 px-4 py-3 text-white placeholder-white/35 outline-none transition focus:border-skala-accent/60 focus:ring-2 focus:ring-skala-accent/30"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label
+                for="r-tipo"
+                class="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-white/70"
+                >Tipo de mascota</label
+              >
+              <select
+                id="r-tipo"
+                name="tipo"
+                required
+                class="rounded-xl border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-skala-accent/60 focus:ring-2 focus:ring-skala-accent/30"
+              >
+                <option value="Perro">Perro</option>
+                <option value="Gato">Gato</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              class="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-[#ff3b3b] px-7 py-4 font-display text-[0.74rem] font-black uppercase tracking-[0.16em] text-white shadow-[0_14px_36px_rgba(255,59,59,0.35)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff5252] focus-visible:ring-2 focus-visible:ring-white/60"
+            >
+              Registrar mi mascota
+              <FiArrowUpRight aria-hidden="true" className="h-4 w-4" />
+            </button>
+            <p class="text-center text-xs text-white/45">
+              Te redirigiremos a WhatsApp para confirmar tu cupo.
+            </p>
+          </form>
+        </div>
+      </div>
+    </section>
+
     <!-- ORGANIZADOR + ACTIVIDADES -->
     <section class="relative mx-auto mt-16 max-w-360 px-5">
       <div
@@ -501,6 +735,37 @@ const actividades = [
           className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
         />
       </a>
+
+      <!-- Redes sociales de Manchas Cakes / SKALA -->
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a
+          href={CONTACT_DATA.INSTAGRAM_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-skala-accent/40 hover:text-white"
+        >
+          <FiInstagram className="h-4 w-4 text-skala-accent" aria-hidden="true" />
+          Instagram
+        </a>
+        <a
+          href={CONTACT_DATA.FACEBOOK_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-skala-accent/40 hover:text-white"
+        >
+          <FiFacebook className="h-4 w-4 text-skala-accent" aria-hidden="true" />
+          Facebook
+        </a>
+        <a
+          href={CONTACT_DATA.TIKTOK_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-skala-accent/40 hover:text-white"
+        >
+          <FaTiktok className="h-4 w-4 text-skala-accent" aria-hidden="true" />
+          TikTok
+        </a>
+      </div>
     </section>
   </main>
 
@@ -525,6 +790,9 @@ const actividades = [
   </style>
 
   <script>
+    // Número de WhatsApp para el pre-registro (mismo que CONTACT_DATA).
+    const REGISTRO_WA = "51959739831";
+
     function initCountdown() {
       const root = document.getElementById("countdown");
       if (!root) return;
@@ -567,7 +835,32 @@ const actividades = [
       window.setInterval(tick, 1000);
     }
 
+    // Pre-registro: construye un mensaje de WhatsApp con los datos del lead.
+    function initRegistroForm() {
+      const form = document.getElementById("registro-form") as HTMLFormElement | null;
+      if (!form) return;
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        const nombre = String(data.get("nombre") || "").trim();
+        const mascota = String(data.get("mascota") || "").trim();
+        const tipo = String(data.get("tipo") || "").trim();
+        const msg =
+          "Hola, quiero pre-registrar a mi mascota al Desfile Patriótico Canino 🐾\n" +
+          `• Mi nombre: ${nombre}\n` +
+          `• Mascota: ${mascota}\n` +
+          `• Tipo: ${tipo}`;
+        const link = `https://wa.me/${REGISTRO_WA}?text=${encodeURIComponent(msg)}`;
+        window.open(link, "_blank", "noopener");
+        form.reset();
+      });
+    }
+
     initCountdown();
-    document.addEventListener("astro:page-load", initCountdown);
+    initRegistroForm();
+    document.addEventListener("astro:page-load", () => {
+      initCountdown();
+      initRegistroForm();
+    });
   </script>
 </Layout>

@@ -13,51 +13,128 @@ import {
   FiTarget,
   FiTrendingUp,
   FiVideo,
+  FiHeart,
+  FiBriefcase,
+  FiSmile,
+  FiEdit3,
+  FiInstagram,
 } from "react-icons/fi";
 
 export const services = [
+  // 1. Producción Audiovisual
   {
-    icon: FiPenTool,
-    title: "Branding & Identidad Visual",
+    icon: FiHeart,
+    title: "Eventos Sociales",
     description:
-      "Construimos la personalidad visual de tu marca o la reordenamos para que comunique mejor y con más fuerza.",
-    tags: ["Logo", "Brandbook", "Paleta", "Tipografía"],
+      "Cobertura cinematográfica para matrimonios y quinceañeros, enfocada en capturar la narrativa emocional y los momentos clave.",
+    tags: ["Matrimonios", "Quinceañeros", "Cine"],
+    category: "audiovisual",
   },
   {
-    icon: FiVideo,
-    title: "Producción Audiovisual",
+    icon: FiSmile,
+    title: "Celebraciones Privadas",
     description:
-      "Dirección, grabación y producción de contenido audiovisual profesional: spots, reels, corporativos y más.",
-    tags: ["Spots", "Reels", "Corporativo", "Docu-style"],
+      "Registro profesional de cumpleaños, aniversarios y fiestas con un estilo dinámico.",
+    tags: ["Cumpleaños", "Aniversarios", "Fiestas"],
+    category: "audiovisual",
+  },
+  {
+    icon: FiBriefcase,
+    title: "Sector Corporativo",
+    description:
+      "Producción de videos institucionales, grabación de conferencias, lanzamientos de marca y contenido empresarial.",
+    tags: ["Institucional", "Conferencias", "Lanzamientos"],
+    category: "audiovisual",
   },
   {
     icon: FiCamera,
-    title: "Fotografía",
+    title: "Fotografía Profesional",
     description:
-      "Sesiones de producto, retrato y cobertura de eventos con dirección de arte incluida.",
-    tags: ["Retrato", "Producto", "Coberturas", "Editorial"],
+      "Cobertura de eventos, sesiones de retrato corporativo, marca personal y fotografía de producto.",
+    tags: ["Retrato", "Producto", "Eventos"],
+    category: "audiovisual",
+  },
+  {
+    icon: FiEdit3,
+    title: "Edición y Montaje",
+    description:
+      "Servicio de edición avanzada, transiciones profesionales y diseño sonoro.",
+    tags: ["Edición", "Transiciones", "Diseño sonoro"],
+    category: "audiovisual",
+  },
+  {
+    icon: FiFilm,
+    title: "Corrección de Color",
+    description:
+      "Tratamiento estético para lograr acabados cinematográficos y una identidad visual coherente.",
+    tags: ["Color", "Cinematográfico", "Identidad"],
+    category: "audiovisual",
+  },
+  // 2. Marketing y Contenido Digital
+  {
+    icon: FiInstagram,
+    title: "Social Media Content",
+    description:
+      "Creación de Reels, TikToks y videos verticales optimizados para generar impacto e interacción.",
+    tags: ["Reels", "TikTok", "Vertical"],
+    category: "marketing",
+  },
+  {
+    icon: FiVideo,
+    title: "Publicidad Dinámica",
+    description:
+      "Spots publicitarios breves y estratégicos para campañas en plataformas digitales.",
+    tags: ["Spots", "Campañas", "Digital"],
+    category: "marketing",
   },
   {
     icon: FiPlay,
-    title: "Edición & Post Producción",
+    title: "Cobertura de Experiencias",
     description:
-      "Color, motion graphics, subtítulos y retoque fotográfico con acabado profesional.",
-    tags: ["Color", "Motion", "Retoque", "Subtítulos"],
+      "Registro de activaciones de marca y eventos de marketing para difusión inmediata.",
+    tags: ["Activaciones", "Eventos", "Difusión"],
+    category: "marketing",
   },
   {
     icon: FiMessageCircle,
-    title: "Social Media & Community",
+    title: "Community Manager",
     description:
-      "Estrategia de redes, publicación, comunidad y respuesta con foco en continuidad.",
-    tags: ["Instagram", "TikTok", "LinkedIn", "Calendario"],
+      "Programación de la parrilla de contenido y gestión de la comunidad en redes sociales.",
+    tags: ["Parrilla", "Comunidad", "RRSS"],
+    category: "marketing",
+  },
+  // 3. Diseño Gráfico y Creatividad
+  {
+    icon: FiPenTool,
+    title: "Identidad Visual",
+    description:
+      "Diseño de logotipos, selección de paletas de colores y creación de manuales de marca para empresas o proyectos.",
+    tags: ["Logo", "Paleta", "Manual"],
+    category: "diseno",
   },
   {
-    icon: FiTrendingUp,
-    title: "Marketing & Campañas",
+    icon: FiShare2,
+    title: "Diseño para Redes Sociales",
     description:
-      "Planificación de campañas, análisis de métricas y optimización para escalar resultados.",
-    tags: ["Meta Ads", "Google", "Métricas", "Estrategia"],
+      "Creación de flyers, banners y piezas gráficas personalizadas para historias y publicaciones estáticas.",
+    tags: ["Flyers", "Banners", "Piezas"],
+    category: "diseno",
   },
+  {
+    icon: FiLayers,
+    title: "Material Corporativo",
+    description:
+      "Diseño de tarjetas de presentación, catálogos digitales, presentaciones de ventas y papelería institucional.",
+    tags: ["Tarjetas", "Catálogos", "Papelería"],
+    category: "diseno",
+  },
+] as const;
+
+// Etiquetas de las categorías de servicios (para agrupar en la UI).
+export const serviceCategories = [
+  { id: "audiovisual", label: "Producción Audiovisual" },
+  { id: "marketing", label: "Marketing y Contenido Digital" },
+  { id: "diseno", label: "Diseño Gráfico y Creatividad" },
 ] as const;
 
 export const singleServices = [

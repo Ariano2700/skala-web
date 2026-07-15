@@ -4,7 +4,14 @@ import PortfolioCta from "../components/portfolio/PortfolioCta.astro";
 import PortfolioFilters from "../components/portfolio/PortfolioFilters.astro";
 import PortfolioGrid from "../components/portfolio/PortfolioGrid.astro";
 import PortfolioHero from "../components/portfolio/PortfolioHero.astro";
-import { portfolioProjects } from "../data/portafolio";
+import { portfolioProjects, adaptSanityProjects } from "../data/portafolio";
+import { getAllProjects } from "../sanity/project/api";
+
+// Fuente de datos: Sanity (CMS) con respaldo en la data estática local.
+// Si Sanity no responde o está vacío, conservamos los proyectos del archivo.
+const sanityProjects = await getAllProjects();
+const sourceProjects =
+  sanityProjects.length > 0 ? adaptSanityProjects(sanityProjects) : portfolioProjects;
 
 const pageTitle =
   "Portafolio Skala - Agencia & Productora Audiovisual en Trujillo";
@@ -54,8 +61,8 @@ const structuredData = [
     "@id": `${canonicalUrl}#portfolio-list`,
     name: "Casos de Éxito de Skala",
     description: "Lista de proyectos desarrollados por la agencia Skala",
-    numberOfItems: portfolioProjects?.length || 0,
-    itemListElement: (portfolioProjects || []).map(
+    numberOfItems: sourceProjects?.length || 0,
+    itemListElement: (sourceProjects || []).map(
       (project: any, index: number) => ({
         "@type": "ListItem",
         position: index + 1,
@@ -77,9 +84,9 @@ const structuredData = [
   robots="index, follow"
 >
   <main id="top" class="relative z-10">
-    <PortfolioHero />
-    <PortfolioFilters />
-    <PortfolioGrid />
+    <PortfolioHero projects={sourceProjects} />
+    <PortfolioFilters projects={sourceProjects} />
+    <PortfolioGrid projects={sourceProjects} />
     <PortfolioCta />
   </main>
 </Layout>

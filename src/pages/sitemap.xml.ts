@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
-import { portfolioProjects } from "../components/portfolio/portfolio-data";
+import { portfolioProjects, adaptSanityProjects } from "../data/portafolio";
+import { getAllProjects } from "../sanity/project/api";
 
 const staticPages = [
   {
@@ -22,7 +23,12 @@ const staticPages = [
   },
 ];
 
-const projectPages = portfolioProjects.map((project) => ({
+// Proyectos desde Sanity (CMS) con respaldo en la data estática local.
+const sanityProjects = await getAllProjects();
+const sourceProjects =
+  sanityProjects.length > 0 ? adaptSanityProjects(sanityProjects) : portfolioProjects;
+
+const projectPages = sourceProjects.map((project) => ({
   loc: `/proyecto/${project.id}/`,
   lastmod: "2026-07-11",
   changefreq: "monthly" as const,

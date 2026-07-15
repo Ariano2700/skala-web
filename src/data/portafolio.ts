@@ -2,12 +2,7 @@
 // Cada proyecto puede tener múltiples recursos (imagen y/o video).
 // Los assets viven en /public/portafolio/<slug>/... o en la raíz para videos sueltos.
 
-export type PortfolioCategoryValue =
-  | "all"
-  | "brand"
-  | "foto"
-  | "video"
-  | "social";
+export type PortfolioCategoryValue = "all" | (string & {});
 
 export interface PortfolioMedia {
   type: "image" | "video";
@@ -21,10 +16,13 @@ export interface PortfolioProject {
   id: string;
   title: string;
   client: string;
-  category: Exclude<PortfolioCategoryValue, "all">;
+  /** Categorías del proyecto (un proyecto puede tener varias). */
+  categories: string[];
+  /** Etiqueta de la categoría principal (para mostrar en la tarjeta/modal). */
   categoryLabel: string;
   layout: "wide" | "narrow tall" | "narrow" | "half" | "third" | "full";
-  accent: "brand" | "foto" | "video" | "social";
+  /** Color de acento (hex) dinámico desde Sanity. */
+  accent: string;
   overlay: string;
   /** Recursos del proyecto (imagen y/o video). */
   media: PortfolioMedia[];
@@ -44,10 +42,10 @@ export const portfolioProjects: PortfolioProject[] = [
     id: "steffy_boutique",
     title: "Steffy Boutique",
     client: "Steffy Boutique",
-    category: "foto",
+    categories: ["foto"],
     categoryLabel: "Fotografía",
     layout: "third",
-    accent: "foto",
+    accent: "#35d9f1",
     overlay: "Ver galería",
     media: [
       {
@@ -71,10 +69,10 @@ export const portfolioProjects: PortfolioProject[] = [
     id: "psicologa_fiorella",
     title: "Psicóloga Fiorella",
     client: "Fiorella",
-    category: "social",
+    categories: ["social"],
     categoryLabel: "Social Media",
     layout: "third",
-    accent: "social",
+    accent: "#f135a0",
     overlay: "Ver resultados",
     media: [
       {
@@ -101,10 +99,10 @@ export const portfolioProjects: PortfolioProject[] = [
     id: "mamma_pizza",
     title: "Mamma Pizza",
     client: "Mamma Pizza",
-    category: "foto",
+    categories: ["foto"],
     categoryLabel: "Fotografía",
     layout: "narrow tall",
-    accent: "foto",
+    accent: "#35d9f1",
     overlay: "Ver galería",
     media: [
       {
@@ -130,10 +128,10 @@ export const portfolioProjects: PortfolioProject[] = [
     id: "lions",
     title: "Lions",
     client: "Lions",
-    category: "brand",
+    categories: ["brand"],
     categoryLabel: "Branding",
     layout: "wide",
-    accent: "brand",
+    accent: "#f1a135",
     overlay: "Ver proyecto",
     media: [
       { type: "image", src: "/portafolio/lions/lions.jpeg", alt: "Lions" },
@@ -155,10 +153,10 @@ export const portfolioProjects: PortfolioProject[] = [
     id: "casa_forno",
     title: "Casa Forno",
     client: "Casa Forno",
-    category: "video",
+    categories: ["video"],
     categoryLabel: "Video",
     layout: "half",
-    accent: "video",
+    accent: "#f135a0",
     overlay: "Ver video",
     media: [{ type: "video", src: "/portafolio/casa-forno.mp4" }],
     details: {
@@ -175,10 +173,10 @@ export const portfolioProjects: PortfolioProject[] = [
     id: "orthodentix",
     title: "Orthodentix",
     client: "Orthodentix",
-    category: "video",
+    categories: ["video"],
     categoryLabel: "Video",
     layout: "half",
-    accent: "video",
+    accent: "#f135a0",
     overlay: "Ver video",
     media: [{ type: "video", src: "/portafolio/orthodentix.mp4" }],
     details: {
@@ -190,17 +188,6 @@ export const portfolioProjects: PortfolioProject[] = [
       duration: "1 semana",
     },
   },
-];
-
-export const portfolioFilters: {
-  label: string;
-  value: PortfolioCategoryValue;
-}[] = [
-  { label: "Todos", value: "all" },
-  { label: "Branding", value: "brand" },
-  { label: "Fotografía", value: "foto" },
-  { label: "Video", value: "video" },
-  { label: "Social Media", value: "social" },
 ];
 
 export type PortfolioProjectItem = PortfolioProject;
@@ -218,13 +205,17 @@ export const getPortfolioGridClass = (
   return "col-span-12";
 };
 
-export const getPortfolioAccentClass = (
+/**
+ * Devuelve el estilo CSS en línea para el color de acento del proyecto.
+ * El acento es dinámico (hex) y viene de Sanity; si no hay color, usa el
+ * acento por defecto del tema.
+ */
+export const getPortfolioAccentStyle = (
   project: PortfolioProjectItem,
-): string => {
-  if (project.accent === "brand") return "bg-[#f1a135]";
-  if (project.accent === "foto") return "bg-[#35d9f1]";
-  if (project.accent === "video") return "bg-[#f135a0]";
-  return "bg-skala-accent";
+): Record<string, string> => {
+  return project.accent
+    ? { backgroundColor: project.accent }
+    : { backgroundColor: "var(--color-skala-accent)" };
 };
 
 /** Recurso de portada: prioriza imagen, si no hay usa el primer video. */
@@ -243,3 +234,102 @@ export const countMedia = (
     videos: project.media.filter((m) => m.type === "video").length,
   };
 };
+
+// ---------------------------------------------------------------------------
+// Adaptador Sanity -> modelo de portafolio
+// ---------------------------------------------------------------------------
+// El modelo de Sanity (`Project`) usa `categories[]`, `mainImage` y `gallery`,
+// mientras que los componentes del portafolio esperan `categories`, `categoryLabel`,
+// `layout`, `accent`, `overlay` y `media[]`. Este adaptador traduce un proyecto
+// de Sanity al formato `PortfolioProject` para reutilizar toda la UI existente.
+//
+// IMPORTANTE: las categorías son 100% dinámicas. No hay un mapa fijo de
+// slugs -> valores: el slug, la etiqueta y el color de acento se toman
+// directamente de cada documento `category` en Sanity.
+
+import type { Project, ProjectMedia } from "../sanity/project/project-mapper";
+import type { Category } from "../sanity/category/category-mapper";
+
+/** Color de acento por defecto (tema) cuando una categoría no define color. */
+const DEFAULT_ACCENT = "#5cd8fc";
+
+/**
+ * Detecta si una URL de Sanity corresponde a un video.
+ * Los videos de Sanity viven bajo `/files/` y las imágenes bajo `/images/`.
+ * Como respaldo, también se reconocen extensiones de video comunes.
+ */
+const isVideoUrl = (url: string): boolean => {
+  if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(url)) return true;
+  return /\/files\//i.test(url) || /cdn\.sanity\.io\/.*\/files\//i.test(url);
+};
+
+/** Convierte la galería de Sanity (imagen/video) al formato `PortfolioMedia`. */
+const mapGalleryToMedia = (gallery: ProjectMedia[]): PortfolioMedia[] => {
+  if (gallery.length === 0) return [];
+  return gallery.map((item) => ({
+    type: isVideoUrl(item.url) ? "video" : "image",
+    src: item.url,
+    alt: "alt" in item ? item.alt : item.caption,
+  }));
+};
+
+/**
+ * Devuelve el color de acento de una categoría (dinámico desde Sanity).
+ * Fallback al color por defecto del tema si la categoría no define ninguno.
+ */
+const categoryAccent = (category?: Category): string =>
+  category?.accent || DEFAULT_ACCENT;
+
+/**
+ * Adapta un `Project` de Sanity al modelo `PortfolioProject`.
+ * Si el proyecto no tiene galería, devuelve `null` (se filtra en la capa de página).
+ *
+ * Nota: la `mainImage` NO se incluye en `media` (es solo portada), por lo que
+ * los KPIs de imágenes/videos solo cuentan la galería real del proyecto.
+ */
+export const adaptSanityProject = (
+  project: Project,
+): PortfolioProject | null => {
+  // Categorías dinámicas: usamos el slug real de Sanity como valor.
+  const categories = Array.from(
+    new Set((project.categories ?? []).map((c) => c.slug).filter(Boolean)),
+  );
+  if (categories.length === 0) categories.push("sin-categoria");
+
+  // Presentación basada en la primera categoría (para acento y etiqueta).
+  const primary = project.categories?.[0];
+  const primaryLabel = primary?.title || categories[0];
+  const accent = categoryAccent(primary);
+
+  // Galería (imagen/video) — excluye la mainImage para no duplicar en los KPIs.
+  const media = mapGalleryToMedia(project.gallery);
+
+  if (media.length === 0) return null;
+
+  return {
+    id: project.slug || project.id,
+    title: project.title,
+    client: project.client ?? "Skala",
+    categories,
+    categoryLabel: primaryLabel,
+    layout: "third",
+    accent,
+    overlay: "Ver proyecto",
+    media,
+    featured: project.featured,
+    details: {
+      description: project.description,
+      challenge: project.challenge,
+      solution: project.solution,
+      results: project.results.map((r) => r.text),
+      tools: project.tools,
+      duration: project.duration ?? "",
+    },
+  };
+};
+
+/** Adapta una lista de `Project` de Sanity al modelo `PortfolioProject[]`. */
+export const adaptSanityProjects = (projects: Project[]): PortfolioProject[] =>
+  projects
+    .map(adaptSanityProject)
+    .filter((p): p is PortfolioProject => p !== null);

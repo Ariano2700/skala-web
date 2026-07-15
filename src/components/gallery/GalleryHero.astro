@@ -1,0 +1,126 @@
+---
+import { FiArrowUpRight, FiLock } from "react-icons/fi";
+import { LuDog } from "react-icons/lu";
+
+interface Props {
+  total: number;
+}
+
+const { total = 0 } = Astro.props;
+---
+
+<section
+  id="top"
+  class="relative mx-auto grid min-h-[78svh] w-full max-w-360 grid-cols-1 items-center gap-10 px-5 pb-12 pt-28 md:px-12 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] xl:gap-16"
+>
+  <!-- Fondo temático Perú -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute inset-0 bg-[#04142e]"></div>
+    <div
+      class="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(214,40,40,0.22),transparent_45%),radial-gradient(circle_at_50%_110%,rgba(255,255,255,0.10),transparent_45%)]"
+    >
+    </div>
+  </div>
+
+  <div class="relative">
+    <div
+      class="absolute inset-x-0 top-0 hidden h-px bg-[linear-gradient(90deg,transparent,rgba(92,216,252,0.42),transparent)] xl:block"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="flex flex-col gap-6">
+      <span
+        class="inline-flex w-fit items-center gap-2 rounded-full border border-[#ff3b3b]/40 bg-[#ff3b3b]/10 px-4 py-2 text-[0.7rem] font-black uppercase tracking-[0.18em] text-[#ff8a8a]"
+      >
+        🇵🇪 Desfile Patriótico Canino
+      </span>
+
+      <h1
+        class="relative m-0 font-display text-[clamp(3rem,7vw,6.5rem)] font-black leading-[0.88] tracking-[-0.06em] text-white"
+        data-reveal
+        style="--reveal-delay: 120ms;"
+      >
+        GALERÍA<br />
+        <span class="text-[#ff3b3b]">DEL</span>
+        <span class="text-white"> EVENTO</span>
+      </h1>
+
+      <p
+        class="max-w-[52ch] text-[1.08rem] leading-8 text-skala-muted"
+        data-reveal
+        style="--reveal-delay: 220ms;"
+      >
+        Revive los mejores momentos del desfile 🐾. Explora las fotos y videos de
+        cada participante y descarga los recuerdos de tu engreído.
+      </p>
+
+      <div
+        class="flex flex-wrap gap-3"
+        data-reveal
+        style="--reveal-delay: 300ms;"
+      >
+        <a
+          href="#galerias"
+          class="group inline-flex items-center justify-center gap-3 rounded-full bg-[#ff3b3b] px-7 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-white shadow-[0_18px_35px_rgba(255,59,59,0.28)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-white/60 active:translate-y-px"
+        >
+          <span>Ver galerías</span>
+          <FiArrowUpRight
+            aria-hidden="true"
+            className="transition-transform size-4 duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          />
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Showcase circular -->
+  <div
+    class="hero-showcase relative grid min-h-96 items-stretch rounded-full aspect-square xl:min-h-120"
+    data-reveal
+    style="--reveal-delay: 180ms;"
+  >
+    <div
+      class="absolute inset-0 overflow-hidden rounded-[inherit] border border-skala-border bg-skala-bg shadow-(--shadow) contain-[layout_paint]"
+      aria-hidden="true"
+    >
+      <img
+        src="/desfile_canino/hero.jpg"
+        alt="Desfile Patriótico Canino"
+        class="absolute inset-0 h-full w-full object-cover opacity-70"
+      />
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(4,20,46,0.55),transparent_70%),linear-gradient(180deg,rgba(4,20,46,0.25)_0%,rgba(4,20,46,0.45)_50%,rgba(4,20,46,0.92)_100%)]"
+      >
+      </div>
+    </div>
+
+    <span
+      class="dog-float pointer-events-none absolute -left-3 top-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-skala-accent backdrop-blur"
+      style="animation-delay: 0s;"
+    >
+      <LuDog className="h-7 w-7" aria-hidden="true" />
+    </span>
+    <span
+      class="dog-float pointer-events-none absolute -right-2 bottom-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-skala-accent backdrop-blur"
+      style="animation-delay: 2.4s;"
+    >
+      <FiLock className="h-7 w-7" aria-hidden="true" />
+    </span>
+
+    <div
+      class="relative z-10 flex flex-col items-center justify-center p-7 text-center md:p-9"
+    >
+      <span
+        class="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/90 backdrop-blur"
+      >
+        🐾 {total} galerías
+      </span>
+      <p
+        class="mt-4 font-display text-2xl font-black leading-tight tracking-[-0.03em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] md:text-3xl"
+      >
+        Los recuerdos de tu engreído ❤️
+      </p>
+    </div>
+  </div>
+</section>

@@ -109,6 +109,24 @@ main > section:not(#top) {
   contain-intrinsic-size: auto 760px;
 }
 
+/* Filtros de portafolio: estado activo con color de acento dinámico (Sanity). */
+.portfolio-filter {
+  --filter-accent: var(--color-skala-accent);
+  border-color: var(--color-skala-border);
+  color: var(--color-skala-muted);
+}
+
+.portfolio-filter:hover {
+  border-color: color-mix(in srgb, var(--filter-accent) 40%, transparent);
+  color: var(--color-skala-text);
+}
+
+.portfolio-filter.is-active {
+  border-color: var(--filter-accent);
+  background-color: var(--filter-accent);
+  color: var(--color-skala-text-secondary);
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);

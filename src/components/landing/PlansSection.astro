@@ -1,8 +1,8 @@
 ---
-import { FiArrowUpRight, FiCheckCircle, FiStar } from "react-icons/fi";
+import { FiArrowUpRight, FiCheckCircle, FiStar, FiCamera, FiVideo, FiBriefcase, FiHeart } from "react-icons/fi";
 import SectionLabel from "./SectionLabel.astro";
 import { CONTACT_DATA } from "../../data/contact_data";
-import { plans } from "../../data/plans";
+import { plans, specialServices } from "../../data/plans";
 
 /**
  * Helper: returns true when the plan background is considered "light"
@@ -143,5 +143,63 @@ function isLightBg(hex: string): boolean {
         );
       })
     }
+  </div>
+
+  <!-- Servicios especiales (cotización a medida) -->
+  <div class="mt-16 flex flex-col gap-6">
+    <div class="flex flex-col gap-2">
+      <p
+        class="font-display text-[clamp(1.6rem,3.4vw,2.6rem)] font-black tracking-[-0.04em] text-skala-text"
+      >
+        Servicios especiales
+      </p>
+      <p class="max-w-[60ch] text-sm leading-7 text-skala-muted">
+        {specialServices.note}
+        <span class="ml-1 font-semibold text-skala-accent">
+          ({specialServices.travelNote})
+        </span>
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      {
+        specialServices.items.map((service, index) => {
+          const icons = [FiHeart, FiCamera, FiBriefcase, FiVideo];
+          const Icon = icons[index % icons.length];
+          return (
+            <article
+              class="flex flex-col gap-3 rounded-[26px] border border-skala-border bg-white/[0.035] p-6 transition duration-300 hover:-translate-y-1 hover:border-skala-accent/40"
+              data-reveal
+              style={`--reveal-delay: ${index * 80}ms;`}
+            >
+              <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-skala-accent/15 text-skala-accent">
+                <Icon className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <h3 class="m-0 font-display text-lg font-black tracking-[-0.03em] text-skala-text">
+                {service.title}
+              </h3>
+              <p class="m-0 text-sm leading-7 text-skala-muted">
+                {service.description}
+              </p>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    <a
+      href={CONTACT_DATA.WHATSAPP_LINK(
+        "Hola, quiero cotizar un servicio especial (evento/fotografía corporativa).",
+      )}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group mt-2 inline-flex w-fit items-center justify-center gap-3 rounded-full bg-skala-accent px-7 py-4 font-display text-[0.74rem] font-black uppercase tracking-[0.16em] text-skala-text-secondary shadow-[0_14px_36px_rgba(92,216,252,0.28)] transition duration-200 hover:-translate-y-0.5 hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+    >
+      <span>Cotizar servicio especial</span>
+      <FiArrowUpRight
+        aria-hidden="true"
+        className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      />
+    </a>
   </div>
 </section>

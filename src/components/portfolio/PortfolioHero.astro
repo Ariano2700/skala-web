@@ -1,19 +1,25 @@
 ---
 import SectionLabel from "../landing/SectionLabel.astro";
 import SkalaWordmark from "../shared/SkalaWordmark";
-import { portfolioProjects } from "../../data/portafolio";
+import { portfolioProjects, type PortfolioProjectItem } from "../../data/portafolio";
 import PortfolioHeroVisual from "./PortfolioHeroVisual.astro";
 
-const totalProjects = portfolioProjects.length;
-const totalImages = portfolioProjects.reduce(
+interface Props {
+  projects?: PortfolioProjectItem[];
+}
+
+const { projects = portfolioProjects } = Astro.props;
+
+const totalProjects = projects.length;
+const totalImages = projects.reduce(
   (acc, p) => acc + p.media.filter((m) => m.type === "image").length,
   0,
 );
-const totalVideos = portfolioProjects.reduce(
+const totalVideos = projects.reduce(
   (acc, p) => acc + p.media.filter((m) => m.type === "video").length,
   0,
 );
-const disciplines = new Set(portfolioProjects.map((p) => p.category)).size;
+const disciplines = new Set(projects.flatMap((p) => p.categories)).size;
 ---
 
 <section id="portafolio" class="relative z-10 overflow-hidden py-20 md:py-36">

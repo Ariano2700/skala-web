@@ -1,0 +1,73 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SiteNav from "../components/shared/SiteNav.astro";
+import SiteFooter from "../components/shared/SiteFooter.astro";
+import GalleryHero from "../components/gallery/GalleryHero.astro";
+import GalleryGrid from "../components/gallery/GalleryGrid.astro";
+import { getPublicGalleries } from "../sanity/gallery/api";
+
+// Solo galerías públicas (publicadas y sin código de acceso).
+const galleries = await getPublicGalleries();
+
+const pageTitle = "Galería del Desfile Canino · Skala";
+const pageDescription =
+  "Explora y descarga las fotos y videos del Desfile Patriótico Canino. Recuerdos de cada participante, listos para compartir.";
+const canonicalUrl = new URL(
+  "/galeria-desfile-canino/",
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  keywords="galería desfile canino, fotos desfile canino, videos perros, skala, paseo de aguas"
+  robots="index, follow"
+>
+  <SiteNav />
+  <main class="relative z-10">
+    <GalleryHero total={galleries.length} />
+
+    <!-- Buscador de galerías -->
+    <div class="relative z-10 mx-auto w-full max-w-360 px-5 md:px-12">
+      <div
+        class="flex items-center gap-3 rounded-full border border-skala-border bg-white/[0.035] px-5 py-3 shadow-[0_18px_50px_rgba(0,22,52,0.18)] focus-within:border-skala-accent/50"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 shrink-0 text-skala-muted"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <input
+          type="search"
+          id="gallery-search"
+          placeholder="Busca una galería por nombre…"
+          aria-label="Buscar galería"
+          class="w-full bg-transparent text-sm font-medium text-skala-text outline-none placeholder:text-skala-muted"
+          autocomplete="off"
+        />
+        <button
+          type="button"
+          id="gallery-search-clear"
+          class="hidden shrink-0 text-xs font-bold uppercase tracking-[0.12em] text-skala-muted transition hover:text-skala-accent"
+          aria-label="Limpiar búsqueda"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <GalleryGrid galleries={galleries} />
+  </main>
+  <SiteFooter />
+</Layout>
