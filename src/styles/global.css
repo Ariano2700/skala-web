@@ -109,6 +109,11 @@ main > section:not(#top) {
   contain-intrinsic-size: auto 760px;
 }
 
+/* Las secciones ancladas no quedan tapadas por la barra fija (mobile/desktop). */
+:where(section[id], [id]) {
+  scroll-margin-top: 5.5rem;
+}
+
 /* Filtros de portafolio: estado activo con color de acento dinámico (Sanity). */
 .portfolio-filter {
   --filter-accent: var(--color-skala-accent);

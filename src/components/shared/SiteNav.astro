@@ -157,11 +157,10 @@ const resolveHref = (href: string) =>
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
   }
 
-  .mobile-nav-panel,
-  .mobile-nav-links > a,
-  .mobile-nav-cta {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
+  /* Las tarjetas del menú móvil son visibles por defecto (no dependen de JS
+     para ser clicables). La animación de entrada es solo decorativa. */
+  .mobile-nav-panel {
+    opacity: 1;
   }
 </style>
 
