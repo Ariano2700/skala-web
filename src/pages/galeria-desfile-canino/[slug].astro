@@ -1,4 +1,5 @@
 ---
+export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
 import SiteNav from "../../components/shared/SiteNav.astro";
 import SiteFooter from "../../components/shared/SiteFooter.astro";
@@ -10,27 +11,25 @@ import {
   FiImage,
   FiVideo,
 } from "react-icons/fi";
+import { getGalleryBySlug } from "../../sanity/gallery/api";
 
-export async function getStaticPaths() {
-  // Se generan las páginas de las galerías publicadas Y de las que tienen
-  // código de acceso (aunque no estén marcadas como publicadas): así son
-  // alcanzables vía link/QR y se protegen con el gate de código en el cliente.
-  // El acceso se valida en el cliente (no exponemos el código en URL ni HTML).
-  const { getAllGalleries } = await import("../../sanity/gallery/api");
-  const all = await getAllGalleries();
-  return all
-    .filter((g) => g.published || g.accessCode)
-    .map((gallery) => ({
-      params: { slug: gallery.slug },
-      props: { gallery },
-    }));
+// Renderizado bajo demanda: se consulta Sanity en cada petición (igual que en
+// dev), así cualquier galería nueva (pública o privada por QR) aparece en
+// producción sin necesidad de redeploy. El gate de código se valida en cliente.
+const { slug } = Astro.params;
+if (!slug) {
+  return new Response("Galería no encontrada", {
+    status: 404,
+    headers: { "content-type": "text/html; charset=utf-8" },
+  });
 }
-
-interface Props {
-  gallery: import("../../sanity/gallery/gallery-mapper").Gallery;
+const gallery = await getGalleryBySlug(slug);
+if (!gallery) {
+  return new Response("Galería no encontrada", {
+    status: 404,
+    headers: { "content-type": "text/html; charset=utf-8" },
+  });
 }
-
-const { gallery } = Astro.props;
 
 const pageTitle = `${gallery.name} · Galería del Desfile Canino · Skala`;
 const pageDescription = `Fotos y videos de ${gallery.name} en el Desfile Patriótico Canino. Ve y descarga los recuerdos.`;
@@ -92,7 +91,7 @@ const videos = media.filter((m) => m.kind === "video");
         <button
           type="button"
           id="download-all"
-          class="group inline-flex items-center gap-2 rounded-full bg-skala-accent px-5 py-3 text-[0.72rem] font-black uppercase tracking-[0.14em] text-skala-text-secondary shadow-[0_14px_32px_rgba(92,216,252,0.18)] transition duration-200 hover:-translate-y-px hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+          class="cursor-pointer group inline-flex items-center gap-2 rounded-full bg-skala-accent px-5 py-3 text-[0.72rem] font-black uppercase tracking-[0.14em] text-skala-text-secondary shadow-[0_14px_32px_rgba(92,216,252,0.18)] transition duration-200 hover:-translate-y-px hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60"
         >
           <FiDownload className="h-4 w-4" />
           Descargar todo

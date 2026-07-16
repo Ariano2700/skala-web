@@ -6,6 +6,7 @@ import {
   FiMapPin,
   FiShoppingBag,
   FiVideo,
+  FiImage,
   FiTag,
   FiPackage,
   FiGift,
@@ -47,6 +48,41 @@ const actividades = [
   { icon: FiHeart, label: "Juegos con tu mascota" },
   { icon: FiSmile, label: "Juegos para niños" },
   { icon: FiBriefcase, label: "Feria de emprendedores" },
+];
+
+// Paquetes que Skala vende en la feria del Desfile Patriótico Canino.
+const paquetes = [
+  {
+    icon: FiImage,
+    title: "Paquete Fotos",
+    accent: "from-[#5cd8fc]/15 to-transparent",
+    items: [
+      { qty: "3 fotos", price: "12 soles" },
+      { qty: "5 fotos", price: "20 soles" },
+      { qty: "10 fotos", price: "40 soles" },
+    ],
+  },
+  {
+    icon: FiVideo,
+    title: "Paquete de Video",
+    accent: "from-[#ff3b3b]/15 to-transparent",
+    items: [
+      {
+        qty: "Vídeo recopilación de 20 segundos y 5 fotos",
+        price: "60 soles",
+      },
+    ],
+  },
+  {
+    icon: FiGift,
+    title: "Extra Fotos Polaroid",
+    accent: "from-amber-400/15 to-transparent",
+    items: [
+      { qty: "3 fotos", price: "20 soles" },
+      { qty: "5 fotos", price: "35 soles" },
+      { qty: "10 fotos", price: "50 soles" },
+    ],
+  },
 ];
 
 // Cronograma de actividades del Gran Concurso de Disfraces Peruanos.
@@ -714,6 +750,74 @@ const cronograma = [
           }
         </div>
       </div>
+    </section>
+
+    <!-- PAQUETES SKALA (lo que vendemos en la feria) -->
+    <section
+      id="paquetes"
+      class="relative mx-auto mt-16 max-w-360 scroll-mt-24 px-5"
+    >
+      <div class="text-center">
+        <span
+          class="inline-flex w-fit items-center gap-2 rounded-full border border-skala-accent/30 bg-skala-accent/10 px-4 py-2 text-[0.7rem] font-black uppercase tracking-[0.18em] text-skala-accent"
+        >
+          🐾 Llévate tus recuerdos
+        </span>
+        <h2
+          class="mt-4 font-display text-[clamp(2rem,5vw,3.6rem)] font-black tracking-tighter text-white"
+        >
+          PAQUETES SKALA
+        </h2>
+        <div class="mx-auto mt-3 h-1 w-24 rounded-full bg-[#ff3b3b]"></div>
+        <p class="mx-auto mt-4 max-w-[52ch] text-skala-muted">
+          Captura la mejor versión de tu engreído en el Desfile Patriótico
+          Canino.
+        </p>
+      </div>
+
+      <div class="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {
+          paquetes.map((pack) => (
+            <article class:list={[
+              "group relative flex flex-col gap-5 overflow-hidden rounded-4xl border border-white/10 bg-white/4 p-7 transition duration-300 hover:-translate-y-1 hover:border-skala-accent/40",
+            ]}>
+              <div
+                class:list={[
+                  "pointer-events-none absolute inset-0 bg-linear-to-br opacity-60",
+                  pack.accent,
+                ]}
+              />
+              <div class="relative flex items-center gap-3">
+                <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/8 text-skala-accent">
+                  <pack.icon className="h-6 w-6" aria-hidden="true" />
+                </span>
+                <h3 class="font-display text-xl font-black tracking-[-0.03em] text-white">
+                  {pack.title}
+                </h3>
+              </div>
+
+              <ul class="relative flex flex-col gap-3">
+                {
+                  pack.items.map((item) => (
+                    <li class="flex items-center justify-between gap-4 rounded-2xl border border-white/8 bg-black/20 px-4 py-3">
+                      <span class="text-sm font-medium text-white/85">
+                        {item.qty}
+                      </span>
+                      <span class="shrink-0 rounded-full bg-skala-accent/15 px-3 py-1 text-[0.72rem] font-black uppercase tracking-widest text-skala-accent">
+                        {item.price}
+                      </span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="mt-8 text-center text-sm text-white/50">
+        Pagos en efectivo el día del evento · ¡Cupos limitados!
+      </p>
     </section>
 
     <!-- CIERRE + CTA -->

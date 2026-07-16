@@ -146,11 +146,12 @@ export async function getGalleryById(id: string) {
 }
 
 /**
- * Lista las galerías públicas: las que están publicadas Y no tienen código
- * de acceso. Se usan en la página /galeria-desfile-canino.
+ * Lista las galerías públicas: las que están marcadas como publicadas
+ * (published == true). El código de acceso ya no define si es pública o no;
+ * una galería no publicada solo es alcanzable vía link/QR.
  */
 export async function getPublicGalleries() {
-  const query = `*[${BASE_GALLERY_FILTER} && published == true && !defined(accessCode)] | ${ORDER_BY_NAME} ${GALLERY_BASE_QUERY}`;
+  const query = `*[${BASE_GALLERY_FILTER} && published == true] | ${ORDER_BY_NAME} ${GALLERY_BASE_QUERY}`;
   try {
     const result = await sanityClient.fetch<GallerySanitySchema[]>(query);
     return mapToGalleryList(result);

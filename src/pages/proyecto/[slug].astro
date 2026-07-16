@@ -1,4 +1,5 @@
 ---
+export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
 import AmbientBackdrop from "../../components/landing/AmbientBackdrop.astro";
 import SiteNav from "../../components/shared/SiteNav.astro";
@@ -14,28 +15,20 @@ import {
 import { getAllProjects } from "../../sanity/project/api";
 import { FiArrowLeft, FiExternalLink } from "react-icons/fi";
 
-export async function getStaticPaths() {
-  // Sanity (CMS) con respaldo en la data estática local.
-  const sanityProjects = await getAllProjects();
-  const sanityAdapted = adaptSanityProjects(sanityProjects);
+// Renderizado bajo demanda: Sanity (CMS) en vivo, con respaldo en la data
+// estática local. Cualquier proyecto nuevo en Sanity aparece sin redeploy.
+const { slug } = Astro.params;
+const sanityProjects = await getAllProjects();
+const sanityAdapted = adaptSanityProjects(sanityProjects);
+const fromSanity = sanityAdapted.find((p) => p.id === slug);
+const project = fromSanity ?? portfolioProjects.find((p) => p.id === slug);
 
-  // Unimos ambas fuentes, priorizando Sanity; los slugs estáticos que no
-  // existan en Sanity se conservan como respaldo.
-  const bySlug = new Map<string, PortfolioProjectItem>();
-  for (const p of portfolioProjects) bySlug.set(p.id, p);
-  for (const p of sanityAdapted) bySlug.set(p.id, p);
-
-  return Array.from(bySlug.values()).map((project) => ({
-    params: { slug: project.id },
-    props: { project },
-  }));
+if (!project) {
+  return new Response("Proyecto no encontrado", {
+    status: 404,
+    headers: { "content-type": "text/html; charset=utf-8" },
+  });
 }
-
-interface Props {
-  project: PortfolioProjectItem;
-}
-
-const { project } = Astro.props;
 
 const cover = getCoverMedia(project);
 

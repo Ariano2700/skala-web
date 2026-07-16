@@ -9,6 +9,9 @@ import icon from "astro-icon";
 
 import sanity from "@sanity/astro";
 
+import netlify from "@astrojs/netlify";
+
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -24,6 +27,7 @@ export default defineConfig({
       dataset: "production",
       useCdn: false,
     }),
+    netlify(),
   ],
   image: {
     domains: ["cdn.sanity.io"],

@@ -26,3 +26,5 @@ pnpm-debug.log*
 #extras
 /skills
 /base
+# Local Netlify folder
+.netlify
