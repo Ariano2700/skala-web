@@ -1,5 +1,5 @@
 import { useGSAP } from "@gsap/react";
-import { gsap } from "gsap";
+import gsap from "gsap";
 import { useId, useRef } from "react";
 import fullLogo from "../../icons/logotype.svg?raw";
 
