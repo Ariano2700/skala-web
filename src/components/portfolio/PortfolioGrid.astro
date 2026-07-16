@@ -1,12 +1,12 @@
 ---
-import { portfolioProjects, type PortfolioProjectItem } from "../../data/portafolio";
+import { type PortfolioProjectItem } from "../../data/portafolio";
 import PortfolioCard from "./PortfolioCard.astro";
 
 interface Props {
   projects?: PortfolioProjectItem[];
 }
 
-const { projects = portfolioProjects } = Astro.props;
+const { projects = [] } = Astro.props;
 ---
 
 <section

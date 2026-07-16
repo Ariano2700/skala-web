@@ -1,18 +1,17 @@
 ---
-export const prerender = false;
 import Layout from "../layouts/Layout.astro";
 import PortfolioCta from "../components/portfolio/PortfolioCta.astro";
 import PortfolioFilters from "../components/portfolio/PortfolioFilters.astro";
 import PortfolioGrid from "../components/portfolio/PortfolioGrid.astro";
 import PortfolioHero from "../components/portfolio/PortfolioHero.astro";
-import { portfolioProjects, adaptSanityProjects } from "../data/portafolio";
+import { adaptSanityProjects } from "../data/portafolio";
 import { getAllProjects } from "../sanity/project/api";
 
 // Fuente de datos: Sanity (CMS) con respaldo en la data estática local.
 // Si Sanity no responde o está vacío, conservamos los proyectos del archivo.
 const sanityProjects = await getAllProjects();
 const sourceProjects =
-  sanityProjects.length > 0 ? adaptSanityProjects(sanityProjects) : portfolioProjects;
+  sanityProjects.length > 0 ? adaptSanityProjects(sanityProjects) : undefined;
 
 const pageTitle =
   "Portafolio Skala - Agencia & Productora Audiovisual en Trujillo";

@@ -37,158 +37,158 @@ export interface PortfolioProject {
   };
 }
 
-export const portfolioProjects: PortfolioProject[] = [
-  {
-    id: "steffy_boutique",
-    title: "Steffy Boutique",
-    client: "Steffy Boutique",
-    categories: ["foto"],
-    categoryLabel: "Fotografía",
-    layout: "third",
-    accent: "#35d9f1",
-    overlay: "Ver galería",
-    media: [
-      {
-        type: "image",
-        src: "/portafolio/steffy_boutique/steffy_boutique.jpeg",
-        alt: "Steffy Boutique",
-      },
-      { type: "video", src: "/portafolio/steffy_boutique/steffy_boutique.mp4" },
-    ],
-    details: {
-      description:
-        "Sesión de moda y video para Steffy Boutique, con foco en producto y estilo.",
-      challenge: "Mostrar la ropa con estilo editorial y dinámico.",
-      solution: "Fotografía de producto y reel de tendencias.",
-      results: ["Catálogo visual", "Reel de tendencias"],
-      tools: ["Lightroom", "CapCut"],
-      duration: "1 semana",
-    },
-  },
-  {
-    id: "psicologa_fiorella",
-    title: "Psicóloga Fiorella",
-    client: "Fiorella",
-    categories: ["social"],
-    categoryLabel: "Social Media",
-    layout: "third",
-    accent: "#f135a0",
-    overlay: "Ver resultados",
-    media: [
-      {
-        type: "image",
-        src: "/portafolio/psicologa_fiorella/psicologa_fiorella.jpeg",
-        alt: "Psicóloga Fiorella",
-      },
-      {
-        type: "video",
-        src: "/portafolio/psicologa_fiorella/psicologa_fiorella.mp4",
-      },
-    ],
-    details: {
-      description:
-        "Contenido para redes de Psicóloga Fiorella, con imagen y video de acercamiento humano.",
-      challenge: "Generar cercanía y confianza con la audiencia.",
-      solution: "Piezas visuales cálidas y reel de presentación.",
-      results: ["Contenido para RRSS", "Reel de presentación"],
-      tools: ["Canva", "Premiere Pro"],
-      duration: "2 semanas",
-    },
-  },
-  {
-    id: "mamma_pizza",
-    title: "Mamma Pizza",
-    client: "Mamma Pizza",
-    categories: ["foto"],
-    categoryLabel: "Fotografía",
-    layout: "narrow tall",
-    accent: "#35d9f1",
-    overlay: "Ver galería",
-    media: [
-      {
-        type: "image",
-        src: "/portafolio/mamma_pizza/mamma_pizza.jpeg",
-        alt: "Mamma Pizza",
-      },
-      { type: "video", src: "/portafolio/mamma_pizza/mamma_pizza.mp4" },
-    ],
-    details: {
-      description:
-        "Fotografía de producto y video corto para Mamma Pizza, pensado para redes y carta digital.",
-      challenge:
-        "Hacer que la comida se vea apetitosa y coherente con la marca.",
-      solution:
-        "Iluminación cálida, dirección de arte y edición de reel corto.",
-      results: ["Fotos para carta y RRSS", "Reel promocional"],
-      tools: ["Lightroom", "CapCut"],
-      duration: "1 semana",
-    },
-  },
-  {
-    id: "lions",
-    title: "Lions",
-    client: "Lions",
-    categories: ["brand"],
-    categoryLabel: "Branding",
-    layout: "wide",
-    accent: "#f1a135",
-    overlay: "Ver proyecto",
-    media: [
-      { type: "image", src: "/portafolio/lions/lions.jpeg", alt: "Lions" },
-      { type: "video", src: "/portafolio/lions/lions.mp4" },
-    ],
-    details: {
-      description:
-        "Identidad visual y pieza audiovisual para Lions, con dirección de arte y edición de video.",
-      challenge:
-        "Comunicar la personalidad de la marca con recursos reales de imagen y video.",
-      solution:
-        "Producimos sesión fotográfica y video promocional con estilo coherente.",
-      results: ["Identidad aplicada", "Pieza en video lista para redes"],
-      tools: ["Photoshop", "Premiere Pro"],
-      duration: "3 semanas",
-    },
-  },
-  {
-    id: "casa_forno",
-    title: "Casa Forno",
-    client: "Casa Forno",
-    categories: ["video"],
-    categoryLabel: "Video",
-    layout: "half",
-    accent: "#f135a0",
-    overlay: "Ver video",
-    media: [{ type: "video", src: "/portafolio/casa-forno.mp4" }],
-    details: {
-      description: "Pieza audiovisual para Casa Forno.",
-      challenge: "Comunicar el producto con una sola pieza en video.",
-      solution: "Edición de video promocional.",
-      results: ["Video promocional listo"],
-      tools: ["Premiere Pro"],
-      duration: "1 semana",
-    },
-  },
+// export const portfolioProjects: PortfolioProject[] = [
+//   {
+//     id: "steffy_boutique",
+//     title: "Steffy Boutique",
+//     client: "Steffy Boutique",
+//     categories: ["foto"],
+//     categoryLabel: "Fotografía",
+//     layout: "third",
+//     accent: "#35d9f1",
+//     overlay: "Ver galería",
+//     media: [
+//       {
+//         type: "image",
+//         src: "/portafolio/steffy_boutique/steffy_boutique.jpeg",
+//         alt: "Steffy Boutique",
+//       },
+//       { type: "video", src: "/portafolio/steffy_boutique/steffy_boutique.mp4" },
+//     ],
+//     details: {
+//       description:
+//         "Sesión de moda y video para Steffy Boutique, con foco en producto y estilo.",
+//       challenge: "Mostrar la ropa con estilo editorial y dinámico.",
+//       solution: "Fotografía de producto y reel de tendencias.",
+//       results: ["Catálogo visual", "Reel de tendencias"],
+//       tools: ["Lightroom", "CapCut"],
+//       duration: "1 semana",
+//     },
+//   },
+//   {
+//     id: "psicologa_fiorella",
+//     title: "Psicóloga Fiorella",
+//     client: "Fiorella",
+//     categories: ["social"],
+//     categoryLabel: "Social Media",
+//     layout: "third",
+//     accent: "#f135a0",
+//     overlay: "Ver resultados",
+//     media: [
+//       {
+//         type: "image",
+//         src: "/portafolio/psicologa_fiorella/psicologa_fiorella.jpeg",
+//         alt: "Psicóloga Fiorella",
+//       },
+//       {
+//         type: "video",
+//         src: "/portafolio/psicologa_fiorella/psicologa_fiorella.mp4",
+//       },
+//     ],
+//     details: {
+//       description:
+//         "Contenido para redes de Psicóloga Fiorella, con imagen y video de acercamiento humano.",
+//       challenge: "Generar cercanía y confianza con la audiencia.",
+//       solution: "Piezas visuales cálidas y reel de presentación.",
+//       results: ["Contenido para RRSS", "Reel de presentación"],
+//       tools: ["Canva", "Premiere Pro"],
+//       duration: "2 semanas",
+//     },
+//   },
+//   {
+//     id: "mamma_pizza",
+//     title: "Mamma Pizza",
+//     client: "Mamma Pizza",
+//     categories: ["foto"],
+//     categoryLabel: "Fotografía",
+//     layout: "narrow tall",
+//     accent: "#35d9f1",
+//     overlay: "Ver galería",
+//     media: [
+//       {
+//         type: "image",
+//         src: "/portafolio/mamma_pizza/mamma_pizza.jpeg",
+//         alt: "Mamma Pizza",
+//       },
+//       { type: "video", src: "/portafolio/mamma_pizza/mamma_pizza.mp4" },
+//     ],
+//     details: {
+//       description:
+//         "Fotografía de producto y video corto para Mamma Pizza, pensado para redes y carta digital.",
+//       challenge:
+//         "Hacer que la comida se vea apetitosa y coherente con la marca.",
+//       solution:
+//         "Iluminación cálida, dirección de arte y edición de reel corto.",
+//       results: ["Fotos para carta y RRSS", "Reel promocional"],
+//       tools: ["Lightroom", "CapCut"],
+//       duration: "1 semana",
+//     },
+//   },
+//   {
+//     id: "lions",
+//     title: "Lions",
+//     client: "Lions",
+//     categories: ["brand"],
+//     categoryLabel: "Branding",
+//     layout: "wide",
+//     accent: "#f1a135",
+//     overlay: "Ver proyecto",
+//     media: [
+//       { type: "image", src: "/portafolio/lions/lions.jpeg", alt: "Lions" },
+//       { type: "video", src: "/portafolio/lions/lions.mp4" },
+//     ],
+//     details: {
+//       description:
+//         "Identidad visual y pieza audiovisual para Lions, con dirección de arte y edición de video.",
+//       challenge:
+//         "Comunicar la personalidad de la marca con recursos reales de imagen y video.",
+//       solution:
+//         "Producimos sesión fotográfica y video promocional con estilo coherente.",
+//       results: ["Identidad aplicada", "Pieza en video lista para redes"],
+//       tools: ["Photoshop", "Premiere Pro"],
+//       duration: "3 semanas",
+//     },
+//   },
+//   {
+//     id: "casa_forno",
+//     title: "Casa Forno",
+//     client: "Casa Forno",
+//     categories: ["video"],
+//     categoryLabel: "Video",
+//     layout: "half",
+//     accent: "#f135a0",
+//     overlay: "Ver video",
+//     media: [{ type: "video", src: "/portafolio/casa-forno.mp4" }],
+//     details: {
+//       description: "Pieza audiovisual para Casa Forno.",
+//       challenge: "Comunicar el producto con una sola pieza en video.",
+//       solution: "Edición de video promocional.",
+//       results: ["Video promocional listo"],
+//       tools: ["Premiere Pro"],
+//       duration: "1 semana",
+//     },
+//   },
 
-  {
-    id: "orthodentix",
-    title: "Orthodentix",
-    client: "Orthodentix",
-    categories: ["video"],
-    categoryLabel: "Video",
-    layout: "half",
-    accent: "#f135a0",
-    overlay: "Ver video",
-    media: [{ type: "video", src: "/portafolio/orthodentix.mp4" }],
-    details: {
-      description: "Pieza audiovisual para Orthodentix.",
-      challenge: "Explicar el servicio con una pieza en video.",
-      solution: "Edición de video institucional.",
-      results: ["Video institucional listo"],
-      tools: ["Premiere Pro"],
-      duration: "1 semana",
-    },
-  },
-];
+//   {
+//     id: "orthodentix",
+//     title: "Orthodentix",
+//     client: "Orthodentix",
+//     categories: ["video"],
+//     categoryLabel: "Video",
+//     layout: "half",
+//     accent: "#f135a0",
+//     overlay: "Ver video",
+//     media: [{ type: "video", src: "/portafolio/orthodentix.mp4" }],
+//     details: {
+//       description: "Pieza audiovisual para Orthodentix.",
+//       challenge: "Explicar el servicio con una pieza en video.",
+//       solution: "Edición de video institucional.",
+//       results: ["Video institucional listo"],
+//       tools: ["Premiere Pro"],
+//       duration: "1 semana",
+//     },
+//   },
+// ];
 
 export type PortfolioProjectItem = PortfolioProject;
 

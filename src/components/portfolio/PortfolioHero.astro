@@ -1,14 +1,14 @@
 ---
 import SectionLabel from "../landing/SectionLabel.astro";
 import SkalaWordmark from "../shared/SkalaWordmark";
-import { portfolioProjects, type PortfolioProjectItem } from "../../data/portafolio";
+import { type PortfolioProjectItem } from "../../data/portafolio";
 import PortfolioHeroVisual from "./PortfolioHeroVisual.astro";
 
 interface Props {
   projects?: PortfolioProjectItem[];
 }
 
-const { projects = portfolioProjects } = Astro.props;
+const { projects = [] } = Astro.props;
 
 const totalProjects = projects.length;
 const totalImages = projects.reduce(
@@ -35,7 +35,11 @@ const disciplines = new Set(projects.flatMap((p) => p.categories)).size;
         </h1>
       </div>
 
-      <div class="relative flex flex-col gap-6" data-reveal style="--reveal-delay: 120ms;">
+      <div
+        class="relative flex flex-col gap-6"
+        data-reveal
+        style="--reveal-delay: 120ms;"
+      >
         <PortfolioHeroVisual />
 
         <div class="flex flex-col gap-4">

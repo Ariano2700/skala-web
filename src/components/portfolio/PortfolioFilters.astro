@@ -1,6 +1,6 @@
 ---
 import {
-  portfolioProjects,
+  //portfolioProjects,
   type PortfolioProjectItem,
   type PortfolioCategoryValue,
 } from "../../data/portafolio";
@@ -10,28 +10,39 @@ interface Props {
   projects?: PortfolioProjectItem[];
 }
 
-const { projects = portfolioProjects } = Astro.props;
+const { projects = [] } = Astro.props;
 
 // Categorías 100% dinámicas desde Sanity (CMS). El filtro usa el slug real
 // de cada categoría. Si el CMS no responde, se usa el conjunto de slugs
 // presentes en los proyectos estáticos como respaldo.
 const sanityCategories = await getAllCategoriesByOrder();
-const fallbackCategories = Array.from(
-  new Set(projects.flatMap((p) => p.categories)),
-).map((slug) => ({ title: slug, slug, accent: undefined }));
+// const fallbackCategories = Array.from(
+//   new Set(projects.flatMap((p) => p.categories)),
+// ).map((slug) => ({ title: slug, slug, accent: undefined }));
 
 const rawCategories =
-  sanityCategories.length > 0 ? sanityCategories : fallbackCategories;
+  sanityCategories.length > 0
+    ? sanityCategories
+    : projects.flatMap((p) =>
+        p.categories.map((slug) => ({
+          title: slug,
+          slug,
+          accent: undefined,
+        })),
+      );
 
 // Filtro activo leído desde el query param ?categoria= (default "all").
 const activeParam = Astro.url.searchParams.get("categoria") ?? "all";
 const activeFilter: PortfolioCategoryValue =
-  activeParam === "all" ||
-  rawCategories.some((c) => c.slug === activeParam)
+  activeParam === "all" || rawCategories.some((c) => c.slug === activeParam)
     ? (activeParam as PortfolioCategoryValue)
     : "all";
 
-const filters: { label: string; value: PortfolioCategoryValue; accent?: string }[] = [
+const filters: {
+  label: string;
+  value: PortfolioCategoryValue;
+  accent?: string;
+}[] = [
   { label: "Todos", value: "all" },
   ...rawCategories.map((cat) => ({
     label: cat.title,

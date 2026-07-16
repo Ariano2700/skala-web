@@ -6,11 +6,9 @@ import SiteNav from "../../components/shared/SiteNav.astro";
 import SiteFooter from "../../components/shared/SiteFooter.astro";
 import SectionLabel from "../../components/landing/SectionLabel.astro";
 import {
-  portfolioProjects,
   adaptSanityProjects,
   getPortfolioAccentStyle,
   getCoverMedia,
-  type PortfolioProjectItem,
 } from "../../data/portafolio";
 import { getAllProjects } from "../../sanity/project/api";
 import { FiArrowLeft, FiExternalLink } from "react-icons/fi";
@@ -21,7 +19,7 @@ const { slug } = Astro.params;
 const sanityProjects = await getAllProjects();
 const sanityAdapted = adaptSanityProjects(sanityProjects);
 const fromSanity = sanityAdapted.find((p) => p.id === slug);
-const project = fromSanity ?? portfolioProjects.find((p) => p.id === slug);
+const project = fromSanity
 
 if (!project) {
   return new Response("Proyecto no encontrado", {
