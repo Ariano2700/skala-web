@@ -11,7 +11,7 @@ import { getAllProjects } from "../sanity/project/api";
 // Si Sanity no responde o está vacío, conservamos los proyectos del archivo.
 const sanityProjects = await getAllProjects();
 const sourceProjects =
-  sanityProjects.length > 0 ? adaptSanityProjects(sanityProjects) : undefined;
+  sanityProjects.length > 0 ? adaptSanityProjects(sanityProjects) : [];
 
 const pageTitle =
   "Portafolio Skala - Agencia & Productora Audiovisual en Trujillo";
