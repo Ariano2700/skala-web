@@ -16,6 +16,12 @@ import netlify from "@astrojs/netlify";
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
+    ssr: {
+      // gsap ships ESM in index.js but its package.json lacks "type": "module",
+      // so Node fails to load it as externalized CJS in the SSR bundle.
+      // Bundling it via esbuild fixes the ESM/CJS interop for Netlify SSR.
+      noExternal: ["gsap", "@gsap/react"],
+    },
   },
   site: "https://skalaagencia.netlify.app",
   output: "server",
