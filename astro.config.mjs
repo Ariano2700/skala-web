@@ -18,7 +18,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   site: "https://skalaagencia.netlify.app",
-  output: "static",
+  output: "server",
   integrations: [
     react(),
     icon(),
