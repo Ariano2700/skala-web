@@ -19,6 +19,7 @@ export default defineConfig({
   },
   site: "https://skalaagencia.netlify.app",
   output: "server",
+  adapter: netlify(),
   integrations: [
     react(),
     icon(),
@@ -27,7 +28,6 @@ export default defineConfig({
       dataset: "production",
       useCdn: false,
     }),
-    netlify(),
   ],
   image: {
     domains: ["cdn.sanity.io"],
