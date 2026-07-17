@@ -202,3 +202,45 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Modal de detalle de proyecto (ModalPortfolio.tsx)
+   --------------------------------------------------------------------------- */
+[data-project-modal] .project-slide {
+  transition: opacity 0.35s var(--ease-out, ease);
+}
+
+[data-project-modal] [data-carousel] {
+  touch-action: pan-y;
+}
+
+/* El panel captura el scroll para que no se mueva el fondo (desktop) */
+.project-modal-panel {
+  overscroll-behavior: contain;
+}
+
+/* Barra de scroll personalizada del modal */
+[data-project-modal-scroll] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(92, 216, 252, 0.5) transparent;
+}
+[data-project-modal-scroll]::-webkit-scrollbar {
+  width: 8px;
+}
+[data-project-modal-scroll]::-webkit-scrollbar-track {
+  background: transparent;
+}
+[data-project-modal-scroll]::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(92, 216, 252, 0.65),
+    rgba(30, 163, 232, 0.45)
+  );
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+[data-project-modal-scroll]::-webkit-scrollbar-thumb:hover {
+  background: rgba(92, 216, 252, 0.85);
+  background-clip: padding-box;
+}

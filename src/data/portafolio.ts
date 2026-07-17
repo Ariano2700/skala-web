@@ -16,6 +16,7 @@ export interface PortfolioProject {
   id: string;
   title: string;
   client: string;
+  mainImage?: string;
   /** Categorías del proyecto (un proyecto puede tener varias). */
   categories: string[];
   /** Etiqueta de la categoría principal (para mostrar en la tarjeta/modal). */
@@ -34,6 +35,8 @@ export interface PortfolioProject {
     results: string[];
     tools: string[];
     duration: string;
+    year?: number;
+    externalUrl?: string;
   };
 }
 
@@ -222,7 +225,7 @@ export const getPortfolioAccentStyle = (
 export const getCoverMedia = (
   project: PortfolioProjectItem,
 ): PortfolioMedia => {
-  return project.media.find((m) => m.type === "image") ?? project.media[0];
+  return project.mainImage ? { type: "image", src: project.mainImage } : project.media[0];
 };
 
 /** Conteo de recursos por tipo para mostrar en el modal. */
@@ -310,6 +313,7 @@ export const adaptSanityProject = (
     id: project.slug || project.id,
     title: project.title,
     client: project.client ?? "Skala",
+    mainImage: project.mainImage?.url,
     categories,
     categoryLabel: primaryLabel,
     layout: "third",
@@ -324,6 +328,8 @@ export const adaptSanityProject = (
       results: project.results.map((r) => r.text),
       tools: project.tools,
       duration: project.duration ?? "",
+      externalUrl: project.externalUrl,
+      year: project.year,
     },
   };
 };
