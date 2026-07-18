@@ -27,12 +27,17 @@ export default function ModalPortfolio() {
     [total, pauseVideos],
   );
 
+  const getInitialIndex = useCallback((p: PortfolioProjectItem) => {
+    const firstVideoIndex = p.media.findIndex((item) => item.type === "video");
+    return firstVideoIndex >= 0 ? firstVideoIndex : 0;
+  }, []);
+
   const open = useCallback((p: PortfolioProjectItem) => {
     setProject(p);
-    setCurrent(0);
+    setCurrent(getInitialIndex(p));
     setPlaying(null);
     document.body.classList.add("overflow-hidden");
-  }, []);
+  }, [getInitialIndex]);
 
   const close = useCallback(() => {
     setProject(null);
