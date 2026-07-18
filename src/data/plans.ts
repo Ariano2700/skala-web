@@ -81,7 +81,7 @@ export const plans = [
 // Servicios especiales: precio a cotizar con el cliente en reunión.
 export const specialServices = {
   note: "Servicios especiales: cotizar precio con el cliente en una reunión.",
-  travelNote: "70 pasajes por sesión",
+  //travelNote: "70 pasajes por sesión",
   items: [
     {
       title: "Eventos Sociales",

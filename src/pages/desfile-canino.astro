@@ -20,7 +20,6 @@ import {
   FiMic,
   FiStar,
   FiActivity,
-
 } from "react-icons/fi";
 import { FaTiktok } from "react-icons/fa";
 import { TbDogBowl } from "react-icons/tb";
@@ -54,7 +53,7 @@ const actividades = [
 const paquetes = [
   {
     icon: FiImage,
-    title: "Paquete Fotos",
+    title: "Paquete Fotos desfile canino",
     accent: "from-[#5cd8fc]/15 to-transparent",
     items: [
       { qty: "3 fotos", price: "12 soles" },
@@ -64,23 +63,13 @@ const paquetes = [
   },
   {
     icon: FiVideo,
-    title: "Paquete de Video",
+    title: "Paquete de Video Para emprendedores",
     accent: "from-[#ff3b3b]/15 to-transparent",
     items: [
       {
         qty: "Vídeo recopilación de 20 segundos y 5 fotos",
         price: "60 soles",
       },
-    ],
-  },
-  {
-    icon: FiGift,
-    title: "Extra Fotos Polaroid",
-    accent: "from-amber-400/15 to-transparent",
-    items: [
-      { qty: "3 fotos", price: "20 soles" },
-      { qty: "5 fotos", price: "35 soles" },
-      { qty: "10 fotos", price: "50 soles" },
     ],
   },
 ];
@@ -278,7 +267,9 @@ const cronograma = [
           <LuDog className="h-7 w-7" aria-hidden="true" />
         </span>
 
-        <div class="relative z-10 flex flex-col items-center justify-center p-7 text-center md:p-9">
+        <div
+          class="relative z-10 flex flex-col items-center justify-center p-7 text-center md:p-9"
+        >
           <span
             class="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/90 backdrop-blur"
           >
@@ -605,13 +596,11 @@ const cronograma = [
                 <p class="font-display text-lg font-black text-white">
                   {item.title}
                 </p>
-                {
-                  item.highlight && (
-                    <p class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-[#ff8a8a]">
-                      ★ Momento cumbre
-                    </p>
-                  )
-                }
+                {item.highlight && (
+                  <p class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-[#ff8a8a]">
+                    ★ Momento cumbre
+                  </p>
+                )}
               </div>
             </li>
           ))
@@ -775,12 +764,14 @@ const cronograma = [
         </p>
       </div>
 
-      <div class="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div class="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
         {
           paquetes.map((pack) => (
-            <article class:list={[
-              "group relative flex flex-col gap-5 overflow-hidden rounded-4xl border border-white/10 bg-white/4 p-7 transition duration-300 hover:-translate-y-1 hover:border-skala-accent/40",
-            ]}>
+            <article
+              class:list={[
+                "group relative flex flex-col gap-5 overflow-hidden rounded-4xl border border-white/10 bg-white/4 p-7 transition duration-300 hover:-translate-y-1 hover:border-skala-accent/40",
+              ]}
+            >
               <div
                 class:list={[
                   "pointer-events-none absolute inset-0 bg-linear-to-br opacity-60",
@@ -797,18 +788,16 @@ const cronograma = [
               </div>
 
               <ul class="relative flex flex-col gap-3">
-                {
-                  pack.items.map((item) => (
-                    <li class="flex items-center justify-between gap-4 rounded-2xl border border-white/8 bg-black/20 px-4 py-3">
-                      <span class="text-sm font-medium text-white/85">
-                        {item.qty}
-                      </span>
-                      <span class="shrink-0 rounded-full bg-skala-accent/15 px-3 py-1 text-[0.72rem] font-black uppercase tracking-widest text-skala-accent">
-                        {item.price}
-                      </span>
-                    </li>
-                  ))
-                }
+                {pack.items.map((item) => (
+                  <li class="flex items-center justify-between gap-4 rounded-2xl border border-white/8 bg-black/20 px-4 py-3">
+                    <span class="text-sm font-medium text-white/85">
+                      {item.qty}
+                    </span>
+                    <span class="shrink-0 rounded-full bg-skala-accent/15 px-3 py-1 text-[0.72rem] font-black uppercase tracking-widest text-skala-accent">
+                      {item.price}
+                    </span>
+                  </li>
+                ))}
               </ul>
             </article>
           ))
@@ -848,7 +837,10 @@ const cronograma = [
           rel="noopener noreferrer"
           class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-skala-accent/40 hover:text-white"
         >
-          <FiInstagram className="h-4 w-4 text-skala-accent" aria-hidden="true" />
+          <FiInstagram
+            className="h-4 w-4 text-skala-accent"
+            aria-hidden="true"
+          />
           Instagram
         </a>
         <a
@@ -857,7 +849,10 @@ const cronograma = [
           rel="noopener noreferrer"
           class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-skala-accent/40 hover:text-white"
         >
-          <FiFacebook className="h-4 w-4 text-skala-accent" aria-hidden="true" />
+          <FiFacebook
+            className="h-4 w-4 text-skala-accent"
+            aria-hidden="true"
+          />
           Facebook
         </a>
         <a
@@ -941,7 +936,9 @@ const cronograma = [
 
     // Pre-registro: construye un mensaje de WhatsApp con los datos del lead.
     function initRegistroForm() {
-      const form = document.getElementById("registro-form") as HTMLFormElement | null;
+      const form = document.getElementById(
+        "registro-form",
+      ) as HTMLFormElement | null;
       if (!form) return;
       form.addEventListener("submit", (e) => {
         e.preventDefault();
