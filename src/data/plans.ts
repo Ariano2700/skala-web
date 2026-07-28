@@ -1,11 +1,11 @@
 export const plans = [
   {
     name: "Plan Base",
-    tagline: "Esencial para empezar.",
+    tagline: "Ideal para emprendedores que recién arrancan su presencia.",
     featured: false,
-    price: "S/600",
+    price: "S/ 600",
     period: "mensual",
-    colors: { bg: "#5CC6E7", text: "#141412" },
+    colors: { bg: "#03132d", text: "#5CD8FC" },
     features: [
       { label: "Guionización + grilla", included: true },
       { label: "3 Reels", included: true },
@@ -20,15 +20,15 @@ export const plans = [
       { label: "Campañas: opcional", included: true },
     ],
     cta: "Elegir Base",
-    cta_link_message: "Hola, quiero contratar el Plan Base (S/600).",
+    cta_link_message: "Hola, quiero contratar el Plan Base (S/ 600).",
   },
   {
     name: "Plan Plus",
-    tagline: "Más contenido, más presencia.",
+    tagline: "Más contenido y acompañamiento para crecer con orden.",
     featured: false,
-    price: "S/950",
+    price: "S/ 950",
     period: "mensual",
-    colors: { bg: "#F3F3F3", text: "#141412" },
+    colors: { bg: "#B7E82A", text: "#141412" },
     features: [
       { label: "Guionización + grilla", included: true },
       { label: "4 Reels", included: true },
@@ -45,16 +45,16 @@ export const plans = [
       { label: "Campañas: opcional", included: true },
     ],
     cta: "Elegir Plus",
-    cta_link_message: "Hola, quiero contratar el Plan Plus (S/950).",
+    cta_link_message: "Hola, quiero contratar el Plan Plus (S/ 950).",
   },
   {
     name: "Plan Pro",
-    tagline: "Más estrategia, más crecimiento.",
+    tagline: "Producción 4K y community management para escalar.",
     featured: true,
-    badge: "Más elegido",
-    price: "S/1350",
+    price: "S/ 1350",
     period: "mensual",
-    colors: { bg: "#5CC6E7", text: "#141412" },
+    badge: "Más elegido",
+    colors: { bg: "#141412", text: "#FEFEFE" },
     features: [
       { label: "Guionización + grilla", included: true },
       { label: "6 Reels", included: true },
@@ -72,15 +72,15 @@ export const plans = [
       { label: "Campañas: opcional", included: true },
     ],
     cta: "Elegir Pro",
-    cta_link_message: "Hola, quiero contratar el Plan Pro (S/1350).",
+    cta_link_message: "Hola, quiero contratar el Plan Pro (S/ 1350).",
   },
   {
     name: "Plan SKALA",
-    tagline: "Solución completa y escalable.",
+    tagline: "La experiencia completa en 4K con colorización pro.",
     featured: false,
-    price: "S/2000",
+    price: "S/ 2000",
     period: "mensual",
-    colors: { bg: "#F3F3F3", text: "#141412" },
+    colors: { bg: "#F4AC02", text: "#141412" },
     features: [
       { label: "Guionización + grilla", included: true },
       { label: "8 Reels", included: true },
@@ -98,33 +98,34 @@ export const plans = [
       { label: "Campañas: opcional", included: true },
     ],
     cta: "Elegir SKALA",
-    cta_link_message: "Hola, quiero contratar el Plan SKALA (S/2000).",
+    cta_link_message: "Hola, quiero contratar el Plan SKALA (S/ 2000).",
   },
 ];
 
-// Servicios especiales
+// Servicios especiales: precio a cotizar con el cliente en reunión.
 export const specialServices = {
-  note: "Servicios especiales: precio a cotizar con el cliente en una reunión.",
+  note: "Servicios especiales: cotizar precio con el cliente en una reunión.",
+  //travelNote: "70 pasajes por sesión",
   items: [
     {
-      title: "Eventos sociales",
+      title: "Eventos Sociales",
       description:
-        "Cobertura cinematográfica para matrimonios, quinceañeros y celebraciones especiales, enfocada en capturar la emoción y los momentos clave.",
+        "Cobertura cinematográfica para matrimonios y quinceañeros, enfocada en capturar la narrativa emocional y los momentos clave.",
     },
     {
-      title: "Celebraciones privadas",
+      title: "Celebraciones Privadas",
       description:
-        "Registro profesional de cumpleaños, aniversarios y fiestas con un estilo dinámico, cercano y atractivo para redes sociales.",
+        "Registro profesional de cumpleaños, aniversarios y fiestas con un estilo dinámico.",
     },
     {
-      title: "Sector corporativo",
+      title: "Sector Corporativo",
       description:
-        "Producción de videos institucionales, cobertura de conferencias, lanzamientos de marca y contenido audiovisual para empresas.",
+        "Producción de videos institucionales, grabación de conferencias, lanzamientos de marca y contenido empresarial.",
     },
     {
-      title: "Fotografía profesional",
+      title: "Fotografía Profesional",
       description:
-        "Sesiones de retrato corporativo, marca personal, fotografía de producto y cobertura fotográfica de eventos.",
+        "Cobertura de eventos, sesiones de retrato corporativo, marca personal y fotografía de producto.",
     },
   ],
 };
