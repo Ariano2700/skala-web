@@ -1,0 +1,43 @@
+---
+import type { EventClientRef } from "../../sanity/event/event-mapper";
+
+interface Props {
+  clients: EventClientRef[];
+}
+
+const { clients } = Astro.props;
+---
+
+<section
+  class="relative z-10 mx-auto max-w-360 px-5 pb-4 md:px-12"
+  aria-label="Marcas participantes"
+>
+  <p
+    class="m-0 text-[0.68rem] font-black uppercase tracking-[0.2em] text-skala-muted"
+  >
+    Marcas en este evento
+  </p>
+  <div class="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4">
+    {
+      clients.map((client) => (
+        <div
+          class="flex items-center gap-2.5 opacity-80 transition hover:opacity-100"
+          title={client.name}
+        >
+          {client.logoUrl ? (
+            <img
+              src={client.logoUrl}
+              alt={client.name}
+              class="h-20 w-auto object-contain rounded-lg"
+              loading="lazy"
+            />
+          ) : (
+            <span class="font-display text-sm font-black uppercase tracking-[0.08em] text-skala-text">
+              {client.name}
+            </span>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</section>

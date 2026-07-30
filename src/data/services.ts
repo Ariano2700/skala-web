@@ -11,7 +11,6 @@ import {
   FiShare2,
   FiStar,
   FiTarget,
-  FiTrendingUp,
   FiVideo,
   FiHeart,
   FiBriefcase,

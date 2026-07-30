@@ -1,14 +1,18 @@
 ---
-import { FiArrowUpRight, FiMenu, FiX } from "react-icons/fi";
+import { FiArrowUpRight, FiMenu, FiX, FiChevronDown } from "react-icons/fi";
 import Logotype from "../../icons/Logotype.astro";
 import { CONTACT_DATA } from "../../data/contact_data";
-import { navLinks } from "../../data/navigation";
+import { buildDynamicNavLinks, getStaticNavLinks } from "../../data/navigation-dynamic";
+import RenderSubLinks from "./RenderSubLinks.astro";
 
 // En la home las anclas funcionan directo (#servicios). En otras páginas
 // hay que volver a la home y luego hacer scroll a la sección (/#servicios).
 const isHome = Astro.url.pathname === "/";
 const resolveHref = (href: string) =>
   href.startsWith("#") && !isHome ? `/${href}` : href;
+
+// Use dynamic nav links for SSR, static for SSG fallback
+const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamicNavLinks();
 ---
 
 <header
@@ -41,19 +45,50 @@ const resolveHref = (href: string) =>
       class="hidden items-center gap-1 rounded-full border border-white/8 bg-[rgba(4,20,46,0.72)] p-1 xl:inline-flex"
       aria-label="Secciones principales"
     >
-      {
-        navLinks.map((item) => (
-          <a
-            href={resolveHref(item.href)}
-            title={item.label}
-            aria-label={item.label}
-            class="group relative rounded-full px-4 py-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-skala-muted transition duration-200 hover:bg-white/06 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
-          >
-            {item.label}
-            <span class="absolute inset-x-4 bottom-1.5 h-px scale-x-0 bg-skala-accent transition-transform duration-300 group-hover:scale-x-100" />
-          </a>
-        ))
-      }
+      <div class="relative flex items-center gap-1" data-desktop-nav>
+        {
+          navLinks.map((item) => (
+            <div class="relative" data-nav-item>
+              {item.subLinks && item.subLinks.length > 0 ? (
+                <>
+                  <a
+                    href={resolveHref(item.href)}
+                    title={item.label}
+                    aria-label={item.label}
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    class="group/link desktop-submenu-trigger relative flex w-full items-center justify-between gap-1 whitespace-nowrap overflow-hidden rounded-2xl px-4 py-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-skala-muted transition duration-200 hover:bg-white/06 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+                  >
+                    <span>{item.label}</span>
+                    <FiChevronDown
+                      className="shrink-0 ml-1 h-3 w-3 opacity-50 transition-transform duration-200 group-hover/link:opacity-100 group-hover/link:rotate-180"
+                      aria-hidden="true"
+                    />
+                    <span class="absolute inset-x-4 bottom-1.5 h-px scale-x-0 bg-skala-accent transition-transform duration-300 group-hover/link:scale-x-100" />
+                  </a>
+                  <div
+                    class="desktop-submenu-content absolute left-0 top-full z-50 mt-2 hidden min-w-50 rounded-2xl border border-white/12 bg-[#04142e]/96 py-2 shadow-[0_28px_80px_rgba(0,0,0,0.38)] backdrop-blur-xl"
+                    role="menu"
+                    aria-label={item.label}
+                  >
+                    <RenderSubLinks links={item.subLinks} isMobile={false} />
+                  </div>
+                </>
+              ) : (
+                <a
+                  href={resolveHref(item.href)}
+                  title={item.label}
+                  aria-label={item.label}
+                  class="group/link relative flex w-full items-center justify-between gap-1 whitespace-nowrap overflow-hidden rounded-2xl px-4 py-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-skala-muted transition duration-200 hover:bg-white/06 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+                >
+                  <span>{item.label}</span>
+                  <span class="absolute inset-x-4 bottom-1.5 h-px scale-x-0 bg-skala-accent transition-transform duration-300 group-hover/link:scale-x-100" />
+                </a>
+              )}
+            </div>
+          ))
+        }
+      </div>
     </nav>
 
     <a
@@ -115,24 +150,7 @@ const resolveHref = (href: string) =>
         class="mobile-nav-links grid gap-2 p-3"
         aria-label="Secciones principales en móvil"
       >
-        {
-          navLinks.map((item) => (
-            <a
-              href={resolveHref(item.href)}
-              title={item.label}
-              aria-label={item.label}
-              class="group flex items-center justify-between rounded-2xl border border-transparent bg-white/3 px-4 py-4 text-skala-muted transition duration-200 hover:-translate-x-0.5 hover:border-skala-accent/24 hover:bg-skala-accent/6 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-x-0"
-            >
-              <span class="text-sm font-bold tracking-[0.08em]">
-                {item.label}
-              </span>
-              <FiArrowUpRight
-                className="h-4 w-4 opacity-0 transition duration-200 group-hover:translate-x-0.5 group-hover:translate-y-[-0.5px] group-hover:opacity-100"
-                aria-hidden="true"
-              />
-            </a>
-          ))
-        }
+        <RenderSubLinks links={navLinks} isMobile={true} />
       </nav>
 
       <a
@@ -170,18 +188,16 @@ const resolveHref = (href: string) =>
     const closeButton = document.querySelector("[data-nav-close]");
     const mobileNav = document.querySelector("[data-mobile-nav]");
     const mobileLinks = mobileNav?.querySelectorAll<HTMLElement>(
-      ".mobile-nav-links > a",
+      ".mobile-nav-links a, .mobile-submenu-content a",
     );
     const mobileCta = mobileNav?.querySelector<HTMLElement>(".mobile-nav-cta");
-
+    let closeTimeout: ReturnType<typeof setTimeout>;
     if (!toggleButton || !mobileNav) {
       return;
     }
 
-    let closeTimeout = 0;
-
     const setMenuState = (open: boolean) => {
-      window.clearTimeout(closeTimeout);
+      clearTimeout(closeTimeout);
       mobileNav.classList.toggle("hidden", false);
 
       if (open) {
@@ -241,7 +257,7 @@ const resolveHref = (href: string) =>
           },
         );
 
-        closeTimeout = window.setTimeout(() => {
+        closeTimeout = setTimeout(() => {
           mobileNav.classList.add("hidden");
         }, 190);
       }
@@ -269,8 +285,96 @@ const resolveHref = (href: string) =>
 
     closeButton?.addEventListener("click", () => setMenuState(false));
 
+    // Close mobile menu when clicking any link (including submenu links)
     mobileNav.querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", () => setMenuState(false));
+    });
+
+    // Mobile submenu toggle handling
+    const mobileSubmenuToggles = mobileNav.querySelectorAll(
+      "[data-submenu-toggle]",
+    );
+    mobileSubmenuToggles.forEach((toggle) => {
+      toggle.addEventListener("click", () => {
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        // Find the submenu content - try by ID first, then by DOM structure
+        const contentId = toggle.getAttribute("aria-controls");
+        let content = contentId ? document.getElementById(contentId) : null;
+        // Fallback: content is next sibling of the wrapper (parent of button)
+        if (!content) {
+          const wrapper = toggle.closest(".mobile-submenu-wrapper");
+          content = wrapper?.nextElementSibling as HTMLElement | null;
+        }
+        if (!content) return;
+        
+        if (!isOpen) {
+          content.classList.remove("hidden");
+          // Force reflow for animation
+          content.offsetHeight;
+          content.classList.add("open");
+        } else {
+          content.classList.remove("open");
+          content.addEventListener(
+            "transitionend",
+            () => {
+              if (!content.classList.contains("open")) {
+                content.classList.add("hidden");
+              }
+            },
+            { once: true },
+          );
+        }
+        toggle.setAttribute("aria-expanded", String(!isOpen));
+        toggle.toggleAttribute("data-open", !isOpen);
+      });
+    });
+
+    // Desktop submenu hover handling
+    const desktopNavItems = document.querySelectorAll("[data-nav-item]");
+    desktopNavItems.forEach((item) => {
+      const trigger = item.querySelector<HTMLAnchorElement>(
+        ".desktop-submenu-trigger",
+      );
+      const content = item.querySelector<HTMLElement>(
+        ".desktop-submenu-content",
+      );
+
+      if (trigger && content) {
+        let hideTimeout: ReturnType<typeof setTimeout>;
+
+        const showSubmenu = () => {
+          clearTimeout(hideTimeout);
+          content.classList.remove("hidden");
+        };
+
+        const hideSubmenu = () => {
+          hideTimeout = setTimeout(() => {
+            content.classList.add("hidden");
+          }, 150);
+        };
+
+        item.addEventListener("mouseenter", showSubmenu);
+        item.addEventListener("mouseleave", hideSubmenu);
+
+        // Keyboard support
+        trigger.addEventListener("keydown", (e: KeyboardEvent) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            showSubmenu();
+            content.querySelector<HTMLAnchorElement>("a, button")?.focus();
+          } else if (e.key === "Escape") {
+            hideSubmenu();
+            trigger.focus();
+          }
+        });
+
+        content.addEventListener("keydown", (e: KeyboardEvent) => {
+          if (e.key === "Escape") {
+            hideSubmenu();
+            trigger.focus();
+          }
+        });
+      }
     });
 
     document.addEventListener("keydown", (event) => {

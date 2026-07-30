@@ -1,0 +1,79 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getAllEvents } from "../../sanity/event/api";
+import { formatEventDate } from "../../data/event";
+import EventHero from "../../components/event/EventHero.astro";
+import EventFilters from "../../components/event/EventFilters.astro";
+import EventGrid from "../../components/event/EventGrid.astro";
+import EventCta from "../../components/event/EventCta.astro";
+
+// Fuente de datos: Sanity (CMS). El mapper (event-mapper.ts) ya deja los
+// eventos listos para consumir (equivalente a adaptSanityProjects).
+const events = await getAllEvents();
+
+const pageTitle = "Eventos - Cobertura en vivo | Skala Agencia en Trujillo";
+const pageDescription =
+  "Revisa la cobertura de eventos de Skala en Trujillo: fotografía, video y contenido en vivo para lanzamientos, activaciones y experiencias de marca.";
+const canonicalUrl = new URL(
+  "/eventos/",
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+const eventKeywords =
+  "cobertura de eventos trujillo, fotografia de eventos, produccion audiovisual eventos, cobertura en vivo redes sociales, activaciones de marca trujillo, skala eventos";
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "Skala",
+    url: canonicalUrl,
+    image: new URL(
+      "/logotype.jpg",
+      Astro.site ?? "https://skalaagencia.netlify.app",
+    ).href,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Trujillo",
+      addressRegion: "La Libertad",
+      addressCountry: "PE",
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${canonicalUrl}#event-list`,
+    name: "Eventos cubiertos por Skala",
+    description:
+      "Lista de eventos con cobertura fotográfica y audiovisual de Skala",
+    numberOfItems: events.length,
+    itemListElement: events.map((event, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: new URL(
+        `/eventos/${event.slug}/`,
+        Astro.site ?? "https://skalaagencia.netlify.app",
+      ).href,
+      name: event.title,
+      description: `${event.title} - ${formatEventDate(event)}${
+        event.location?.venue ? ` en ${event.location.venue}` : ""
+      }.`,
+    })),
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  structuredData={structuredData}
+  keywords={eventKeywords}
+  robots="index, follow"
+>
+  <main id="top" class="relative z-10">
+    <EventHero events={events} />
+    <EventFilters events={events} />
+    <EventGrid events={events} />
+    <EventCta />
+  </main>
+</Layout>

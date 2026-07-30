@@ -1,0 +1,128 @@
+---
+import { IoMdClose } from 'react-icons/io';
+import type { EventMediaItem } from '../../sanity/event/event-mapper';
+
+interface Props {
+  gallery: EventMediaItem[];
+  title: string;
+}
+ 
+const { gallery, title } = Astro.props;
+---
+<section
+  id="galeria"
+  class="relative z-10 mx-auto max-w-360 px-5 py-16 md:px-12"
+  aria-labelledby="event-gallery-title"
+>
+  <h2
+    id="event-gallery-title"
+    class="mb-8 font-display text-3xl font-black tracking-[-0.04em] text-skala-text md:text-4xl"
+  >
+    Galería
+  </h2>
+ 
+  <div class="grid grid-cols-2 gap-3 md:grid-cols-4" data-gallery>
+    {
+      gallery.map((item, index) => (
+        <button
+          type="button"
+          class="cursor-pointer group relative aspect-square overflow-hidden rounded-2xl border border-skala-border bg-white/3"
+          data-gallery-trigger
+          data-index={index}
+          aria-label={`Ver ${item.kind === "video" ? "video" : "imagen"} ${index + 1} de ${title}`}
+        >
+          <img
+            src={item.kind === "video" ? item.posterUrl || item.url : item.url}
+            alt={item.alt || title}
+            loading="lazy"
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+          {item.kind === "video" && (
+            <span class="absolute inset-0 flex items-center justify-center bg-[#04142e]/30">
+              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-lg text-[#04142e]">
+                ▶
+              </span>
+            </span>
+          )}
+        </button>
+      ))
+    }
+  </div>
+ 
+  <dialog
+    id="event-lightbox"
+    class="m-auto max-h-[90vh] max-w-[92vw] rounded-2xl border border-skala-border bg-[#04142e] p-0 backdrop:bg-[#04142e]/90"
+  >
+    <div class="relative">
+      <button
+        type="button"
+        data-gallery-close
+        class="cursor-pointer absolute right-3 top-5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#04142e] hover:bg-white focus:outline-none focus:ring-2 focus:ring-skala-accent/60 transition-colors"
+        aria-label="Cerrar galería"
+      >
+        <IoMdClose />
+      </button>
+      <button
+        type="button"
+        data-gallery-download
+        class="cursor-pointer absolute left-3 top-5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#04142e] hover:bg-white focus:outline-none focus:ring-2 focus:ring-skala-accent/60 transition-colors"
+        aria-label="Descargar imagen"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+      <div
+        data-gallery-content
+        class="max-h-[90vh] max-w-[92vw]"
+      />
+    </div>
+  </dialog>
+</section>
+ 
+<script define:vars={{ gallery }}>
+  const dialog = document.getElementById("event-lightbox");
+  const content = dialog?.querySelector("[data-gallery-content]");
+  const triggers = document.querySelectorAll("[data-gallery-trigger]");
+  const closeBtn = dialog?.querySelector("[data-gallery-close]");
+  const downloadBtn = dialog?.querySelector("[data-gallery-download]");
+
+  const render = (index) => {
+    const item = gallery[index];
+    if (!content || !item) return;
+    content.innerHTML =
+      item.kind === "video"
+        ? `<video src="${item.url}" controls autoplay class="max-h-[90vh] max-w-[92vw] rounded-2xl"></video>`
+        : `<img src="${item.url}" alt="${item.alt || ""}" class="max-h-[90vh] max-w-[92vw] rounded-2xl object-contain" />`;
+    
+    // Update download button
+    if (downloadBtn && item.kind === "image") {
+      downloadBtn.style.display = "flex";
+      downloadBtn.onclick = () => {
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.download = item.alt || `imagen-${index + 1}`;
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+    } else if (downloadBtn) {
+      downloadBtn.style.display = "none";
+    }
+  };
+
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      const index = Number(trigger.getAttribute("data-index"));
+      render(index);
+      dialog?.showModal();
+    });
+  });
+
+  closeBtn?.addEventListener("click", () => dialog?.close());
+  dialog?.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  dialog?.addEventListener("close", () => {
+    if (content) content.innerHTML = "";
+  });
+</script>

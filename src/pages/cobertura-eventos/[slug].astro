@@ -1,0 +1,92 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import EventCta from "../../components/event/EventCta.astro";
+import EventDetailHero from "../../components/event/EventDetailHero.astro";
+import EventGallery from "../../components/event/EventGallery.astro";
+import EventClient from "../../components/event/EventClient.astro";
+import { formatEventDate } from "../../data/event";
+import { getAllEventSlugs, getEventBySlug } from "../../sanity/event/api";
+
+// Genera una página estática por cada evento publicado en Sanity.
+export async function getStaticPaths() {
+  const slugs = await getAllEventSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const event = await getEventBySlug(slug as string);
+
+if (!event) {
+  return Astro.redirect("/eventos/", 302);
+}
+
+const pageTitle = event.seo?.metaTitle || `${event.title} | Eventos Skala`;
+const pageDescription =
+  event.seo?.metaDescription ||
+  event.hero.description ||
+  `Cobertura fotográfica y audiovisual del evento ${event.title}, realizado ${formatEventDate(
+    event,
+  )}${event.location?.venue ? ` en ${event.location.venue}` : ""}.`;
+const canonicalUrl = new URL(
+  `/eventos/${event.slug}/`,
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+const ogImage =
+  event.seo?.ogImageUrl ||
+  event.hero.imageUrl ||
+  new URL("/logotype.jpg", Astro.site ?? "https://skalaagencia.netlify.app")
+    .href;
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    startDate: event.date,
+    ...(event.endDate ? { endDate: event.endDate } : {}),
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    description: pageDescription,
+    image: [ogImage],
+    url: canonicalUrl,
+    ...(event.location?.venue
+      ? {
+          location: {
+            "@type": "Place",
+            name: event.location.venue,
+            address: event.location.address || undefined,
+            ...(event.location.geo
+              ? {
+                  geo: {
+                    "@type": "GeoCoordinates",
+                    latitude: event.location.geo.lat,
+                    longitude: event.location.geo.lng,
+                  },
+                }
+              : {}),
+          },
+        }
+      : {}),
+    organizer: {
+      "@type": "Organization",
+      name: "Skala",
+      url: "https://skalaagencia.netlify.app",
+    },
+  },
+];
+---
+
+<Layout
+  title={pageTitle + " | Skala"}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  structuredData={structuredData}
+  robots="index, follow"
+>
+  <main id="top" class="relative z-10">
+    <EventDetailHero event={event} />
+    {event.clients.length > 0 && <EventClient clients={event.clients} />}
+    <EventGallery gallery={event.gallery} title={event.title} />
+    <EventCta />
+  </main>
+</Layout>

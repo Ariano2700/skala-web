@@ -1,0 +1,91 @@
+---
+import { FiCalendar, FiMapPin } from "react-icons/fi";
+import type { Event } from "../../sanity/event/event-mapper";
+import {
+  formatEventDate,
+  getEventStatusLabel,
+} from "../../data/event";
+
+interface Props {
+  event: Event;
+  index?: number;
+}
+
+const { event, index = 0 } = Astro.props;
+
+const status = getEventStatusLabel(event);
+const isFeatured = event.featured;
+---
+ 
+<article
+  class={`event-card group relative col-span-12 overflow-hidden rounded-3xl border border-skala-border bg-white/30 transition duration-300 hover:-translate-y-1 hover:border-skala-accent/40 ${
+    isFeatured ? "md:col-span-8" : "md:col-span-4"
+  }`}
+  data-event-card
+  data-category={event.categories.map((cat) => cat.slug).join(" ")}
+  style={`animation-delay: ${index * 0.04}s`}
+>
+  <a
+    href={`/cobertura-eventos/${event.slug}/`}
+    title={event.title}
+    aria-label={`Ver cobertura de ${event.title}`}
+    class="block"
+  >
+    <div class="relative aspect-4/5 overflow-hidden">
+      {
+        event.hero.imageUrl && (
+          <img
+            src={event.hero.imageUrl}
+            alt={event.hero.imageAlt || event.title}
+            loading="lazy"
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+        )
+      }
+      <div
+        class="absolute inset-0 bg-linear-to-t from-[#04142e]/95 via-[#04142e]/10 to-transparent"
+      >
+      </div>
+ 
+      <span
+        class="absolute left-4 top-4 inline-flex items-center rounded-full border border-white/20 bg-[#04142e]/70 px-3 py-1.5 text-[0.62rem] font-black uppercase tracking-[0.14em] text-skala-text backdrop-blur"
+      >
+        {status}
+      </span>
+ 
+      <div class="absolute inset-x-0 bottom-0 p-5">
+        <p
+          class="m-0 flex items-center gap-1.5 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-skala-accent"
+        >
+          <FiCalendar className="h-3.5 w-3.5" aria-hidden="true" />
+          {formatEventDate(event)}
+        </p>
+        <h3
+          class="mt-2 font-display text-2xl font-black leading-[1.02] tracking-[-0.03em] text-skala-text"
+        >
+          {event.title}
+        </h3>
+        {
+          event.location?.venue && (
+            <p class="mt-2 flex items-center gap-1.5 text-xs text-skala-muted">
+              <FiMapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              {event.location.venue}
+            </p>
+          )
+        }
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          {
+            event.categories.slice(0, 3).map((cat) => (
+              <span
+                class="rounded-full border border-skala-border px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-[0.12em] text-skala-muted"
+                style={cat.accent ? `border-color: ${cat.accent}55;` : undefined}
+              >
+                {cat.title}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </a>
+</article>

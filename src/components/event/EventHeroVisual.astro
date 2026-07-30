@@ -1,0 +1,42 @@
+---
+import type { Event } from "../../sanity/event/event-mapper";
+
+interface Props {
+  events?: Event[];
+}
+
+const { events = [] } = Astro.props;
+
+const featured = events
+  .filter((e) => e.featured && e.hero.imageUrl)
+  .slice(0, 3);
+const fallback = events.filter((e) => e.hero.imageUrl).slice(0, 3);
+const visual = featured.length > 0 ? featured : fallback;
+---
+
+{
+  visual.length > 0 && (
+    <div class="relative isolate grid grid-cols-3 gap-3 overflow-hidden rounded-4xl border border-skala-border bg-white/2 p-3">
+      {visual.map((event, i) => (
+        <a
+          href={`/eventos/${event.slug}/`}
+          title={event.title}
+          aria-label={event.title}
+          class={`group relative block overflow-hidden rounded-3xl ${
+            i === 0 ? "row-span-2 aspect-3/4" : "aspect-square"
+          }`}
+        >
+          <img
+            src={event.hero.imageUrl}
+            alt={event.hero.imageAlt || event.title}
+            loading={i === 0 ? "eager" : "lazy"}
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+          <span class="absolute inset-x-0 bottom-0 bg-linear-to-t from-[#04142e]/90 to-transparent p-3 text-[0.65rem] font-black uppercase tracking-[0.14em] text-skala-text">
+            {event.title}
+          </span>
+        </a>
+      ))}
+    </div>
+  )
+}

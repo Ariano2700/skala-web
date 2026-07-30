@@ -1,0 +1,88 @@
+---
+import { FiCalendar, FiMapPin } from "react-icons/fi";
+import type { Event } from "../../sanity/event/event-mapper";
+import { formatEventDate, getEventStatusLabel } from "../../data/event";
+
+interface Props {
+  event: Event;
+}
+
+const { event } = Astro.props;
+const status = getEventStatusLabel(event);
+---
+
+<section class="relative z-10 overflow-hidden pb-16 pt-28 md:pt-36">
+  {
+    event.hero.imageUrl && (
+      <div class="absolute inset-0 -z-10">
+        <img
+          src={event.hero.imageUrl}
+          alt={event.hero.imageAlt || event.title}
+          class="h-full w-full object-cover opacity-40"
+        />
+        <div class="absolute inset-0 bg-linear-to-t from-[#04142e] via-[#04142e]/85 to-[#04142e]/50" />
+      </div>
+    )
+  }
+
+  <div class="mx-auto max-w-360 px-5 md:px-12">
+    <div class="max-w-[70ch]" data-reveal>
+      <div class="flex flex-wrap items-center gap-3">
+        <span
+          class="inline-flex items-center rounded-full border border-skala-accent/35 bg-skala-accent/10 px-4 py-2 text-[0.68rem] font-black uppercase tracking-[0.16em] text-skala-accent"
+        >
+          {status}
+        </span>
+        {
+          event.categories.map((cat) => (
+            <span
+              class="inline-flex items-center rounded-full border border-skala-border px-3 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-skala-muted"
+              style={cat.accent ? `border-color: ${cat.accent}55;` : undefined}
+            >
+              {cat.title}
+            </span>
+          ))
+        }
+      </div>
+
+      <h1
+        class="mt-6 font-display text-[clamp(2.6rem,6vw,5.6rem)] font-black leading-[0.94] tracking-[-0.055em] text-skala-text text-wrap:balance"
+      >
+        {event.title}
+      </h1>
+
+      {
+        event.hero.tagline && (
+          <p class="mt-4 text-lg font-medium text-skala-accent md:text-xl">
+            {event.hero.tagline}
+          </p>
+        )
+      }
+
+      <div
+        class="mt-6 flex flex-wrap items-center gap-5 text-sm text-skala-muted"
+      >
+        <span class="flex items-center gap-2">
+          <FiCalendar className="h-4 w-4" aria-hidden="true" />
+          {formatEventDate(event)}
+        </span>
+        {
+          event.location?.venue && (
+            <span class="flex items-center gap-2">
+              <FiMapPin className="h-4 w-4" aria-hidden="true" />
+              {event.location.venue}
+            </span>
+          )
+        }
+      </div>
+
+      {
+        event.hero.description && (
+          <p class="mt-6 max-w-[62ch] text-base leading-8 text-skala-muted md:text-lg">
+            {event.hero.description}
+          </p>
+        )
+      }
+    </div>
+  </div>
+</section>

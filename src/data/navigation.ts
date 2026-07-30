@@ -1,4 +1,4 @@
-interface NavLink {
+export interface NavLink {
   label: string;
   href: string;
   subLinks?: NavLink[];
@@ -11,7 +11,12 @@ export const navLinks: NavLink[] = [
   { label: "Equipo", href: "#equipo" },
   { label: "Contacto", href: "#contacto" },
   { label: "Portafolio", href: "/portafolio" },
-  //TEMPORAL
-  { label: "Desfile Canino", href: "/desfile-canino" },
-  { label: "Galería Desfile Canino", href: "/galeria-desfile-canino" },
+  {
+    label: "Cobertura Eventos",
+    href: "/cobertura-eventos",
+    subLinks: [
+      { label: "Galería Desfile Canino", href: "/cobertura-eventos/galeria-desfile-canino" },
+      { label: "Galería Emprendimientos", href: "/cobertura-eventos/galeria-emprededores" },
+    ],
+  },
 ];

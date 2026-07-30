@@ -101,10 +101,10 @@ const absoluteOgImage = new URL(ogImage, siteUrl).href;
     class="min-h-screen bg-[#04142e] text-[#f4f8ff] scroll-smooth antialiased"
   >
     <AmbientBackdrop />
-    <SiteNav />
+    <SiteNav isStatic={false} />
     <LenisScroll client:load />
     <slot />
-    <SiteFooter />
+    <SiteFooter isStatic={false} />
     <RevealScript />
   </body>
 </html>

@@ -1,0 +1,86 @@
+---
+import { getAllCategoriesByOrder } from "../../sanity/category/api";
+import { type EventCategoryValue, getUsedCategories } from "../../data/event";
+import type { Event } from "../../sanity/event/event-mapper";
+
+interface Props {
+  events?: Event[];
+}
+
+const { events = [] } = Astro.props;
+
+// Categorías 100% dinámicas desde Sanity (mismo patrón que en portafolio).
+// El filtro usa el slug real de cada categoría. Si el CMS no responde o
+// aún no tiene categorías cargadas, se cae a las que ya están en uso
+// dentro de los eventos recibidos (data/eventos.ts -> EVENT_CATEGORY_CONFIG).
+const sanityCategories = await getAllCategoriesByOrder();
+
+const usedCategories =
+  sanityCategories.length > 0
+    ? sanityCategories.map((cat) => ({
+        label: cat.title,
+        value: cat.slug,
+        accent: cat.accent,
+      }))
+    : getUsedCategories(events);
+
+// Filtro activo leído desde el query param ?categoria= (default "all").
+const activeParam = Astro.url.searchParams.get("categoria") ?? "all";
+const activeFilter: EventCategoryValue =
+  activeParam === "all" || usedCategories.some((c) => c.value === activeParam)
+    ? (activeParam as EventCategoryValue)
+    : "all";
+
+const filters: { label: string; value: string; accent?: string }[] = [
+  { label: "Todos", value: "all" },
+  ...usedCategories,
+];
+---
+
+<div
+  class="event-filters sticky top-18 z-40 border-y border-skala-border bg-[#04142e]/94 py-4 backdrop-blur-xl"
+  aria-label="Filtros de eventos"
+>
+  <div
+    class="mx-auto flex max-w-360 flex-wrap items-center gap-3 px-5 md:px-12"
+  >
+    {
+      filters.map((filter) => {
+        const isActive = filter.value === activeFilter;
+        const accentVar = filter.accent
+          ? `--filter-accent: ${filter.accent};`
+          : "";
+        return (
+          <a
+            href={`?categoria=${filter.value}`}
+            title={`Filtrar por ${filter.label}`}
+            aria-label={`Filtrar por ${filter.label}`}
+            class={`cursor-pointer portfolio-filter group rounded-full border px-4 py-2.5 text-[0.7rem] font-black uppercase tracking-[0.14em] transition duration-200 focus-visible:ring-2 focus-visible:ring-skala-accent/60 ${
+              isActive ? "is-active" : ""
+            }`}
+            style={accentVar}
+            data-filter={filter.value}
+            aria-pressed={isActive ? "true" : "false"}
+          >
+            {filter.label}
+          </a>
+        );
+      })
+    }
+
+    <span
+      class="ml-auto text-xs font-medium uppercase tracking-[0.16em] text-skala-muted"
+      data-filter-count
+    >
+      {`${events.length} eventos`}
+    </span>
+  </div>
+</div>
+
+<style>
+  .event-filter.is-active {
+    border-color: rgba(92, 216, 252, 1);
+    background: rgba(92, 216, 252, 1);
+    color: #04142e;
+  }
+</style>
