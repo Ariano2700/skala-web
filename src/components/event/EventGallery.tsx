@@ -148,9 +148,12 @@ export default function EventGallery({
               />
             ) : (
               <img
-                src={sanityImageUrl(activeItem.url, { width: 800 })}
-                srcSet={sanitySrcSet(activeItem.url, [300, 500, 800])}
-                sizes="(max-width: 768px) 50vw, 25vw"
+                src={sanityImageUrl(activeItem.url, {
+                  width: 1400,
+                  quality: 70,
+                })}
+                srcSet={sanitySrcSet(activeItem.url, [800, 1200, 1600], 70)}
+                sizes="92vw"
                 alt={activeItem.alt || ""}
                 className="max-h-[90vh] max-w-[92vw] rounded-2xl object-contain"
               />
