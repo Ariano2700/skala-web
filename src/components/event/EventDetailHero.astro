@@ -20,7 +20,8 @@ const status = getEventStatusLabel(event);
           alt={event.hero.imageAlt || event.title}
           class="h-full w-full object-cover opacity-40"
         />
-        <div class="absolute inset-0 bg-linear-to-t from-[#04142e] via-[#04142e]/85 to-[#04142e]/50" />
+        <div class="absolute inset-0 bg-linear-to-t from-[#04142e] via-[#04142e]/60 to-transparent" />
+        <div class="absolute bottom-0 left-0 right-0 h-48 bg-linear-to-t from-[#04142e] to-transparent" />
       </div>
     )
   }

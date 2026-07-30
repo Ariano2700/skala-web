@@ -2,10 +2,10 @@
 import Layout from "../../layouts/Layout.astro";
 import EventCta from "../../components/event/EventCta.astro";
 import EventDetailHero from "../../components/event/EventDetailHero.astro";
-import EventGallery from "../../components/event/EventGallery.astro";
 import EventClient from "../../components/event/EventClient.astro";
 import { formatEventDate } from "../../data/event";
 import { getAllEventSlugs, getEventBySlug } from "../../sanity/event/api";
+import EventGallery from "../../components/event/EventGallery";
 
 // Genera una página estática por cada evento publicado en Sanity.
 export async function getStaticPaths() {
@@ -74,6 +74,8 @@ const structuredData = [
     },
   },
 ];
+const GALLERY_PAGE_SIZE = 8;
+const galleryFirstPage = event.gallery.slice(0, GALLERY_PAGE_SIZE);
 ---
 
 <Layout
@@ -86,7 +88,13 @@ const structuredData = [
   <main id="top" class="relative z-10">
     <EventDetailHero event={event} />
     {event.clients.length > 0 && <EventClient clients={event.clients} />}
-    <EventGallery gallery={event.gallery} title={event.title} />
+    <EventGallery
+      client:load
+      gallery={galleryFirstPage}
+      total={event.gallery.length}
+      eventSlug={event.slug}
+      title={event.title}
+    />
     <EventCta />
   </main>
 </Layout>

@@ -1,8 +1,11 @@
 import { sanityClient } from "sanity:client";
 import {
+  mapGalleryItem,
   mapToEvent,
   mapToEventList,
+  type EventMediaItem,
   type EventSanitySchema,
+  type RawGalleryItem,
 } from "./event-mapper";
 
 const event_BASE_QUERY = `{
@@ -196,5 +199,131 @@ export async function searchEvents(
   } catch (error) {
     console.error("Error searching events:", error);
     return { data: [], total: 0, page, pageSize, totalPages: 0 };
+  }
+}
+
+export async function getEventsInfiniteScroll({
+  lastId,
+  pageSize = 10,
+  query,
+  categorySlug,
+  timeframe,
+  featured,
+}: {
+  lastId?: string;
+  pageSize?: number;
+  query?: string;
+  categorySlug?: string;
+  /** "upcoming" = eventos que aún no terminan, "past" = ya realizados. */
+  timeframe?: "upcoming" | "past";
+  featured?: boolean;
+}) {
+  try {
+    const filters: string[] = [BASE_event_FILTER, `published == true`];
+    const params: Record<string, string | number | boolean> = { pageSize };
+
+    if (query?.trim()) {
+      filters.push(
+        `(title match $search || location.venue match $search || categories[]->title match $search)`,
+      );
+      params.search = `*${query.trim()}*`;
+    }
+
+    if (categorySlug?.trim()) {
+      filters.push(`$categorySlug in categories[]->slug.current`);
+      params.categorySlug = categorySlug.trim();
+    }
+
+    if (featured !== undefined) {
+      filters.push(`featured == $featured`);
+      params.featured = featured;
+    }
+
+    if (timeframe === "upcoming") {
+      filters.push(`coalesce(endDate, date) >= $now`);
+      params.now = new Date().toISOString();
+    } else if (timeframe === "past") {
+      filters.push(`coalesce(endDate, date) < $now`);
+      params.now = new Date().toISOString();
+    }
+
+    const filtersQuery = filters.join(" && ");
+    let sanityQuery = `*[${filtersQuery}] | order(date desc, _id desc) [0...$pageSize] ${event_BASE_QUERY}`;
+
+    if (lastId) {
+      const lastEvent = await sanityClient.fetch<{ date: string } | null>(
+        `*[${BASE_event_FILTER} && _id == $lastId][0]{ date }`,
+        { lastId },
+      );
+      if (!lastEvent?.date) {
+        return { data: [], lastId: null };
+      }
+      sanityQuery = `*[${filtersQuery} && (date < $lastDate || (date == $lastDate && _id < $lastId))] | order(date desc, _id desc) [0...$pageSize] ${event_BASE_QUERY}`;
+      params.lastDate = lastEvent.date;
+      params.lastId = lastId;
+    }
+
+    const result = await sanityClient.fetch<EventSanitySchema[]>(
+      sanityQuery,
+      params,
+    );
+    return {
+      data: mapToEventList(result),
+      lastId: result.length > 0 ? result[result.length - 1]._id : null,
+    };
+  } catch (error) {
+    console.error("Error fetching events for infinite scroll:", error);
+    return { data: [], lastId: null };
+  }
+}
+
+export async function getEventGalleryPage({
+  slug,
+  offset = 0,
+  limit = 12,
+}: {
+  slug: string;
+  offset?: number;
+  limit?: number;
+}): Promise<{ items: EventMediaItem[]; total: number; hasMore: boolean }> {
+  const query = `*[${BASE_event_FILTER} && slug.current == $slug][0]{
+    "total": count(gallery),
+    "items": gallery[$offset...$end]{
+      _key,
+      _type,
+      "assetId": asset->_id,
+      "url": asset->url,
+      alt,
+      caption,
+      credit,
+      "poster": poster{ "url": asset->url },
+      "lqip": asset->metadata.lqip,
+      "dimensions": asset->metadata.dimensions,
+      "client": client->{
+        _id,
+        name,
+        business,
+        "logo": logo{ "url": asset->url }
+      }
+    }
+  }`;
+
+  try {
+    const result = await sanityClient.fetch<{
+      total: number;
+      items: RawGalleryItem[];
+    } | null>(query, { slug, offset, end: offset + limit });
+
+    const total = result?.total ?? 0;
+    const items = (result?.items ?? []).map(mapGalleryItem);
+
+    return {
+      items,
+      total,
+      hasMore: offset + items.length < total,
+    };
+  } catch (error) {
+    console.error(`Error fetching gallery page for event ${slug}:`, error);
+    return { items: [], total: 0, hasMore: false };
   }
 }

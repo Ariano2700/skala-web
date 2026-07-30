@@ -9,11 +9,31 @@ export interface EventMediaItem {
   credit?: string;
   kind: "image" | "video";
   posterUrl?: string;
+  lqip?: string;
+  width?: number;
+  height?: number;
   client?: {
     id: string;
     name: string;
     business?: string;
     logoUrl?: string;
+  };
+}
+
+export interface RawGalleryItem {
+  _key?: string;
+  _type?: string;
+  assetId?: string;
+  url?: string;
+  alt?: string;
+  caption?: string;
+  credit?: string;
+  poster?: { url?: string };
+  client?: {
+    _id?: string;
+    name?: string;
+    business?: string;
+    logo?: { url?: string };
   };
 }
 
@@ -29,6 +49,25 @@ export interface EventClientRef {
     website?: string;
   };
 }
+
+export const mapGalleryItem = (item: RawGalleryItem): EventMediaItem => ({
+  _key: item?._key,
+  assetId: item?.assetId,
+  url: item?.url || "",
+  alt: item?.alt || "",
+  caption: item?.caption || "",
+  credit: item?.credit || "",
+  kind: item?._type === "videoItem" ? "video" : "image",
+  posterUrl: item?.poster?.url,
+  client: item?.client
+    ? {
+        id: item.client._id ?? "",
+        name: item.client.name ?? "",
+        business: item.client.business,
+        logoUrl: item.client.logo?.url,
+      }
+    : undefined,
+});
 
 /** Categoría resuelta desde la referencia `categories[]->` (documento `category`). */
 export interface EventCategoryRef {
@@ -47,6 +86,8 @@ export interface EventSanitySchema extends SanityDocument {
     assetId?: string;
     url?: string;
     alt?: string;
+    lqip?: string;
+    dimensions?: { width: number; height: number };
   };
   heroVideo?: {
     assetId?: string;
@@ -78,6 +119,8 @@ export interface EventSanitySchema extends SanityDocument {
     caption?: string;
     credit?: string;
     poster?: { url?: string };
+    lqip?: string;
+    dimensions?: { width: number; height: number };
     client?: {
       _id?: string;
       name?: string;
@@ -147,6 +190,9 @@ export const mapToEvent = (raw: EventSanitySchema | null): Event => {
         credit: item?.credit || "",
         kind: item?._type === "videoItem" ? "video" : "image",
         posterUrl: item?.poster?.url,
+        lqip: item?.lqip,
+        width: item?.dimensions?.width,
+        height: item?.dimensions?.height,
         client: item?.client
           ? {
               id: item.client._id ?? "",
@@ -171,8 +217,8 @@ export const mapToEvent = (raw: EventSanitySchema | null): Event => {
   // categories ahora llega resuelto desde Sanity (categories[]->{...}).
   // Se descartan referencias "rotas" (documento borrado) que llegarían sin slug.
   const categories: EventCategoryRef[] = Array.isArray(raw?.categories)
-    ? raw!.categories!
-        .filter((c) => !!c?.slug)
+    ? raw!
+        .categories!.filter((c) => !!c?.slug)
         .map((c) => ({
           id: c._id ?? "",
           title: c.title ?? c.slug ?? "Sin categoría",
