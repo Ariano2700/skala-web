@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useInfiniteGallery } from "../../hooks/useInfiniteGallery";
 import type { EventMediaItem } from "../../sanity/event/event-mapper";
+import { sanityImageUrl, sanitySrcSet } from "../../lib/sanity-image";
 
 interface Props {
   /** Primer lote, ya recortado y renderizado desde el .astro que lo hospeda. */
@@ -22,7 +23,12 @@ function handleDownload(item: EventMediaItem, index: number) {
   document.body.removeChild(link);
 }
 
-export default function EventGallery({ gallery, total, eventSlug, title }: Props) {
+export default function EventGallery({
+  gallery,
+  total,
+  eventSlug,
+  title,
+}: Props) {
   const { items, isLoading, hasMore, sentinelRef } = useInfiniteGallery({
     eventSlug,
     pageSize: gallery.length || 12,
@@ -56,9 +62,20 @@ export default function EventGallery({ gallery, total, eventSlug, title }: Props
             className="group relative aspect-square cursor-pointer overflow-hidden rounded-2xl border border-skala-border bg-white/3"
           >
             <img
-              src={item.kind === "video" ? item.posterUrl || item.url : item.url}
+              src={sanityImageUrl(
+                item.kind === "video" ? item.posterUrl || item.url : item.url,
+                {
+                  width: 500,
+                },
+              )}
+              srcSet={sanitySrcSet(
+                item.kind === "video" ? item.posterUrl || item.url : item.url,
+                [300, 500, 800],
+              )}
+              sizes="(max-width: 768px) 50vw, 25vw"
               alt={item.alt || title}
               loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
             />
             {item.kind === "video" && (
@@ -131,7 +148,9 @@ export default function EventGallery({ gallery, total, eventSlug, title }: Props
               />
             ) : (
               <img
-                src={activeItem.url}
+                src={sanityImageUrl(activeItem.url, { width: 800 })}
+                srcSet={sanitySrcSet(activeItem.url, [300, 500, 800])}
+                sizes="(max-width: 768px) 50vw, 25vw"
                 alt={activeItem.alt || ""}
                 className="max-h-[90vh] max-w-[92vw] rounded-2xl object-contain"
               />
