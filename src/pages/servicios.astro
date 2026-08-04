@@ -1,0 +1,186 @@
+---
+export const prerender = true;
+import Layout from "../layouts/Layout.astro";
+import SectionLabel from "../components/landing/SectionLabel.astro";
+import CtaSection from "../components/landing/CtaSection.astro";
+import SinglesSection from "../components/landing/SinglesSection.astro";
+import PlanCard from "../components/shared/PlanCard.astro";
+import ServiciosCategoryNav from "../components/servicios/ServiciosCategoryNav.astro";
+import {
+  webDevPacks,
+  brandingPacks,
+  designPacks,
+  photoVideoEventPacks,
+} from "../data/servicePacks";
+import { getOrganizationSchema, organizationRef } from "../data/organization";
+
+const pageTitle = "Servicios y packs - Skala Agencia & Productora";
+const pageDescription =
+  "Packs individuales de desarrollo web, branding, diseño, fotografía, video y cobertura de eventos, más servicios sueltos con cotización directa por WhatsApp.";
+const canonicalUrl = new URL(
+  "/servicios/",
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+const serviciosKeywords =
+  "packs de branding trujillo, diseño de logo precio, paginas web trujillo, cobertura de eventos, video corporativo, servicios de diseño redes sociales, skala servicios";
+
+const pricedPacks = [...webDevPacks, ...brandingPacks, ...designPacks];
+
+// Algunos packs (ej. desarrollo web) tienen precio en rango ("S/ 450 - S/ 900")
+// en vez de un valor fijo; se refleja como min/max en el JSON-LD.
+const buildOffer = (pack: (typeof pricedPacks)[number]) => {
+  const numbers =
+    pack.price.match(/[\d,]+/g)?.map((n) => Number(n.replace(/,/g, ""))) ?? [];
+  const priceFields =
+    numbers.length >= 2
+      ? {
+          priceSpecification: {
+            "@type": "PriceSpecification",
+            minPrice: numbers[0],
+            maxPrice: numbers[1],
+            priceCurrency: "PEN",
+          },
+        }
+      : numbers.length === 1
+        ? { price: numbers[0], priceCurrency: "PEN" }
+        : {};
+
+  return {
+    "@type": "Offer",
+    itemOffered: {
+      "@type": "Service",
+      name: pack.name,
+      description: pack.tagline,
+    },
+    ...priceFields,
+  };
+};
+
+const structuredData = [
+  getOrganizationSchema(),
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    serviceType: "Branding, diseño, desarrollo web, fotografía y video",
+    provider: organizationRef,
+    areaServed: {
+      "@type": "City",
+      name: "Trujillo",
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Packs y servicios sueltos Skala",
+      itemListElement: pricedPacks.map(buildOffer),
+    },
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  structuredData={structuredData}
+  keywords={serviciosKeywords}
+  robots="index, follow"
+>
+  <main id="top" class="relative z-10 flex flex-col gap-24 pb-24">
+    <section class="mx-auto w-full max-w-360 px-5 pt-32 md:px-12">
+      <SectionLabel label="Servicios y packs" />
+      <h1
+        class="m-0 max-w-[18ch] font-display text-[clamp(2.4rem,4.8vw,5rem)] leading-[0.95] tracking-[-0.065em]"
+        data-reveal
+      >
+        Todo lo que hacemos, en packs claros y con precio.
+      </h1>
+      <p
+        class="mt-5 max-w-[62ch] text-[1.05rem] leading-8 text-skala-muted"
+        data-reveal
+        style="--reveal-delay: 120ms;"
+      >
+        Desde una web o un logo hasta una cobertura de evento: elige el pack
+        que necesitas o cotiza una pieza suelta directo por WhatsApp.
+      </p>
+    </section>
+
+    <ServiciosCategoryNav />
+
+    <section
+      id="dev-web"
+      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
+    >
+      <div class="flex flex-col gap-2">
+        <h2
+          class="m-0 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-black tracking-tighter text-skala-text"
+          data-reveal
+        >
+          Desarrollo Web
+        </h2>
+        <p class="max-w-[62ch] text-sm leading-7 text-skala-muted" data-reveal style="--reveal-delay: 90ms;">
+          Los precios no incluyen hosting, dominio ni mantenimiento mensual —
+          se cotizan aparte. El precio final dentro de cada rango depende del
+          número de páginas o productos, el nivel de personalización y las
+          integraciones adicionales (CRM, ERP, facturación SUNAT, etc.).
+        </p>
+      </div>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {webDevPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_web" />)}
+      </div>
+    </section>
+
+    <section
+      id="branding"
+      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
+    >
+      <h2
+        class="m-0 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-black tracking-tighter text-skala-text"
+        data-reveal
+      >
+        Branding
+      </h2>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {brandingPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_branding" />)}
+      </div>
+    </section>
+
+    <section
+      id="diseno"
+      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
+    >
+      <h2
+        class="m-0 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-black tracking-tighter text-skala-text"
+        data-reveal
+      >
+        Diseño
+      </h2>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {designPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_diseno" />)}
+      </div>
+    </section>
+
+    <section
+      id="foto-video-evento"
+      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
+    >
+      <div class="flex flex-col gap-2">
+        <h2
+          class="m-0 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-black tracking-tighter text-skala-text"
+          data-reveal
+        >
+          Fotografía, Video & Cobertura de Evento
+        </h2>
+        <p class="max-w-[62ch] text-sm leading-7 text-skala-muted" data-reveal style="--reveal-delay: 90ms;">
+          Estamos definiendo el detalle final de estos tres packs — mientras
+          tanto, cuéntanos tu proyecto y te armamos una cotización a medida.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {photoVideoEventPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_foto_video_evento" />)}
+      </div>
+    </section>
+
+    <SinglesSection />
+
+    <CtaSection />
+  </main>
+</Layout>

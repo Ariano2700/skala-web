@@ -1,0 +1,117 @@
+---
+// Banner de consentimiento (opt-in) para Google Analytics 4 / Consent Mode
+// v2. No bloquea la página (no hay overlay ni backdrop) — es una barra
+// inferior dismissible. Google Analytics ya arranca en "denied" por
+// defecto (ver Analytics.astro); este banner es lo único que puede pasarlo
+// a "granted", y guarda la elección en localStorage para no volver a
+// preguntar.
+import { FiX } from "react-icons/fi";
+---
+
+<div
+  id="cookie-consent-banner"
+  class="fixed inset-x-0 bottom-0 z-70 hidden justify-center p-4 sm:p-6"
+  data-consent-banner
+  role="region"
+  aria-label="Preferencias de cookies"
+>
+  <div
+    class="flex w-full max-w-3xl flex-col gap-4 rounded-3xl border border-skala-border bg-skala-surface-strong p-5 shadow-[0_28px_80px_rgba(0,0,0,0.45)] sm:flex-row sm:items-center sm:gap-6 sm:p-6"
+  >
+    <p class="m-0 flex-1 text-sm leading-6 text-skala-muted">
+      <strong class="text-skala-text">Usamos cookies de analítica</strong> (Google
+      Analytics) para entender cómo navegas el sitio y mejorar tu experiencia.
+      No se activan hasta que aceptes.
+    </p>
+
+    <div class="flex shrink-0 items-center gap-3">
+      <button
+        type="button"
+        data-consent-reject
+        class="cursor-pointer rounded-full border border-skala-border bg-transparent px-5 py-3 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-skala-muted transition duration-200 hover:border-skala-accent/40 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+      >
+        Rechazar
+      </button>
+      <button
+        type="button"
+        data-consent-accept
+        class="cursor-pointer rounded-full bg-skala-accent px-5 py-3 text-[0.7rem] font-black uppercase tracking-[0.14em] text-skala-text-secondary! transition duration-200 hover:-translate-y-0.5 hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+      >
+        Aceptar
+      </button>
+      <button
+        type="button"
+        data-consent-reject
+        title="Cerrar (equivale a rechazar)"
+        aria-label="Cerrar (equivale a rechazar)"
+        class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-skala-muted transition duration-200 hover:bg-white/5 hover:text-skala-text sm:hidden"
+      >
+        <FiX className="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = "skala-consent";
+
+  const banner = document.querySelector<HTMLElement>("[data-consent-banner]");
+  const acceptButtons = document.querySelectorAll<HTMLButtonElement>(
+    "[data-consent-accept]",
+  );
+  const rejectButtons = document.querySelectorAll<HTMLButtonElement>(
+    "[data-consent-reject]",
+  );
+
+  const getStoredConsent = (): string | null => {
+    try {
+      return localStorage.getItem(STORAGE_KEY);
+    } catch {
+      return "denied"; // sin localStorage, no insistimos con el banner
+    }
+  };
+
+  const hideBanner = () => {
+    banner?.classList.add("hidden");
+    banner?.classList.remove("flex");
+  };
+
+  const showBanner = () => {
+    banner?.classList.remove("hidden");
+    banner?.classList.add("flex");
+  };
+
+  const decide = (value: "granted" | "denied") => {
+    try {
+      localStorage.setItem(STORAGE_KEY, value);
+    } catch {
+      // localStorage bloqueado: la sesión sigue funcionando, solo no se
+      // recuerda la elección entre visitas.
+    }
+
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })
+      .gtag;
+
+    if (value === "granted" && typeof gtag === "function") {
+      gtag("consent", "update", {
+        ad_storage: "granted",
+        ad_user_data: "granted",
+        ad_personalization: "granted",
+        analytics_storage: "granted",
+      });
+    }
+
+    hideBanner();
+  };
+
+  if (banner && getStoredConsent() === null) {
+    showBanner();
+  }
+
+  acceptButtons.forEach((btn) =>
+    btn.addEventListener("click", () => decide("granted")),
+  );
+  rejectButtons.forEach((btn) =>
+    btn.addEventListener("click", () => decide("denied")),
+  );
+</script>

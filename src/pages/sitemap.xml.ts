@@ -17,7 +17,13 @@ const staticPages = [
     priority: 0.9,
   },
   {
-    loc: "/eventos/",
+    loc: "/servicios/",
+    lastmod: "2026-08-04",
+    changefreq: "monthly" as const,
+    priority: 0.9,
+  },
+  {
+    loc: "/cobertura-eventos/",
     lastmod: "2026-07-30",
     changefreq: "weekly" as const,
     priority: 0.8,
@@ -38,7 +44,7 @@ const projectPages = sourceProjects.map((project) => ({
 
 const events = await getAllEvents();
 const eventPages = events.map((event) => ({
-  loc: `/eventos/${event.slug}/`,
+  loc: `/cobertura-eventos/${event.slug}/`,
   lastmod: "2026-07-30",
   changefreq: "weekly" as const,
   priority: 0.7,

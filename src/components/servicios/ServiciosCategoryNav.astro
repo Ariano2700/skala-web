@@ -1,0 +1,34 @@
+---
+// Nav lateral/sticky con anclas internas a cada categoría de /servicios.
+// Reutiliza el mismo patrón sticky + blur que PortfolioFilters.astro.
+const categories = [
+  { id: "dev-web", label: "Desarrollo Web" },
+  { id: "branding", label: "Branding" },
+  { id: "diseno", label: "Diseño" },
+  { id: "foto-video-evento", label: "Foto, Video & Evento" },
+  { id: "sueltos", label: "Servicios Sueltos" },
+];
+---
+
+<nav
+  id="top"
+  class="sticky top-18 z-40 border-y border-skala-border bg-[#04142e]/94 py-4 backdrop-blur-xl"
+  aria-label="Categorías de servicios"
+>
+  <div
+    class="mx-auto flex max-w-360 flex-wrap items-center gap-2 overflow-x-auto px-5 md:px-12"
+  >
+    {
+      categories.map((cat) => (
+        <a
+          href={`#${cat.id}`}
+          title={`Ir a ${cat.label}`}
+          aria-label={`Ir a ${cat.label}`}
+          class="shrink-0 rounded-full border border-skala-border px-4 py-2.5 text-[0.7rem] font-black uppercase tracking-[0.14em] text-skala-muted transition duration-200 hover:border-skala-accent/40 hover:bg-skala-accent/8 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+        >
+          {cat.label}
+        </a>
+      ))
+    }
+  </div>
+</nav>

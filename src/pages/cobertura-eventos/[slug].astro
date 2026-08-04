@@ -17,7 +17,7 @@ const { slug } = Astro.params;
 const event = await getEventBySlug(slug as string);
 
 if (!event) {
-  return Astro.redirect("/eventos/", 302);
+  return Astro.redirect("/cobertura-eventos/", 302);
 }
 
 const pageTitle = event.seo?.metaTitle || `${event.title} | Eventos Skala`;
@@ -28,7 +28,7 @@ const pageDescription =
     event,
   )}${event.location?.venue ? ` en ${event.location.venue}` : ""}.`;
 const canonicalUrl = new URL(
-  `/eventos/${event.slug}/`,
+  `/cobertura-eventos/${event.slug}/`,
   Astro.site ?? new URL("https://skalaagencia.netlify.app"),
 ).href;
 const ogImage =

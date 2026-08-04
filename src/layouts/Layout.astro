@@ -1,9 +1,12 @@
 ---
 import AmbientBackdrop from "../components/landing/AmbientBackdrop.astro";
 import RevealScript from "../components/landing/RevealScript.astro";
+import Analytics from "../components/shared/Analytics.astro";
+import CookieConsentBanner from "../components/shared/CookieConsentBanner.astro";
 import LenisScroll from "../components/shared/LenisScroll";
 import SiteFooter from "../components/shared/SiteFooter.astro";
 import SiteNav from "../components/shared/SiteNav.astro";
+import WhatsAppTracking from "../components/shared/WhatsAppTracking.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -36,6 +39,8 @@ const absoluteOgImage = new URL(ogImage, siteUrl).href;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+
+    <Analytics />
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -106,5 +111,7 @@ const absoluteOgImage = new URL(ogImage, siteUrl).href;
     <slot />
     <SiteFooter isStatic={false} />
     <RevealScript />
+    <WhatsAppTracking />
+    <CookieConsentBanner />
   </body>
 </html>

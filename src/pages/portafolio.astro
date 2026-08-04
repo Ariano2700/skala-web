@@ -6,6 +6,7 @@ import PortfolioGrid from "../components/portfolio/PortfolioGrid.astro";
 import PortfolioHero from "../components/portfolio/PortfolioHero.astro";
 import { adaptSanityProjects } from "../data/portafolio";
 import { getAllProjects } from "../sanity/project/api";
+import { getOrganizationSchema } from "../data/organization";
 
 // Fuente de datos: Sanity (CMS) con respaldo en la data estática local.
 // Si Sanity no responde o está vacío, conservamos los proyectos del archivo.
@@ -25,36 +26,7 @@ const portfolioKeywords =
   "portafolio audiovisual, casos de exito marketing, proyectos de branding, fotografia publicitaria trujillo, produccion de reels, diseño grafico trujillo, skala portafolio";
 
 const structuredData = [
-  {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService", // El idóneo para una Agencia con sede física
-    name: "Skala",
-    url: canonicalUrl,
-    image: new URL(
-      "/logotype.jpg",
-      Astro.site ?? "https://skalaagencia.netlify.app",
-    ).href,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Trujillo",
-      addressRegion: "La Libertad",
-      addressCountry: "PE",
-    },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Saturday"],
-        opens: "09:00",
-        closes: "13:00",
-      },
-    ],
-  },
+  getOrganizationSchema(),
   {
     "@context": "https://schema.org",
     "@type": "ItemList",

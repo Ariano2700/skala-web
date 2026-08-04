@@ -136,6 +136,36 @@ export const serviceCategories = [
   { id: "diseno", label: "Diseño Gráfico y Creatividad" },
 ] as const;
 
+// Selección curada para la home: 2 bloques, priorizando lo que más se vende.
+// El catálogo completo de 13 servicios granulares (arriba) queda disponible
+// para /servicios; branding y diseño ahora también viven ahí como packs con
+// precio, así que aquí solo mostramos una muestra representativa.
+export const homeServiceGroups = [
+  {
+    id: "produccion",
+    label: "Producción & Contenido",
+    items: services.filter((s) =>
+      [
+        "Eventos Sociales",
+        "Sector Corporativo",
+        "Fotografía Profesional",
+        "Social Media Content",
+      ].includes(s.title),
+    ),
+  },
+  {
+    id: "marca",
+    label: "Marca & Diseño",
+    items: services.filter((s) =>
+      [
+        "Identidad Visual",
+        "Diseño para Redes Sociales",
+        "Material Corporativo",
+      ].includes(s.title),
+    ),
+  },
+] as const;
+
 export const singleServices = [
   {
     icon: FiCamera,

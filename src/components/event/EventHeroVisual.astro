@@ -19,7 +19,7 @@ const visual = featured.length > 0 ? featured : fallback;
     <div class="relative isolate grid grid-cols-3 gap-3 overflow-hidden rounded-4xl border border-skala-border bg-white/2 p-3">
       {visual.map((event, i) => (
         <a
-          href={`/eventos/${event.slug}/`}
+          href={`/cobertura-eventos/${event.slug}/`}
           title={event.title}
           aria-label={event.title}
           class={`group relative block overflow-hidden rounded-3xl ${

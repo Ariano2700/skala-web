@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { getAllEvents } from "../../sanity/event/api";
 import { formatEventDate } from "../../data/event";
+import { getOrganizationSchema } from "../../data/organization";
 import EventHero from "../../components/event/EventHero.astro";
 import EventFilters from "../../components/event/EventFilters.astro";
 import EventGrid from "../../components/event/EventGrid.astro";
@@ -15,29 +16,14 @@ const pageTitle = "Eventos - Cobertura en vivo | Skala Agencia en Trujillo";
 const pageDescription =
   "Revisa la cobertura de eventos de Skala en Trujillo: fotografía, video y contenido en vivo para lanzamientos, activaciones y experiencias de marca.";
 const canonicalUrl = new URL(
-  "/eventos/",
+  "/cobertura-eventos/",
   Astro.site ?? new URL("https://skalaagencia.netlify.app"),
 ).href;
 const eventKeywords =
   "cobertura de eventos trujillo, fotografia de eventos, produccion audiovisual eventos, cobertura en vivo redes sociales, activaciones de marca trujillo, skala eventos";
 
 const structuredData = [
-  {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    name: "Skala",
-    url: canonicalUrl,
-    image: new URL(
-      "/logotype.jpg",
-      Astro.site ?? "https://skalaagencia.netlify.app",
-    ).href,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Trujillo",
-      addressRegion: "La Libertad",
-      addressCountry: "PE",
-    },
-  },
+  getOrganizationSchema(),
   {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -50,7 +36,7 @@ const structuredData = [
       "@type": "ListItem",
       position: index + 1,
       url: new URL(
-        `/eventos/${event.slug}/`,
+        `/cobertura-eventos/${event.slug}/`,
         Astro.site ?? "https://skalaagencia.netlify.app",
       ).href,
       name: event.title,

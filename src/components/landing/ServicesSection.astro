@@ -1,11 +1,5 @@
 ---
-import { services, serviceCategories } from "../../data/services";
-
-// Agrupa los servicios por categoría para renderizar con encabezado.
-const grouped = serviceCategories.map((cat) => ({
-  ...cat,
-  items: services.filter((s) => s.category === cat.id),
-}));
+import { homeServiceGroups } from "../../data/services";
 ---
 
 <section class="relative mx-auto w-full max-w-360 px-5 md:px-12" id="servicios">
@@ -18,7 +12,7 @@ const grouped = serviceCategories.map((cat) => ({
 
   <div class="mt-12 flex flex-col gap-14">
     {
-      grouped.map((group) => (
+      homeServiceGroups.map((group) => (
         <div class="flex flex-col gap-6">
           <div class="flex items-center gap-4" data-reveal>
             <span class="h-px w-10 bg-skala-accent/50" />

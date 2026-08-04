@@ -43,6 +43,9 @@ import { ctaLinks } from "../../data/cta";
               rel="noopener noreferrer"
               title={action.label}
               aria-label={action.label}
+              data-ga-whatsapp={action.href.includes("wa.me") ? "" : undefined}
+              data-ga-location="cta_section"
+              data-ga-label={action.label}
               class="group inline-flex items-center justify-center gap-3 rounded-full border px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-[#04142e]/40 active:translate-y-px"
               class:list={[
                 action.variant === "solid"

@@ -99,6 +99,9 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
       aria-label="Contáctanos por WhatsApp"
       target="_blank"
       rel="noopener noreferrer"
+      data-ga-whatsapp
+      data-ga-location="nav"
+      data-ga-label="Agenda"
       class="group hidden items-center gap-2 rounded-full border border-skala-border-strong bg-skala-accent px-4 py-3 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-skala-text-secondary! shadow-[0_14px_32px_rgba(92,216,252,0.18)] transition duration-200 hover:-translate-y-px hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px xl:inline-flex"
     >
       Agenda <FiArrowUpRight

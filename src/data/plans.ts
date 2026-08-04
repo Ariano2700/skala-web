@@ -101,31 +101,3 @@ export const plans = [
     cta_link_message: "Hola, quiero contratar el Plan SKALA (S/ 2000).",
   },
 ];
-
-// Servicios especiales: precio a cotizar con el cliente en reunión.
-export const specialServices = {
-  note: "Servicios especiales: cotizar precio con el cliente en una reunión.",
-  //travelNote: "70 pasajes por sesión",
-  items: [
-    {
-      title: "Eventos Sociales",
-      description:
-        "Cobertura cinematográfica para matrimonios y quinceañeros, enfocada en capturar la narrativa emocional y los momentos clave.",
-    },
-    {
-      title: "Celebraciones Privadas",
-      description:
-        "Registro profesional de cumpleaños, aniversarios y fiestas con un estilo dinámico.",
-    },
-    {
-      title: "Sector Corporativo",
-      description:
-        "Producción de videos institucionales, grabación de conferencias, lanzamientos de marca y contenido empresarial.",
-    },
-    {
-      title: "Fotografía Profesional",
-      description:
-        "Cobertura de eventos, sesiones de retrato corporativo, marca personal y fotografía de producto.",
-    },
-  ],
-};

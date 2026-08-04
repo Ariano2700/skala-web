@@ -1,6 +1,24 @@
 {
   "version": 1,
   "skills": {
+    "astro": {
+      "source": "astrolicious/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/astro/SKILL.md",
+      "computedHash": "3a70f9666e7b6a03efb939b7e62938f4d3a6a5d956b2cc3c10011fda6ba27e9b"
+    },
+    "emil-design-eng": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "87067d79205fdedc6d682891027dd9c7335486c4b4dc2e785638941a9d2e6061"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
     "gsap-core": {
       "source": "greensock/gsap-skills",
       "sourceType": "github",
@@ -48,6 +66,18 @@
       "sourceType": "github",
       "skillPath": "skills/gsap-utils/SKILL.md",
       "computedHash": "72af4a036d417d6eaef7478eca2f28e760631fb78db822ba34a9c706797aab62"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "b120d9315cdca22c5a2de2c57e35dc70362aa2b0050fc97b3e0378a525f5d017"
+    },
+    "marketing-psychology": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-psychology/SKILL.md",
+      "computedHash": "d057044710ce7b7f9b90b84b3ab64e9359aaf47982b922ec10daca3822185ede"
     }
   }
 }

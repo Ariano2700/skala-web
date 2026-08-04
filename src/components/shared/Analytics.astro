@@ -1,0 +1,70 @@
+---
+// Google Analytics 4 con Google Consent Mode v2. Dos scripts separados a
+// propósito:
+//
+// 1. Bootstrap (hilo principal, normal): define dataLayer/gtag, fija el
+//    consentimiento por defecto en "denied" y restaura la elección previa
+//    del visitante si ya existe en localStorage (ver CookieConsentBanner).
+//    Es solo un puñado de pushes a un array — no vale la pena mandarlo a
+//    un worker.
+// 2. La descarga/ejecución real de gtag.js (el script pesado que golpea
+//    googletagmanager.com) sí va con type="text/partytown", para que corra
+//    fuera del hilo principal. "dataLayer.push" está configurado como
+//    forward en astro.config.mjs para que Partytown reenvíe los comandos
+//    del paso 1 hacia el worker.
+//
+// Si no hay PUBLIC_GA_MEASUREMENT_ID configurado (ej. en un fork local sin
+// .env), el componente no renderiza nada — no rompe el build.
+const GA_MEASUREMENT_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
+---
+
+{
+  GA_MEASUREMENT_ID && (
+    <>
+      <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        window.gtag = gtag;
+
+        let storedConsent = null;
+        try {
+          storedConsent = localStorage.getItem("skala-consent");
+        } catch (e) {
+          // localStorage bloqueado (modo privado, política del navegador, etc.)
+        }
+
+        // Consent Mode v2: todo denegado hasta que el visitante responda el
+        // banner. "wait_for_update" le da 500ms a esta config antes de que
+        // gtag mande el primer hit, por si el banner ya tenía una decisión
+        // guardada y la actualiza justo después (ver bloque siguiente).
+        gtag("consent", "default", {
+          ad_storage: "denied",
+          ad_user_data: "denied",
+          ad_personalization: "denied",
+          analytics_storage: "denied",
+          wait_for_update: 500,
+        });
+
+        if (storedConsent === "granted") {
+          gtag("consent", "update", {
+            ad_storage: "granted",
+            ad_user_data: "granted",
+            ad_personalization: "granted",
+            analytics_storage: "granted",
+          });
+        }
+
+        gtag("js", new Date());
+        gtag("config", GA_MEASUREMENT_ID);
+      </script>
+
+      <script
+        is:inline
+        type="text/partytown"
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+      />
+    </>
+  )
+}

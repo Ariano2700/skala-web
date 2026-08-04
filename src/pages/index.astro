@@ -6,13 +6,15 @@ import ContactSection from "../components/landing/ContactSection.astro";
 import CtaSection from "../components/landing/CtaSection.astro";
 import HeroSection from "../components/landing/HeroSection.astro";
 import MarqueeStrip from "../components/landing/MarqueeStrip.astro";
+import MoreServicesCta from "../components/landing/MoreServicesCta.astro";
 import PlansSection from "../components/landing/PlansSection.astro";
-import WebSystemsSection from "../components/landing/WebSystemsSection.astro";
 import ProcessSection from "../components/landing/ProcessSection.astro";
 import ServicesSection from "../components/landing/ServicesSection.astro";
-
-import SinglesSection from "../components/landing/SinglesSection.astro";
 import Team from "../components/landing/team/Team.astro";
+import {
+  getOrganizationWithTeamSchema,
+  organizationRef,
+} from "../data/organization";
 const pageTitle = "Skala - Agencia de Branding & Producción Audiovisual";
 const pageDescription =
   "Agencia estratégica en Trujillo, Perú. Especialistas en diseño de marca, fotografía comercial, producción de video para redes sociales y campañas integrales.";
@@ -21,41 +23,13 @@ const canonicalUrl = (Astro.site ?? new URL("https://skalaagencia.netlify.app"))
 const homeKeywords =
   "agencia de publicidad trujillo, productora audiovisual peru, diseño de marca, marketing digital trujillo, produccion de video, creacion de contenido, escala agencia, skala";
 const homeStructuredData = [
-  {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    name: "Skala",
-    url: canonicalUrl,
-    image: `${canonicalUrl}logotype.jpg`,
-    telephone: "+51947168626",
-    areaServed: "Trujillo, Peru",
-    priceRange: "$$",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Trujillo",
-      addressRegion: "La Libertad",
-      addressCountry: "PE",
-    },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Saturday"],
-        opens: "09:00",
-        closes: "13:00",
-      },
-    ],
-  },
+  getOrganizationWithTeamSchema(),
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Skala Agencia",
     url: canonicalUrl,
+    publisher: organizationRef,
   },
 ];
 ---
@@ -74,8 +48,7 @@ const homeStructuredData = [
     <AboutSection />
     <ServicesSection />
     <PlansSection />
-    <WebSystemsSection />
-    <SinglesSection />
+    <MoreServicesCta />
     <ProcessSection />
     <Team />
     <ContactSection />

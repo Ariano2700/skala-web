@@ -78,25 +78,13 @@ import "./team.css";
   </div>
 </section>
 
-<!-- Datos estructurados JSON-LD para SEO -->
-<script
-  type="application/ld+json"
-  set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Skala",
-    description: "Agencia y Productora Audiovisual en Trujillo, Perú",
-    employee: TeamData.map((member) => ({
-      "@type": "Person",
-      name: member.name,
-      jobTitle: member.role,
-      worksFor: {
-        "@type": "Organization",
-        name: "Skala",
-      },
-    })),
-  })}
-/>
+<!--
+  El JSON-LD del equipo (employee[]) ya no se declara aquí: Team.astro solo
+  se usa en la home, así que se emite una sola vez como parte de la entidad
+  Organization/ProfessionalService consolidada en src/data/organization.ts
+  (ver getOrganizationWithTeamSchema() en index.astro). Declarar un segundo
+  "@type": "Organization" aquí duplicaba la entidad con datos desincronizados.
+-->
 
 <script>
   import gsap from "gsap";

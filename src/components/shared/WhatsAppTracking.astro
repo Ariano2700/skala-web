@@ -1,0 +1,30 @@
+---
+// Trackea como evento GA4 "click_whatsapp" cualquier link marcado con
+// data-ga-whatsapp. Un solo listener delegado a nivel document — cualquier
+// CTA nuevo que agregue el atributo se trackea automático sin tocar este
+// archivo.
+//
+// Alcance actual (decidido con el cliente): CTAs genéricos (nav, CTA final
+// de home/servicios, portafolio, eventos) + los 16 botones de planes/packs
+// de PlanCard. El formulario de #contacto y el modal de #sueltos en
+// /servicios quedan pendientes para un batch aparte (arman el link de
+// WhatsApp dinámicamente por JS, no son un <a href> estático).
+---
+
+<script>
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement | null;
+    const link = target?.closest<HTMLElement>("[data-ga-whatsapp]");
+    if (!link) return;
+
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })
+      .gtag;
+    if (typeof gtag !== "function") return;
+
+    gtag("event", "click_whatsapp", {
+      cta_location: link.dataset.gaLocation || "unknown",
+      cta_label: link.dataset.gaLabel || "",
+      cta_value: link.dataset.gaValue || undefined,
+    });
+  });
+</script>

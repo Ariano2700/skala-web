@@ -11,6 +11,8 @@ import sanity from "@sanity/astro";
 
 import netlify from "@astrojs/netlify";
 
+import partytown from "@astrojs/partytown";
+
 
 // https://astro.build/config
 export default defineConfig({
@@ -33,6 +35,15 @@ export default defineConfig({
       projectId: "6ksx455m",
       dataset: "production",
       useCdn: false,
+    }),
+    // Corre gtag.js (Google Analytics 4) en un web worker en vez del hilo
+    // principal. "dataLayer.push" es la única llamada que necesitamos
+    // reenviar al worker: es como gtag() encola comandos (config, consent,
+    // event) internamente.
+    partytown({
+      config: {
+        forward: ["dataLayer.push"],
+      },
     }),
   ],
   image: {
