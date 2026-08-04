@@ -9,6 +9,7 @@ import {
 } from "../../data/portafolio";
 import { getAllProjects } from "../../sanity/project/api";
 import { FiArrowLeft } from "react-icons/fi";
+import ProjectCta from "../../components/portfolio/ProjectCta.astro";
 
 // Renderizado bajo demanda: Sanity (CMS) en vivo, con respaldo en la data
 // estática local. Cualquier proyecto nuevo en Sanity aparece sin redeploy.
@@ -198,6 +199,8 @@ const canonicalUrl = new URL(
         </div>
       </div>
     </section>
+
+    <ProjectCta project={project} />
   </main>
 </Layout>
 

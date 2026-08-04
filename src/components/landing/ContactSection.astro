@@ -293,6 +293,18 @@ import { CONTACT_DATA } from "../../data/contact_data";
       lines.push("");
       lines.push("_Enviado desde el formulario web de Skala._");
 
+      const gtag = (
+        window as unknown as { gtag?: (...args: unknown[]) => void }
+      ).gtag;
+      if (typeof gtag === "function") {
+        gtag("event", "click_whatsapp", {
+          cta_location: "contact_form",
+          cta_label: plan || "Formulario sin plan",
+          contact_services: services.length ? services.join(", ") : undefined,
+          contact_services_count: services.length,
+        });
+      }
+
       const whatsappUrl = `${CONTACT_DATA.WHATSAPP_LINK(lines.join("\n"))}`;
       window.open(whatsappUrl, "_blank", "noopener");
     });

@@ -230,6 +230,16 @@ import { singleServices } from "../../data/services";
     lines.push("");
     lines.push("_Enviado desde el formulario web de Skala._");
 
+    const gtag = (
+      window as unknown as { gtag?: (...args: unknown[]) => void }
+    ).gtag;
+    if (typeof gtag === "function") {
+      gtag("event", "click_whatsapp", {
+        cta_location: "servicios_sueltos_modal",
+        cta_label: selectedService,
+      });
+    }
+
     const whatsappUrl = CONTACT_DATA.WHATSAPP_LINK(lines.join("\n"));
     window.open(whatsappUrl, "_blank", "noopener");
     closeModal();
