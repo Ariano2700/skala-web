@@ -48,6 +48,10 @@ import SkalaWordmark from "../shared/SkalaWordmark.tsx";
               rel="noopener noreferrer"
               title={action.label}
               aria-label={action.label}
+              data-ga-click
+              data-ga-location="hero"
+              data-ga-label={action.label}
+              data-ga-target={action.href}
               class:list={[
                 "group inline-flex items-center justify-center gap-3 rounded-full px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px",
                 action.variant === "primary"

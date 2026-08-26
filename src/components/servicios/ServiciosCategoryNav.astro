@@ -19,12 +19,14 @@ const categories = [
     class="mx-auto flex max-w-360 flex-wrap items-center gap-2 overflow-x-auto px-5 md:px-12"
   >
     {
-      categories.map((cat) => (
+      categories.map((cat, index) => (
         <a
           href={`#${cat.id}`}
           title={`Ir a ${cat.label}`}
           aria-label={`Ir a ${cat.label}`}
           class="shrink-0 rounded-full border border-skala-border px-4 py-2.5 text-[0.7rem] font-black uppercase tracking-[0.14em] text-skala-muted transition duration-200 hover:border-skala-accent/40 hover:bg-skala-accent/8 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60"
+          data-reveal
+          style={`--reveal-delay: ${index * 60}ms;`}
         >
           {cat.label}
         </a>

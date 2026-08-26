@@ -3,6 +3,7 @@ import AmbientBackdrop from "../components/landing/AmbientBackdrop.astro";
 import RevealScript from "../components/landing/RevealScript.astro";
 import Analytics from "../components/shared/Analytics.astro";
 import CookieConsentBanner from "../components/shared/CookieConsentBanner.astro";
+import CtaTracking from "../components/shared/CtaTracking.astro";
 import LenisScroll from "../components/shared/LenisScroll";
 import SiteFooter from "../components/shared/SiteFooter.astro";
 import SiteNav from "../components/shared/SiteNav.astro";
@@ -112,6 +113,7 @@ const absoluteOgImage = new URL(ogImage, siteUrl).href;
     <SiteFooter isStatic={false} />
     <RevealScript />
     <WhatsAppTracking />
+    <CtaTracking />
     <CookieConsentBanner />
   </body>
 </html>

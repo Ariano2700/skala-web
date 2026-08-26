@@ -1,0 +1,70 @@
+---
+// Una sola entrada de acordeón. <details>/<summary> nativo: el contenido
+// vive siempre en el DOM (crawlable/SEO) aunque esté colapsado, y funciona
+// sin JS. La animación de apertura es puro CSS (grid-template-rows 0fr→1fr,
+// ver <style> abajo) — no depende del script de FaqSection.astro.
+import { FiChevronDown } from "react-icons/fi";
+
+interface Props {
+  q: string;
+  a: string;
+  defaultOpen?: boolean;
+  index?: number;
+  /** Agrupa varios <details> en un acordeón exclusivo nativo (solo uno
+   * abierto a la vez dentro del mismo name) — soportado sin JS en todos los
+   * navegadores modernos. Items de clusters distintos usan names distintos
+   * para no interferir entre sí aunque compartan el mismo documento. */
+  name?: string;
+}
+
+const { q, a, defaultOpen = false, index = 0, name } = Astro.props;
+---
+
+<details
+  class="faq-item group rounded-[22px] border border-skala-border bg-white/[0.035] p-1.5 transition duration-300 hover:border-skala-accent/30 hover:bg-skala-accent/[0.045] open:border-skala-accent/40 open:shadow-[0_18px_42px_rgba(92,216,252,0.16)]"
+  data-reveal
+  style={`--reveal-delay: ${index * 45}ms;`}
+  open={defaultOpen}
+  name={name}
+>
+  <summary
+    class="flex cursor-pointer list-none items-center justify-between gap-5 px-5 py-4.5 text-[1.02rem] font-bold leading-[1.4] text-skala-text [&::-webkit-details-marker]:hidden [&::marker]:hidden"
+  >
+    <span>{q}</span>
+    <span
+      class="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-skala-accent/24 bg-skala-accent/8 text-skala-accent"
+      aria-hidden="true"
+    >
+      <FiChevronDown className="faq-item-chevron h-4 w-4" />
+    </span>
+  </summary>
+  <div class="faq-answer grid">
+    <div class="min-h-0 overflow-hidden">
+      <p
+        class="m-0 max-w-[68ch] py-0 pr-5 pb-5 pl-18 text-[0.95rem] leading-[1.75] text-skala-muted"
+      >
+        {a}
+      </p>
+    </div>
+  </div>
+</details>
+
+<style>
+  /* Truco grid-rows: anima a "altura auto" sin JS ni max-height mágico.
+     Curva de Emil Kowalski (más asertiva que las nativas de CSS) porque es
+     una interacción nueva, no algo que ya existiera en el sitio a matchear. */
+  .faq-answer {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 350ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  details[open] > .faq-answer {
+    grid-template-rows: 1fr;
+  }
+
+  .faq-item-chevron {
+    transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  details[open] .faq-item-chevron {
+    transform: rotate(180deg);
+  }
+</style>

@@ -1,0 +1,125 @@
+---
+// Orquestador: arma header + tabs + paneles + CTA, y es dueño del único
+// script que los coordina (medir/mover el indicador, mostrar/ocultar
+// paneles, actualizar el contador). FaqTabs/FaqPanelList/FaqItem/FaqCta son
+// piezas "tontas" de solo render — el comportamiento vive acá, un único
+// lugar, en vez de repartido entre componentes que tendrían que conocerse
+// entre sí.
+import SectionLabel from "../SectionLabel.astro";
+import FaqTabs from "./FaqTabs.astro";
+import FaqPanelList from "./FaqPanelList.astro";
+import FaqCta from "./FaqCta.astro";
+import { faqClusters } from "../../../data/faq";
+
+const defaultCluster = faqClusters[0];
+---
+
+<section
+  id="faq"
+  class="relative z-10 mx-auto w-full max-w-360 px-5 py-20 md:px-12"
+  aria-labelledby="faq-title"
+>
+  <div class="mx-auto max-w-160 text-center">
+    <SectionLabel label="FAQ" />
+    <h2
+      id="faq-title"
+      class="mt-4 font-display text-[clamp(2.4rem,4.6vw,3.6rem)] font-black leading-[0.98] tracking-[-0.05em] text-skala-text"
+      data-reveal
+      style="--reveal-delay: 70ms;"
+    >
+      Preguntas frecuentes
+    </h2>
+    <p
+      class="mx-auto mt-4.5 max-w-[46ch] text-[1.02rem] leading-[1.7] text-skala-muted"
+      data-reveal
+      style="--reveal-delay: 140ms;"
+    >
+      Lo que más nos preguntan sobre producción audiovisual, cobertura de
+      eventos y desarrollo web — con precios y alcance reales, sin letra
+      chica.
+    </p>
+  </div>
+
+  <FaqTabs clusters={faqClusters} activeId={defaultCluster.id} />
+
+  <p
+    class="mb-8.5 text-center text-[0.76rem] text-skala-muted"
+    data-reveal
+    style="--reveal-delay: 260ms;"
+    data-faq-count
+  >
+    <strong class="font-bold text-skala-text" data-faq-count-number>
+      {defaultCluster.items.length}
+    </strong>
+    {" "}preguntas sobre <span data-faq-count-label>{defaultCluster.labelLower}</span>
+  </p>
+
+  <FaqPanelList clusters={faqClusters} activeId={defaultCluster.id} />
+
+  <FaqCta />
+</section>
+
+<script>
+  const tabsRoot = document.querySelector<HTMLElement>("[data-faq-tabs]");
+  const indicator = tabsRoot?.querySelector<HTMLElement>("[data-faq-indicator]");
+  const tabs = tabsRoot
+    ? Array.from(tabsRoot.querySelectorAll<HTMLButtonElement>("[data-faq-tab]"))
+    : [];
+  const panels = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-faq-panel]"),
+  );
+  const countNumber = document.querySelector<HTMLElement>(
+    "[data-faq-count-number]",
+  );
+  const countLabel = document.querySelector<HTMLElement>(
+    "[data-faq-count-label]",
+  );
+
+  const positionIndicator = () => {
+    const active = tabs.find((tab) => tab.hasAttribute("data-active"));
+    if (!indicator || !active) return;
+    indicator.style.width = `${active.offsetWidth}px`;
+    indicator.style.height = `${active.offsetHeight}px`;
+    indicator.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
+    indicator.style.opacity = "1";
+  };
+
+  const setActiveCluster = (clusterId: string) => {
+    let activeTab: HTMLButtonElement | undefined;
+
+    tabs.forEach((tab) => {
+      const isActive = tab.dataset.cluster === clusterId;
+      tab.toggleAttribute("data-active", isActive);
+      tab.setAttribute("aria-pressed", String(isActive));
+      if (isActive) activeTab = tab;
+    });
+
+    panels.forEach((panel) => {
+      panel.hidden = panel.dataset.faqPanel !== clusterId;
+    });
+
+    if (activeTab) {
+      const activePanel = panels.find((p) => p.dataset.faqPanel === clusterId);
+      if (countNumber) {
+        countNumber.textContent = String(activePanel?.children.length ?? 0);
+      }
+      if (countLabel) {
+        countLabel.textContent = activeTab.dataset.labelLower ?? "";
+      }
+    }
+
+    positionIndicator();
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const clusterId = tab.dataset.cluster;
+      if (clusterId) setActiveCluster(clusterId);
+    });
+  });
+
+  // El primer layout ya llega correcto desde el server (activeId por
+  // defecto); solo falta medir/posicionar la píldora una vez montado.
+  requestAnimationFrame(positionIndicator);
+  window.addEventListener("resize", positionIndicator);
+</script>

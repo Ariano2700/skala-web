@@ -62,6 +62,9 @@ import { singleServices } from "../../data/services";
             type="button"
             data-open-service-modal
             data-service-name={service.label}
+            data-ga-click
+            data-ga-location="servicios_sueltos_open"
+            data-ga-label={service.label}
             title="Cotizar este servicio"
             aria-label="Cotizar este servicio"
             class="cursor-pointer group/cotizar relative mt-6 flex w-full items-center justify-between overflow-hidden rounded-2xl border border-skala-accent/20 bg-skala-accent/8 px-4 py-3 text-skala-text hover:text-skala-text-secondary! transition duration-300 hover:-translate-y-0.5 hover:border-skala-accent/45 hover:bg-skala-accent hover:shadow-[0_18px_36px_rgba(92,216,252,0.2)] active:translate-y-0"

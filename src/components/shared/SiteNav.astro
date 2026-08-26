@@ -160,6 +160,10 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
         href={resolveHref("#contacto")}
         title="Contáctanos por WhatsApp"
         aria-label="Contáctanos por WhatsApp"
+        data-ga-click
+        data-ga-location="nav_mobile"
+        data-ga-label="Agenda"
+        data-ga-target="#contacto"
         class="text-skala-text-secondary! mobile-nav-cta group mx-3 mb-3 flex items-center justify-center gap-2 rounded-full bg-skala-accent px-4 py-4 text-[0.72rem] font-black uppercase tracking-[0.16em] transition duration-200 hover:bg-skala-accent/90 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
       >
         Agenda <FiArrowUpRight

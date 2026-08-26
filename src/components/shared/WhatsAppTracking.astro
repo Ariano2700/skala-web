@@ -4,11 +4,16 @@
 // CTA nuevo que agregue el atributo se trackea automático sin tocar este
 // archivo.
 //
-// Alcance actual (decidido con el cliente): CTAs genéricos (nav, CTA final
-// de home/servicios, portafolio, eventos) + los 16 botones de planes/packs
-// de PlanCard. El formulario de #contacto y el modal de #sueltos en
-// /servicios quedan pendientes para un batch aparte (arman el link de
-// WhatsApp dinámicamente por JS, no son un <a href> estático).
+// Alcance: CTAs genéricos con <a data-ga-whatsapp> estático (nav, footer,
+// CTA final de home/servicios, portafolio, eventos, proyecto) + todos los
+// botones de planes/packs de PlanCard (crece solo con el catálogo, sin
+// tocar este archivo — no vale la pena mantener la cuenta exacta acá).
+//
+// El formulario de #contacto y el modal de #sueltos en /servicios NO usan
+// este listener delegado porque arman el link de WhatsApp dinámicamente por
+// JS (no son un <a href> estático en el momento del click) — cada uno
+// dispara su propio gtag("event", "click_whatsapp", ...) al hacer submit,
+// ver ContactSection.astro y SinglesSection.astro.
 ---
 
 <script>

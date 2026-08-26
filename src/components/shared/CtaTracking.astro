@@ -1,0 +1,35 @@
+---
+// Trackea como evento GA4 "cta_click" cualquier elemento marcado con
+// data-ga-click. Mismo patrón de listener delegado que WhatsAppTracking.astro
+// (un solo listener a nivel document, cualquier CTA nuevo que agregue el
+// atributo se trackea automático), pero para señales de INTENCIÓN temprana
+// que no son un click directo a WhatsApp:
+//
+// - CTAs del hero ("Ver planes" / "Hablemos") que solo hacen scroll a una
+//   sección interna.
+// - "Agenda" del menú móvil (también scrollea a #contacto).
+// - Botón "Cotizar" de /servicios#sueltos que abre el modal, antes de que
+//   el visitante llegue a escribir o enviar nada.
+//
+// Se separa de WhatsAppTracking.astro (evento "click_whatsapp") a propósito:
+// mezclar "llegó a WhatsApp" con "mostró interés" en el mismo evento
+// arruinaría cualquier métrica de conversión real.
+---
+
+<script>
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement | null;
+    const el = target?.closest<HTMLElement>("[data-ga-click]");
+    if (!el) return;
+
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })
+      .gtag;
+    if (typeof gtag !== "function") return;
+
+    gtag("event", "cta_click", {
+      cta_location: el.dataset.gaLocation || "unknown",
+      cta_label: el.dataset.gaLabel || "",
+      cta_target: el.dataset.gaTarget || undefined,
+    });
+  });
+</script>

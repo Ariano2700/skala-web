@@ -1,0 +1,31 @@
+---
+// Lista de condiciones/variables de precio que aplican a un grupo de packs
+// completo (ej. "Variables de precio" de fotografía gastronómica,
+// "Adicionales y condiciones" de cobertura de eventos) — se muestra una vez
+// debajo de las cards en vez de repetir el mismo texto en cada tier.
+interface Props {
+  title: string;
+  items: string[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<div
+  class="rounded-3xl border border-skala-border bg-white/[0.035] p-6 md:p-7"
+  data-reveal
+>
+  <p class="m-0 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent">
+    {title}
+  </p>
+  <ul class="mt-4 flex flex-col gap-2.5 p-0">
+    {
+      items.map((item) => (
+        <li class="flex list-none items-start gap-3 text-sm leading-6 text-skala-muted">
+          <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-skala-accent/70" />
+          <span>{item}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>

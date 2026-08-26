@@ -1,0 +1,78 @@
+---
+// Selector de cluster (pills). El estado activo se maneja 100% client-side
+// (ver <script> en FaqSection.astro, que es quien coordina tabs + paneles);
+// acá solo se define el markup y el look de cada estado.
+//
+// La píldora que se desliza detrás del tab activo (en vez de que cada botón
+// "salte" a un fondo sólido) es el patrón de Emil Kowalski para tabs: una
+// sola transformación continua en vez de dos estados discretos
+// reemplazándose. Solo anima transform/width/height/opacity (GPU).
+import type { FaqCluster } from "../../../data/faq";
+
+interface Props {
+  clusters: FaqCluster[];
+  activeId: string;
+}
+
+const { clusters, activeId } = Astro.props;
+---
+
+<div
+  class="relative mt-10 mb-2.5 flex flex-wrap justify-center gap-2.5"
+  data-reveal
+  style="--reveal-delay: 220ms;"
+  data-faq-tabs
+>
+  <div
+    class="faq-tab-indicator pointer-events-none absolute top-0 left-0 z-0 rounded-full bg-skala-accent opacity-0 shadow-[0_18px_42px_rgba(92,216,252,0.16)]"
+    data-faq-indicator
+  >
+  </div>
+  {
+    clusters.map((cluster) => (
+      <button
+        type="button"
+        class="faq-tab relative z-10 inline-flex items-center gap-2.5 rounded-full border border-skala-border px-5 py-3 text-[0.72rem] font-bold tracking-[0.12em] text-skala-muted uppercase transition duration-150 hover:border-skala-accent/40 hover:text-skala-text"
+        data-faq-tab
+        data-cluster={cluster.id}
+        data-label-lower={cluster.labelLower}
+        data-active={cluster.id === activeId ? "" : undefined}
+        aria-pressed={cluster.id === activeId}
+      >
+        <cluster.icon aria-hidden="true" className="h-4 w-4 shrink-0" />
+        <span>{cluster.label}</span>
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  /* data-active: presencia del atributo, no un valor — Tailwind necesita
+     [data-active] a secas para eso, arbitrary variant en vez de data-[..]. */
+  .faq-tab[data-active] {
+    border-color: transparent;
+    color: var(--color-skala-text-secondary);
+  }
+
+  .faq-tab {
+    transition:
+      border-color 150ms ease,
+      color 150ms ease,
+      transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  /* Feedback de presión: el botón "escucha" el clic antes de que el
+     indicador termine de deslizarse (Emil Kowalski: cualquier elemento
+     presionable necesita esto). */
+  .faq-tab:active {
+    transform: scale(0.97);
+  }
+
+  .faq-tab-indicator {
+    transition:
+      transform 220ms cubic-bezier(0.77, 0, 0.175, 1),
+      width 220ms cubic-bezier(0.77, 0, 0.175, 1),
+      height 220ms cubic-bezier(0.77, 0, 0.175, 1),
+      opacity 150ms ease;
+  }
+</style>

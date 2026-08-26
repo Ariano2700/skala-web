@@ -1,0 +1,36 @@
+---
+// Repite la MISMA acción primaria de la sección (ir a #contacto), solo que
+// discreta: el cierre fuerte de la página lo hace <CtaSection /> justo
+// después. data-ga-click es el evento de intención temprana (no
+// click_whatsapp) — ver src/components/shared/CtaTracking.astro.
+import { FaWhatsapp } from "react-icons/fa";
+import { FiArrowUpRight } from "react-icons/fi";
+---
+
+<p
+  class="mt-12 flex flex-col md:flex-row items-center justify-center gap-2.5 text-center text-[0.92rem]"
+  data-reveal
+  style="--reveal-delay: 120ms;"
+>
+  <span class="text-skala-muted"> ¿No encontraste tu respuesta? </span>
+  <a
+    href="#contacto"
+    title="Ir al formulario de contacto"
+    aria-label="Ir al formulario de contacto"
+    class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-full bg-skala-accent px-8 py-3.5 font-display text-[0.74rem] font-bold uppercase tracking-[0.16em] text-black! transition duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-skala-accent/70"
+    data-ga-click
+    data-ga-location="faq"
+    data-ga-label="Escríbenos por WhatsApp"
+    data-ga-target="#contacto"
+  >
+    <FaWhatsapp
+      aria-hidden="true"
+      className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+    />
+    Escríbenos por WhatsApp
+    <FiArrowUpRight
+      aria-hidden="true"
+      className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+    />
+  </a>
+</p>

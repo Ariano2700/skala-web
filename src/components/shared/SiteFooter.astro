@@ -49,6 +49,9 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
               rel="noopener noreferrer"
               title={action.label}
               aria-label={action.label}
+              data-ga-whatsapp={action.href.includes("wa.me") ? "" : undefined}
+              data-ga-location="footer"
+              data-ga-label={action.label}
               class="group inline-flex items-center justify-between gap-3 rounded-2xl border border-skala-border bg-white/[0.035] px-4 py-4 text-sm text-skala-muted transition duration-200 hover:-translate-y-px hover:border-skala-accent/35 hover:bg-skala-accent/55 hover:text-skala-text focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
             >
               <span class="inline-flex items-center gap-3">

@@ -5,12 +5,20 @@ import SectionLabel from "../components/landing/SectionLabel.astro";
 import CtaSection from "../components/landing/CtaSection.astro";
 import SinglesSection from "../components/landing/SinglesSection.astro";
 import PlanCard from "../components/shared/PlanCard.astro";
+import PackNotes from "../components/shared/PackNotes.astro";
 import ServiciosCategoryNav from "../components/servicios/ServiciosCategoryNav.astro";
 import {
   webDevPacks,
   brandingPacks,
   designPacks,
-  photoVideoEventPacks,
+  videoPacks,
+  gastronomicPhotoPacks,
+  gastronomicPhotoNotes,
+  corporatePhotoPacks,
+  birthdayPacks,
+  birthdayNotes,
+  quinceañeraPacks,
+  quinceañeraNotes,
 } from "../data/servicePacks";
 import { getOrganizationSchema, organizationRef } from "../data/organization";
 
@@ -24,7 +32,16 @@ const canonicalUrl = new URL(
 const serviciosKeywords =
   "packs de branding trujillo, diseño de logo precio, paginas web trujillo, cobertura de eventos, video corporativo, servicios de diseño redes sociales, skala servicios";
 
-const pricedPacks = [...webDevPacks, ...brandingPacks, ...designPacks];
+const pricedPacks = [
+  ...webDevPacks,
+  ...brandingPacks,
+  ...designPacks,
+  ...videoPacks,
+  ...gastronomicPhotoPacks,
+  ...corporatePhotoPacks,
+  ...birthdayPacks,
+  ...quinceañeraPacks,
+];
 
 // Algunos packs (ej. desarrollo web) tienen precio en rango ("S/ 450 - S/ 900")
 // en vez de un valor fijo; se refleja como min/max en el JSON-LD.
@@ -160,7 +177,7 @@ const structuredData = [
 
     <section
       id="foto-video-evento"
-      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
+      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-14 px-5 md:px-12"
     >
       <div class="flex flex-col gap-2">
         <h2
@@ -170,12 +187,72 @@ const structuredData = [
           Fotografía, Video & Cobertura de Evento
         </h2>
         <p class="max-w-[62ch] text-sm leading-7 text-skala-muted" data-reveal style="--reveal-delay: 90ms;">
-          Estamos definiendo el detalle final de estos tres packs — mientras
-          tanto, cuéntanos tu proyecto y te armamos una cotización a medida.
+          Precios por sesión o por evento. Los adicionales (horas extra,
+          impresiones, dron) se cotizan aparte de cada pack.
         </p>
       </div>
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {photoVideoEventPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_foto_video_evento" />)}
+
+      <div class="flex flex-col gap-7">
+        <h3
+          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
+          data-reveal
+        >
+          Video
+        </h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {videoPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_video" />)}
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-7">
+        <h3
+          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
+          data-reveal
+        >
+          Fotografía Gastronómica
+        </h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {gastronomicPhotoPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_foto_gastronomica" />)}
+        </div>
+        <PackNotes title="Variables de precio" items={gastronomicPhotoNotes} />
+      </div>
+
+      <div class="flex flex-col gap-7">
+        <h3
+          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
+          data-reveal
+        >
+          Fotografía Corporativa
+        </h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {corporatePhotoPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_foto_corporativa" />)}
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-7">
+        <h3
+          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
+          data-reveal
+        >
+          Cobertura de Cumpleaños
+        </h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {birthdayPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_cumpleanos" />)}
+        </div>
+        <PackNotes title="Adicionales y condiciones" items={birthdayNotes} />
+      </div>
+
+      <div class="flex flex-col gap-7">
+        <h3
+          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
+          data-reveal
+        >
+          Cobertura de Quinceañero
+        </h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {quinceañeraPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_quinceanero" />)}
+        </div>
+        <PackNotes title="Adicionales y condiciones" items={quinceañeraNotes} />
       </div>
     </section>
 
