@@ -57,7 +57,7 @@ import "./team.css";
         aria-live="polite"
       >
         <div class="name default" id="default-text">
-          <span> Integrantes</span>
+          <span role="group"> Integrantes</span>
         </div>
         {
           TeamData.map((member) => (
@@ -66,7 +66,7 @@ import "./team.css";
               id={`${member.name.toLowerCase()}-info`}
               aria-labelledby="team-heading"
             >
-              <span>
+              <span role="group">
                 <strong>{member.name}</strong>
                 <h4 class="sub-name">{member.role}</h4>
               </span>
@@ -103,7 +103,13 @@ import "./team.css";
     const nameElements = document.querySelectorAll(".profile-names .name");
     const nameSpans = document.querySelectorAll(".profile-names .name span");
 
-    // Split text into characters
+    // Split text into characters. Por defecto SplitText inyecta un
+    // aria-label (con el texto original) en cada span destino y un
+    // aria-hidden="true" en cada letra suelta, para que el lector de
+    // pantalla lea la palabra completa en vez de letra por letra. Ese
+    // aria-label solo es válido en elementos con un rol que permita
+    // nombre-por-autor (los <span> sin rol lo prohíben) — por eso llevan
+    // role="group" en el markup de arriba.
     nameSpans.forEach((span) => {
       const split = new SplitText(span, { type: "chars" });
       split.chars.forEach((char) => {
