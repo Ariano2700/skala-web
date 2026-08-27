@@ -16,9 +16,8 @@ import SkalaWordmark from "../shared/SkalaWordmark.tsx";
 
     <div class="flex flex-col gap-6">
       <h1
-        class="relative m-0 max-w-[10ch] font-display text-[clamp(3.4rem,7vw,7.7rem)] font-black leading-[0.86] tracking-[-0.08em] text-wrap:balance"
-        data-reveal
-        style="--reveal-delay: 120ms;"
+        class="relative m-0 max-w-[10ch] font-display text-[clamp(3.4rem,7vw,7.7rem)] font-black leading-[0.86] tracking-[-0.08em] text-wrap:balance hero-intro"
+        style="--hero-delay: 120ms;"
       >
         Tu marca,
         <br />
@@ -27,18 +26,16 @@ import SkalaWordmark from "../shared/SkalaWordmark.tsx";
       </h1>
 
       <p
-        class="max-w-[58ch] text-[1.08rem] leading-8 text-skala-muted"
-        data-reveal
-        style="--reveal-delay: 220ms;"
+        class="max-w-[58ch] text-[1.08rem] leading-8 text-skala-muted hero-intro"
+        style="--hero-delay: 220ms;"
       >
         Estrategia, identidad y producción en un mismo equipo para marcas que
         quieren crecer y Skalar.
       </p>
 
       <div
-        class="flex flex-wrap gap-3"
-        data-reveal
-        style="--reveal-delay: 300ms;"
+        class="flex flex-wrap gap-3 hero-intro"
+        style="--hero-delay: 300ms;"
       >
         {
           heroActions.map((action) => (
@@ -163,6 +160,37 @@ import SkalaWordmark from "../shared/SkalaWordmark.tsx";
 </section>
 
 <style>
+  /*
+    El hero es contenido visible desde el primer pintado (no requiere scroll),
+    así que se anima con CSS puro (animation, no transition+IntersectionObserver)
+    para no depender de que RevealScript.astro cargue/ejecute JS antes de
+    pintar el texto. Ese acoplamiento a JS era el causante del enorme
+    "Retraso de renderizado" del LCP (el párrafo del hero) en PageSpeed Insights.
+  */
+  .hero-intro {
+    animation: heroTextIn 0.7s var(--ease-out, ease) both;
+    animation-delay: var(--hero-delay, 0ms);
+  }
+
+  @keyframes heroTextIn {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 24px, 0) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-intro {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   .hero-showcase {
     animation: heroShowcaseIn 0.72s ease both;
   }
