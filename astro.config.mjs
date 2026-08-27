@@ -28,6 +28,17 @@ export default defineConfig({
   site: "https://skalaagencia.netlify.app",
   output: "server",
   adapter: netlify(),
+  build: {
+    // El CSS scoped de los componentes de cada página se emite por defecto
+    // como <link> externos: cada uno es una petición extra que bloquea el
+    // primer pintado (PSI lo marca como "Solicitudes que bloquean el
+    // renderizado"). Al inlinearlo en el <head> del propio HTML, ese CSS
+    // llega en la misma respuesta que ya se está descargando, sin round
+    // trips adicionales. Contrapartida: se pierde el cacheo entre páginas
+    // de ese CSS (se reenvía en cada navegación); para este sitio, donde
+    // Lighthouse audita landings de una sola página, compensa.
+    inlineStylesheets: "always",
+  },
   integrations: [
     react(),
     icon(),

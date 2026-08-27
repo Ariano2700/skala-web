@@ -89,10 +89,30 @@ const absoluteOgImage = new URL(ogImage, siteUrl).href;
       href="https://fonts.gstatic.com"
       crossorigin="anonymous"
     />
+    <!--
+      La hoja de Google Fonts es render-blocking por naturaleza (es un
+      <link rel="stylesheet"> externo): el navegador no pinta nada hasta
+      resolverla, aunque ya tenga display=swap. El patrón preload+onload
+      la descarga sin bloquear el primer pintado; el <noscript> es el
+      fallback si el usuario tiene JS desactivado.
+    -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Unbounded:wght@400;500;600;700;800;900&display=swap"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Unbounded:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Unbounded:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     {
       structuredData && (
