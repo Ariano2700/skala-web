@@ -158,4 +158,22 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
       <span>Contenido</span>
     </p>
   </div>
+
+  <nav
+    aria-label="Enlaces legales"
+    class="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-white/8 pt-4 text-xs text-skala-muted"
+  >
+    <a href="/politica-de-privacidad" class="transition-colors hover:text-skala-accent">
+      Política de Privacidad
+    </a>
+    <a href="/politica-de-cookies" class="transition-colors hover:text-skala-accent">
+      Política de Cookies
+    </a>
+    <a href="/terminos-y-condiciones" class="transition-colors hover:text-skala-accent">
+      Términos y Condiciones
+    </a>
+    <a href="/libro-de-reclamaciones" class="transition-colors hover:text-skala-accent">
+      Libro de Reclamaciones
+    </a>
+  </nav>
 </footer>

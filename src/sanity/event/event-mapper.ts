@@ -78,6 +78,7 @@ export interface EventCategoryRef {
 }
 
 export interface EventSanitySchema extends SanityDocument {
+  _updatedAt: string;
   title: string;
   slug: { current: string };
   heroTagline?: string;
@@ -144,6 +145,8 @@ export interface EventSanitySchema extends SanityDocument {
 
 export interface Event {
   id: string;
+  /** ISO datetime de la última modificación del documento en Sanity (`_updatedAt`). Usado para el `lastmod` del sitemap. */
+  updatedAt?: string;
   title: string;
   slug: string;
   hero: {
@@ -229,6 +232,7 @@ export const mapToEvent = (raw: EventSanitySchema | null): Event => {
 
   return {
     id: raw?._id ?? "",
+    updatedAt: raw?._updatedAt,
     title: raw?.title ?? "Sin título",
     slug: raw?.slug?.current ?? "",
     hero: {

@@ -1,0 +1,89 @@
+---
+export const prerender = true;
+import Layout from "../layouts/Layout.astro";
+import LegalLayout from "../components/legal/LegalLayout.astro";
+
+const pageTitle = "Política de Cookies | Skala Agencia";
+const pageDescription =
+  "Qué cookies usa el sitio de Skala, para qué sirven y cómo cambiar tu decisión sobre ellas en cualquier momento.";
+const canonicalUrl = new URL(
+  "/politica-de-cookies/",
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+const lastUpdated = "3 de septiembre de 2026";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  robots="index, follow"
+>
+  <main class="relative z-10">
+    <LegalLayout
+      kicker="Legal"
+      title="Política de Cookies"
+      lastUpdated={lastUpdated}
+      intro="Este sitio usa muy pocas cookies, y ninguna se activa sin tu permiso. Acá te explicamos exactamente cuáles y para qué."
+    >
+      <h2>1. Qué es una cookie</h2>
+      <p>
+        Una cookie es un archivo pequeño que un sitio guarda en tu navegador
+        para recordar información entre visitas (por ejemplo, una preferencia
+        o una medición de uso). No pueden acceder a otros archivos de tu
+        dispositivo ni identificarte por nombre.
+      </p>
+
+      <h2>2. Qué usa este sitio</h2>
+      <ul>
+        <li>
+          <strong>Cookies de Google Analytics 4</strong> (medición de uso): solo
+          se activan si haces clic en "Aceptar" en el aviso de cookies que
+          aparece la primera vez que visitas el sitio. Corren con{" "}
+          <strong>Google Consent Mode v2</strong>, que las mantiene bloqueadas
+          por defecto hasta que das tu consentimiento.
+        </li>
+        <li>
+          <strong>Una entrada de almacenamiento local</strong>: guarda si aceptaste o
+          rechazaste el aviso, para no volver a preguntarte en cada visita.
+          Técnicamente no es una cookie (vive en tu navegador, no se envía al
+          servidor), pero cumple una función parecida y por transparencia la
+          mencionamos igual acá.
+        </li>
+      </ul>
+
+      <h2>3. Lo que NO usamos</h2>
+      <p>
+        Este sitio no tiene píxeles de publicidad de redes sociales (Meta,
+        TikTok) ni herramientas de mapas de calor o grabación de sesión. Si
+        eso cambia en el futuro, esta política se actualizará antes de
+        activarlas.
+      </p>
+
+      <h2>4. Cómo cambiar tu decisión</h2>
+      <p>
+        Puedes cambiar de opinión en cualquier momento borrando los datos de
+        navegación de este sitio desde la configuración de tu navegador (o
+        limpiando manualmente el <code>localStorage</code> de{" "}
+        skalaagencia.netlify.app), lo que hace que el aviso de cookies
+        vuelva a aparecer en tu siguiente visita. También puedes bloquear las
+        cookies de Google Analytics directamente desde la configuración de
+        privacidad de tu navegador.
+      </p>
+
+      <h2>5. Más información</h2>
+      <p>
+        Para saber cómo procesa los datos Google Analytics 4, revisa la{" "}
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Política de Privacidad de Google
+        </a>
+        . Para el resto de datos que manejamos directamente, revisa nuestra{" "}
+        <a href="/politica-de-privacidad">Política de Privacidad</a>.
+      </p>
+    </LegalLayout>
+  </main>
+</Layout>

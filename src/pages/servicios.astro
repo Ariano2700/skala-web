@@ -4,22 +4,9 @@ import Layout from "../layouts/Layout.astro";
 import SectionLabel from "../components/landing/SectionLabel.astro";
 import CtaSection from "../components/landing/CtaSection.astro";
 import SinglesSection from "../components/landing/SinglesSection.astro";
-import PlanCard from "../components/shared/PlanCard.astro";
-import PackNotes from "../components/shared/PackNotes.astro";
-import ServiciosCategoryNav from "../components/servicios/ServiciosCategoryNav.astro";
-import {
-  webDevPacks,
-  brandingPacks,
-  designPacks,
-  videoPacks,
-  gastronomicPhotoPacks,
-  gastronomicPhotoNotes,
-  corporatePhotoPacks,
-  birthdayPacks,
-  birthdayNotes,
-  quinceañeraPacks,
-  quinceañeraNotes,
-} from "../data/servicePacks";
+import BrandsMarquee from "../components/shared/BrandsMarquee.astro";
+import { FiArrowUpRight, FiPackage } from "react-icons/fi";
+import { serviceCategories } from "../data/serviceCategories";
 import { getOrganizationSchema, organizationRef } from "../data/organization";
 
 const pageTitle = "Servicios y packs - Skala Agencia & Productora";
@@ -32,16 +19,9 @@ const canonicalUrl = new URL(
 const serviciosKeywords =
   "packs de branding trujillo, diseño de logo precio, paginas web trujillo, cobertura de eventos, video corporativo, servicios de diseño redes sociales, skala servicios";
 
-const pricedPacks = [
-  ...webDevPacks,
-  ...brandingPacks,
-  ...designPacks,
-  ...videoPacks,
-  ...gastronomicPhotoPacks,
-  ...corporatePhotoPacks,
-  ...birthdayPacks,
-  ...quinceañeraPacks,
-];
+const pricedPacks = serviceCategories.flatMap((category) =>
+  category.sections.flatMap((section) => section.packs),
+);
 
 // Algunos packs (ej. desarrollo web) tienen precio en rango ("S/ 450 - S/ 900")
 // en vez de un valor fijo; se refleja como min/max en el JSON-LD.
@@ -72,6 +52,20 @@ const buildOffer = (pack: (typeof pricedPacks)[number]) => {
     ...priceFields,
   };
 };
+
+// Precio de entrada de cada categoría, para la card del grid (el detalle de
+// cada tier vive en /servicios/[categoria], no acá).
+const startingPriceByCategory = new Map(
+  serviceCategories.map((category) => {
+    const allNumbers = category.sections
+      .flatMap((section) => section.packs)
+      .flatMap(
+        (pack) =>
+          pack.price.match(/[\d,]+/g)?.map((n) => Number(n.replace(/,/g, ""))) ?? [],
+      );
+    return [category.slug, Math.min(...allNumbers)];
+  }),
+);
 
 const structuredData = [
   getOrganizationSchema(),
@@ -115,148 +109,90 @@ const structuredData = [
         data-reveal
         style="--reveal-delay: 120ms;"
       >
-        Desde una web o un logo hasta una cobertura de evento: elige el pack
-        que necesitas o cotiza una pieza suelta directo por WhatsApp.
+        Desde una web o un logo hasta una cobertura de evento: elige la
+        categoría que necesitas para ver los packs, precios y alcance
+        completos, o cotiza una pieza suelta directo por WhatsApp.
       </p>
     </section>
 
-    <ServiciosCategoryNav />
-
-    <section
-      id="dev-web"
-      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
-    >
-      <div class="flex flex-col gap-2">
-        <h2
-          class="m-0 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-black tracking-tighter text-skala-text"
-          data-reveal
-        >
-          Desarrollo Web
-        </h2>
-        <p class="max-w-[62ch] text-sm leading-7 text-skala-muted" data-reveal style="--reveal-delay: 90ms;">
-          Los precios no incluyen hosting, dominio ni mantenimiento mensual —
-          se cotizan aparte. El precio final dentro de cada rango depende del
-          número de páginas o productos, el nivel de personalización y las
-          integraciones adicionales (CRM, ERP, facturación SUNAT, etc.).
-        </p>
-      </div>
+    <section class="mx-auto w-full max-w-360 px-5 md:px-12">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {webDevPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_web" />)}
-      </div>
-    </section>
+        {
+          serviceCategories.map((category, index) => (
+            <a
+              href={`/servicios/${category.slug}`}
+              title={`Ver planes de ${category.navLabel}`}
+              aria-label={`Ver planes de ${category.navLabel}`}
+              class="group relative flex flex-col gap-5 overflow-hidden rounded-[28px] border border-skala-border bg-[linear-gradient(180deg,rgba(8,24,52,0.94),rgba(4,20,46,0.96))] p-7 shadow-(--shadow) transition duration-300 hover:-translate-y-1.5 hover:border-skala-accent/40 hover:bg-skala-accent/5"
+              data-reveal
+              style={`--reveal-delay: ${index * 80}ms;`}
+            >
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-skala-accent/24 bg-skala-accent/8 text-skala-accent shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-300 group-hover:scale-110">
+                <category.icon className="h-6 w-6" aria-hidden="true" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <h2 class="m-0 font-display text-[1.15rem] leading-[1.3] tracking-[-0.04em] text-skala-text">
+                  {category.navLabel}
+                </h2>
+                <p class="m-0 line-clamp-2 text-sm leading-6 text-skala-muted">
+                  {category.intro[0]}
+                </p>
+              </div>
+              <div class="mt-auto flex items-center justify-between gap-3 pt-2">
+                <span class="text-[0.66rem] uppercase tracking-[0.18em] text-skala-accent">
+                  Desde S/ {startingPriceByCategory.get(category.slug)}
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-[0.7rem] font-black uppercase tracking-[0.14em] text-skala-text">
+                  Ver planes
+                  <FiArrowUpRight
+                    aria-hidden="true"
+                    className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
+                </span>
+              </div>
+            </a>
+          ))
+        }
 
-    <section
-      id="branding"
-      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
-    >
-      <h2
-        class="m-0 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-black tracking-tighter text-skala-text"
-        data-reveal
-      >
-        Branding
-      </h2>
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {brandingPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_branding" />)}
-      </div>
-    </section>
-
-    <section
-      id="diseno"
-      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
-    >
-      <h2
-        class="m-0 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-black tracking-tighter text-skala-text"
-        data-reveal
-      >
-        Diseño
-      </h2>
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {designPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_diseno" />)}
-      </div>
-    </section>
-
-    <section
-      id="foto-video-evento"
-      class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-14 px-5 md:px-12"
-    >
-      <div class="flex flex-col gap-2">
-        <h2
-          class="m-0 font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-black tracking-tighter text-skala-text"
+        <a
+          href="#sueltos"
+          title="Ver servicios sueltos"
+          aria-label="Ver servicios sueltos"
+          class="group relative flex flex-col gap-5 overflow-hidden rounded-[28px] border border-skala-border bg-white/[0.035] p-7 shadow-(--shadow) transition duration-300 hover:-translate-y-1.5 hover:border-skala-accent/40 hover:bg-skala-accent/5"
           data-reveal
+          style={`--reveal-delay: ${serviceCategories.length * 80}ms;`}
         >
-          Fotografía, Video & Cobertura de Evento
-        </h2>
-        <p class="max-w-[62ch] text-sm leading-7 text-skala-muted" data-reveal style="--reveal-delay: 90ms;">
-          Precios por sesión o por evento. Los adicionales (horas extra,
-          impresiones, dron) se cotizan aparte de cada pack.
-        </p>
-      </div>
-
-      <div class="flex flex-col gap-7">
-        <h3
-          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
-          data-reveal
-        >
-          Video
-        </h3>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {videoPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_video" />)}
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-7">
-        <h3
-          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
-          data-reveal
-        >
-          Fotografía Gastronómica
-        </h3>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {gastronomicPhotoPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_foto_gastronomica" />)}
-        </div>
-        <PackNotes title="Variables de precio" items={gastronomicPhotoNotes} />
-      </div>
-
-      <div class="flex flex-col gap-7">
-        <h3
-          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
-          data-reveal
-        >
-          Fotografía Corporativa
-        </h3>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {corporatePhotoPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_foto_corporativa" />)}
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-7">
-        <h3
-          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
-          data-reveal
-        >
-          Cobertura de Cumpleaños
-        </h3>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {birthdayPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_cumpleanos" />)}
-        </div>
-        <PackNotes title="Adicionales y condiciones" items={birthdayNotes} />
-      </div>
-
-      <div class="flex flex-col gap-7">
-        <h3
-          class="m-0 font-display text-[clamp(1.3rem,2.2vw,1.7rem)] font-black tracking-tight text-skala-text"
-          data-reveal
-        >
-          Cobertura de Quinceañero
-        </h3>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {quinceañeraPacks.map((pack, index) => <PlanCard plan={pack} index={index} location="servicios_quinceanero" />)}
-        </div>
-        <PackNotes title="Adicionales y condiciones" items={quinceañeraNotes} />
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-skala-accent/24 bg-skala-accent/8 text-skala-accent shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-300 group-hover:scale-110">
+            <FiPackage className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <div class="flex flex-col gap-2">
+            <h2 class="m-0 font-display text-[1.15rem] leading-[1.3] tracking-[-0.04em] text-skala-text">
+              Servicios Sueltos
+            </h2>
+            <p class="m-0 line-clamp-2 text-sm leading-6 text-skala-muted">
+              Piezas individuales sin compromiso mensual, a cotizar directo por
+              WhatsApp.
+            </p>
+          </div>
+          <div class="mt-auto flex items-center justify-between gap-3 pt-2">
+            <span class="text-[0.66rem] uppercase tracking-[0.18em] text-skala-accent">
+              A cotizar
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-[0.7rem] font-black uppercase tracking-[0.14em] text-skala-text">
+              Ver servicios
+              <FiArrowUpRight
+                aria-hidden="true"
+                className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </span>
+          </div>
+        </a>
       </div>
     </section>
 
     <SinglesSection />
+
+    <BrandsMarquee />
 
     <CtaSection />
   </main>

@@ -1,134 +1,38 @@
 ---
 import { type PortfolioProjectItem } from "../../data/portafolio";
-import PortfolioCard from "./PortfolioCard.astro";
-import ModalPortfolio from "./ModalPortfolio";
-import { BsSearch } from "react-icons/bs";
+import PortfolioGridClient from "./PortfolioGridClient";
 
 interface Props {
-  projects?: PortfolioProjectItem[];
+  /** Primer lote, ya filtrado por `initialCategory` y recortado a `pageSize`. */
+  initialItems: PortfolioProjectItem[];
+  /** Total real de proyectos en `initialCategory` (no solo los de este lote). */
+  initialTotal: number;
+  /** Categoría activa al cargar, leída de `?categoria=` en el server. */
+  initialCategory: string;
+  pageSize: number;
 }
 
-const { projects = [] } = Astro.props;
+const { initialItems, initialTotal, initialCategory, pageSize } = Astro.props;
 ---
 
 <section
   id="portfolio-grid"
   class="relative z-10 mx-auto w-full max-w-360 px-5 pb-28 pt-12 md:px-12"
   aria-labelledby="portfolio-grid-title"
+  data-reveal
 >
   <h2 id="portfolio-grid-title" class="sr-only">Proyectos de portafolio</h2>
 
-  <div class="portfolio-grid grid grid-cols-12 gap-4" data-portfolio-grid>
-    {
-      projects.map((project, index) => (
-        <PortfolioCard project={project} index={index} />
-      ))
-    }
-  </div>
-
-  <div
-    id="portfolio-empty"
-    class="hidden rounded-3xl border border-skala-border bg-white/[0.035] p-12 text-center"
-    data-portfolio-empty
-  >
-    <p
-      class="mb-3 font-display text-4xl font-black tracking-[-0.04em] text-skala-text"
-    >
-      <BsSearch className="mx-auto mb-6 h-12 w-12 text-skala-accent" />
-    </p>
-    <h3
-      class="mb-3 font-display text-2xl font-black tracking-[-0.04em] text-skala-text"
-    >
-      No hay proyectos en esta categoría todavía.
-    </h3>
-    <p class="m-0 text-sm leading-7 text-skala-muted">
-      Podemos sumar nuevos casos cuando estén listos para publicar.
-    </p>
-  </div>
+  <PortfolioGridClient
+    client:load
+    initialItems={initialItems}
+    initialTotal={initialTotal}
+    initialCategory={initialCategory}
+    pageSize={pageSize}
+  />
 </section>
 
-<ModalPortfolio client:load />
-
-<script>
-  const filterButtons =
-    document.querySelectorAll<HTMLAnchorElement>(".portfolio-filter");
-  const grid = document.querySelector<HTMLElement>("[data-portfolio-grid]");
-  const empty = document.querySelector<HTMLElement>("[data-portfolio-empty]");
-  const count = document.querySelector<HTMLElement>("[data-filter-count]");
-  const cards = grid?.querySelectorAll<HTMLElement>("[data-project-card]");
-
-  const pluralize = (amount: number) =>
-    `${amount} proyecto${amount !== 1 ? "s" : ""}`;
-
-  const applyFilter = (filter: string, button: HTMLAnchorElement) => {
-    if (!grid || !cards || !empty || !count) return;
-
-    let visible = 0;
-
-    filterButtons.forEach((item) => {
-      const isActive = item === button;
-      item.setAttribute("aria-pressed", String(isActive));
-      item.classList.toggle("is-active", isActive);
-    });
-
-    const isMobile = window.innerWidth < 768;
-    const delayStep = isMobile ? 0.015 : 0.04;
-
-    cards.forEach((card, index) => {
-      const cardCategories = (card.dataset.category ?? "").split(" ");
-      const matches = filter === "all" || cardCategories.includes(filter);
-
-      if (matches) {
-        card.hidden = false;
-        card.classList.remove("portfolio-card-hiding");
-        card.style.animationDelay = `${visible * delayStep}s`;
-        card.style.animation = "none";
-        requestAnimationFrame(() => {
-          card.style.animation = "";
-        });
-        visible += 1;
-      } else {
-        card.hidden = true;
-      }
-    });
-
-    empty.classList.toggle("hidden", visible !== 0);
-    count.textContent = pluralize(visible);
-  };
-
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", (event) => {
-      event.preventDefault();
-      const filter = button.dataset.filter ?? "all";
-      applyFilter(filter, button);
-      // Refleja el filtro en la URL (?categoria=) sin recargar la página.
-      const url = new URL(window.location.href);
-      if (filter === "all") {
-        url.searchParams.delete("categoria");
-      } else {
-        url.searchParams.set("categoria", filter);
-      }
-      window.history.replaceState({}, "", url);
-    });
-  });
-
-  // Aplica el filtro activo desde el query param ?categoria= al cargar.
-  const initialFilter = new URL(window.location.href).searchParams.get(
-    "categoria",
-  );
-  if (initialFilter) {
-    const activeButton = Array.from(filterButtons).find(
-      (b) => b.dataset.filter === initialFilter,
-    );
-    if (activeButton) applyFilter(initialFilter, activeButton);
-  }
-</script>
-
 <style>
-  .portfolio-card[hidden] {
-    display: none;
-  }
-
   .portfolio-filter.is-active {
     border-color: rgba(92, 216, 252, 1);
     background: rgba(92, 216, 252, 1);

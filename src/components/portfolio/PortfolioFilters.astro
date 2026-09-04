@@ -8,9 +8,11 @@ import { getAllCategoriesByOrder } from "../../sanity/category/api";
 
 interface Props {
   projects?: PortfolioProjectItem[];
+  /** Total de proyectos de la categoría activa (no solo los ya cargados en la grilla). */
+  total?: number;
 }
 
-const { projects = [] } = Astro.props;
+const { projects = [], total } = Astro.props;
 
 // Categorías 100% dinámicas desde Sanity (CMS). El filtro usa el slug real
 // de cada categoría. Si el CMS no responde, se usa el conjunto de slugs
@@ -53,7 +55,7 @@ const filters: {
 ---
 
 <div
-  class="portfolio-filters sticky top-18 z-40 border-y border-skala-border bg-[#04142e]/94 py-4 backdrop-blur-xl"
+  class="portfolio-filters sticky top-18 z-40 border-y border-skala-border bg-[#04142e]/94 py-4"
   aria-label="Filtros de portafolio"
 >
   <div
@@ -88,7 +90,7 @@ const filters: {
       class="ml-auto text-xs font-medium uppercase tracking-[0.16em] text-skala-muted"
       data-filter-count
     >
-      {`${projects.length} proyectos`}
+      {`${total ?? projects.length} proyectos`}
     </span>
   </div>
 </div>

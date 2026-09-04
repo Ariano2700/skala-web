@@ -10,6 +10,7 @@ import {
 
 const event_BASE_QUERY = `{
   _id,
+  _updatedAt,
   title,
   slug,
   heroTagline,

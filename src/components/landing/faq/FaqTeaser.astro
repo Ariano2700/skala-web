@@ -1,0 +1,90 @@
+---
+// Versión compacta del FAQ para el home: una pregunta representativa por
+// línea de negocio (no las ~24 preguntas completas) con CTA a la página
+// dedicada. La sección completa (con tabs, buscador implícito por cluster y
+// el FAQPage JSON-LD) vive solo en /preguntas-frecuentes — mostrarla dos
+// veces completa sería contenido duplicado en dos URLs sin necesidad.
+import SectionLabel from "../SectionLabel.astro";
+import { faqClusters, faqTotalCount } from "../../../data/faq";
+import { FiArrowUpRight } from "react-icons/fi";
+
+const preview = faqClusters.map((cluster) => ({
+  cluster,
+  item: cluster.items[0],
+}));
+---
+
+<section
+  id="faq"
+  class="relative z-10 mx-auto w-full max-w-360 px-5 py-20 md:px-12"
+  aria-labelledby="faq-teaser-title"
+>
+  <div class="mx-auto max-w-160 text-center">
+    <SectionLabel label="FAQ" />
+    <h2
+      id="faq-teaser-title"
+      class="mt-4 font-display text-[clamp(2.4rem,4.6vw,3.6rem)] font-black leading-[0.98] tracking-[-0.05em] text-skala-text"
+      data-reveal
+      style="--reveal-delay: 70ms;"
+    >
+      Preguntas frecuentes
+    </h2>
+    <p
+      class="mx-auto mt-4.5 max-w-[46ch] text-[1.02rem] leading-[1.7] text-skala-muted"
+      data-reveal
+      style="--reveal-delay: 140ms;"
+    >
+      Lo que más nos preguntan sobre producción audiovisual, cobertura de
+      eventos y desarrollo web — con precios y alcance reales, sin letra
+      chica.
+    </p>
+  </div>
+
+  <div class="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+    {
+      preview.map(({ cluster, item }, index) => (
+        <article
+          class="group flex flex-col gap-4 rounded-[26px] border border-skala-border bg-white/[0.035] p-6 shadow-(--shadow) transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 hover:bg-skala-accent/[0.045]"
+          data-reveal
+          style={`--reveal-delay: ${index * 90}ms;`}
+        >
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-skala-accent/24 bg-skala-accent/8 text-skala-accent">
+            <cluster.icon className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <p class="m-0 text-[0.66rem] uppercase tracking-[0.18em] text-skala-accent">
+            {cluster.label}
+          </p>
+          <h3 class="m-0 font-display text-[1rem] leading-[1.4] tracking-[-0.03em] text-skala-text">
+            {item.q}
+          </h3>
+          <p class="m-0 line-clamp-3 text-sm leading-6 text-skala-muted">
+            {item.a}
+          </p>
+        </article>
+      ))
+    }
+  </div>
+
+  <p
+    class="mt-10 flex flex-col items-center justify-center gap-4 text-center"
+    data-reveal
+    style="--reveal-delay: 260ms;"
+  >
+    <a
+      href="/preguntas-frecuentes"
+      title="Ver todas las preguntas frecuentes"
+      aria-label="Ver todas las preguntas frecuentes"
+      class="group inline-flex items-center justify-center gap-3 rounded-full border border-skala-border-strong bg-white/3 px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] hover:border-skala-accent/40 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+      data-ga-click
+      data-ga-location="faq_teaser"
+      data-ga-label="Ver todas las preguntas"
+      data-ga-target="/preguntas-frecuentes"
+    >
+      <span>Ver las {faqTotalCount} preguntas</span>
+      <FiArrowUpRight
+        aria-hidden="true"
+        className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      />
+    </a>
+  </p>
+</section>

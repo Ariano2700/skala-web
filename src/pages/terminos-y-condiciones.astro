@@ -1,0 +1,138 @@
+---
+export const prerender = true;
+import Layout from "../layouts/Layout.astro";
+import LegalLayout from "../components/legal/LegalLayout.astro";
+import { CONTACT_DATA } from "../data/contact_data";
+
+const pageTitle = "Términos y Condiciones | Skala Agencia";
+const pageDescription =
+  "Condiciones de uso del sitio y de contratación de los servicios de Skala: cotizaciones, entregables, uso del portafolio y ley aplicable.";
+const canonicalUrl = new URL(
+  "/terminos-y-condiciones/",
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+const lastUpdated = "3 de septiembre de 2026";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  robots="index, follow"
+>
+  <main class="relative z-10">
+    <LegalLayout
+      kicker="Legal"
+      title="Términos y Condiciones"
+      lastUpdated={lastUpdated}
+      intro="Estos términos aplican al usar este sitio y al contratar cualquiera de los servicios de Skala. Al escribirnos para cotizar o contratar un proyecto, entendemos que los aceptas."
+    >
+      <h2>1. Quiénes somos</h2>
+      <p>
+        Skala es un proyecto de agencia y productora con sede en Trujillo,
+        Perú, actualmente en etapa de crecimiento y en proceso de
+        formalización como empresa. Estos términos se irán actualizando a
+        medida que ese proceso avance (por ejemplo, para incluir RUC y razón
+        social una vez estén registrados).
+      </p>
+
+      <h2>2. Servicios ofrecidos</h2>
+      <p>
+        Ofrecemos branding, diseño gráfico, desarrollo web, producción
+        audiovisual y cobertura de eventos. El detalle de cada pack, su
+        alcance y su precio referencial está publicado en{" "}
+        <a href="/servicios">/servicios</a> y sus categorías. Ese contenido
+        puede actualizarse sin previo aviso; el alcance y precio que aplican
+        a tu proyecto son los que confirmamos por escrito antes de empezar.
+      </p>
+
+      <h2>3. Cotizaciones y precios</h2>
+      <ul>
+        <li>
+          Los precios publicados en el sitio son referenciales y están en
+          soles (S/, PEN). Cuando se muestra un rango, el valor final
+          depende del alcance real de tu proyecto.
+        </li>
+        <li>
+          Ninguna cotización queda confirmada hasta que ambas partes la
+          acuerden explícitamente por WhatsApp, email o el canal que
+          hayamos usado para conversar.
+        </li>
+        <li>
+          Las condiciones de pago (adelantos, plazos) se acuerdan por
+          escrito antes de iniciar cada proyecto - no publicamos una
+          política única porque varían según el tipo y tamaño del trabajo.
+        </li>
+      </ul>
+
+      <h2>4. Proceso y tiempos de entrega</h2>
+      <p>
+        Trabajamos con un proceso de cinco pasos (ver{" "}
+        <a href="/nosotros#proceso">nuestro proceso</a>). Los tiempos de
+        entrega mostrados junto a cada pack son estimados: pueden variar
+        según la complejidad real del proyecto, la rapidez con la que nos
+        compartas material o feedback, y la carga de trabajo del equipo en
+        ese momento.
+      </p>
+
+      <h2>5. Propiedad intelectual de los entregables</h2>
+      <p>
+        Una vez cancelado el 100% de lo acordado por un proyecto, los
+        archivos finales entregados (el logo, la web, el video terminado,
+        etc.) pasan a ser de uso del cliente para el fin con el que se
+        contrataron. El material de trabajo intermedio (bocetos, material
+        en bruto no entregado, archivos de proyecto de edición) sigue
+        siendo de Skala salvo que se acuerde lo contrario por escrito.
+      </p>
+
+      <h2>6. Uso del trabajo en nuestro portafolio</h2>
+      <p>
+        Salvo que pidas explícitamente confidencialidad antes de empezar el
+        proyecto, Skala puede mostrar el trabajo terminado (fotos, videos,
+        piezas de diseño) en su portafolio, redes sociales y este mismo
+        sitio, como muestra de su trabajo.
+      </p>
+
+      <h2>7. Cancelaciones</h2>
+      <p>
+        Al no tener aún una política estandarizada y pública de
+        reembolsos, cualquier cancelación de un proyecto en curso se
+        conversa caso por caso directamente entre ambas partes, dejando
+        constancia por escrito de lo acordado.
+      </p>
+
+      <h2>8. Limitación de responsabilidad</h2>
+      <p>
+        Skala pone su mejor esfuerzo profesional en cada entrega, pero no
+        garantiza resultados de negocio específicos (ventas, alcance
+        exacto, posiciones en buscadores) que dependen de factores fuera de
+        nuestro control directo, como el mercado, la competencia o
+        decisiones propias del cliente sobre cómo usar lo entregado.
+      </p>
+
+      <h2>9. Ley aplicable</h2>
+      <p>
+        Estos términos se rigen por las leyes de la República del Perú.
+        Cualquier controversia se buscará resolver primero de forma directa
+        y amistosa entre las partes.
+      </p>
+
+      <h2>10. Cambios a estos términos</h2>
+      <p>
+        Podemos actualizar estos términos cuando el proyecto evolucione
+        (por ejemplo, al formalizarnos como empresa). Cualquier cambio se
+        refleja en la fecha de "Última actualización" al inicio de esta
+        página.
+      </p>
+
+      <h2>11. Contacto</h2>
+      <p>
+        ¿Dudas sobre estos términos antes de contratar? Escríbenos a{" "}
+        <a href={`mailto:${CONTACT_DATA.EMAIL_ADDRESS}`}>
+          {CONTACT_DATA.EMAIL_ADDRESS}
+        </a>{" "}
+        o por WhatsApp.
+      </p>
+    </LegalLayout>
+  </main>
+</Layout>

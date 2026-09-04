@@ -4,15 +4,18 @@ import EventCta from "../../components/event/EventCta.astro";
 import EventDetailHero from "../../components/event/EventDetailHero.astro";
 import EventClient from "../../components/event/EventClient.astro";
 import { formatEventDate } from "../../data/event";
-import { getAllEventSlugs, getEventBySlug } from "../../sanity/event/api";
+import { getEventBySlug } from "../../sanity/event/api";
 import EventGallery from "../../components/event/EventGallery";
+import BrandsMarquee from "../../components/shared/BrandsMarquee.astro";
 
-// Genera una página estática por cada evento publicado en Sanity.
-export async function getStaticPaths() {
-  const slugs = await getAllEventSlugs();
-  return slugs.map((slug) => ({ params: { slug } }));
-}
-
+// SSR bajo demanda (sin `prerender = true`, hereda el `output: "server"` de
+// astro.config.mjs): cada visita consulta Sanity en vivo (`getEventBySlug`),
+// no un HTML pre-generado en build. Se eligió así para no tener que
+// redeployar el sitio cada vez que se publica, edita o borra un evento en
+// Sanity — un cambio en el CMS se ve en la siguiente visita, sin build.
+// Contrapartida: cada visita paga el round-trip a Sanity (el proyecto no usa
+// su CDN — `useCdn: false` en astro.config.mjs — para leer siempre el
+// dataset "production" sin la latencia de invalidación de esa caché).
 const { slug } = Astro.params;
 const event = await getEventBySlug(slug as string);
 
@@ -95,6 +98,7 @@ const galleryFirstPage = event.gallery.slice(0, GALLERY_PAGE_SIZE);
       eventSlug={event.slug}
       title={event.title}
     />
+    <BrandsMarquee />
     <EventCta />
   </main>
 </Layout>

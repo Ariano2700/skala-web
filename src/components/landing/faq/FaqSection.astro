@@ -11,6 +11,15 @@ import FaqPanelList from "./FaqPanelList.astro";
 import FaqCta from "./FaqCta.astro";
 import { faqClusters } from "../../../data/faq";
 
+// `headingTag` deja usar el mismo bloque visual como sección del home (h2,
+// por defecto) o como H1 de /preguntas-frecuentes — un solo componente, sin
+// duplicar el título/intro en la página que lo aloja.
+interface Props {
+  headingTag?: "h1" | "h2";
+}
+
+const { headingTag = "h2" } = Astro.props;
+const Heading = headingTag;
 const defaultCluster = faqClusters[0];
 ---
 
@@ -21,14 +30,14 @@ const defaultCluster = faqClusters[0];
 >
   <div class="mx-auto max-w-160 text-center">
     <SectionLabel label="FAQ" />
-    <h2
+    <Heading
       id="faq-title"
       class="mt-4 font-display text-[clamp(2.4rem,4.6vw,3.6rem)] font-black leading-[0.98] tracking-[-0.05em] text-skala-text"
       data-reveal
       style="--reveal-delay: 70ms;"
     >
       Preguntas frecuentes
-    </h2>
+    </Heading>
     <p
       class="mx-auto mt-4.5 max-w-[46ch] text-[1.02rem] leading-[1.7] text-skala-muted"
       data-reveal

@@ -7,6 +7,7 @@ import EventHero from "../../components/event/EventHero.astro";
 import EventFilters from "../../components/event/EventFilters.astro";
 import EventGrid from "../../components/event/EventGrid.astro";
 import EventCta from "../../components/event/EventCta.astro";
+import BrandsMarquee from "../../components/shared/BrandsMarquee.astro";
 
 // Fuente de datos: Sanity (CMS). El mapper (event-mapper.ts) ya deja los
 // eventos listos para consumir (equivalente a adaptSanityProjects).
@@ -60,6 +61,7 @@ const structuredData = [
     <EventHero events={events} />
     <EventFilters events={events} />
     <EventGrid events={events} />
+    <BrandsMarquee />
     <EventCta />
   </main>
 </Layout>

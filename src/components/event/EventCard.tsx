@@ -28,7 +28,7 @@ export default function EventCardReact({ event }: Props) {
           )}
           <div className="absolute inset-0 bg-linear-to-t from-[#04142e]/95 via-[#04142e]/10 to-transparent" />
 
-          <span className="absolute left-4 top-4 inline-flex items-center rounded-full border border-white/20 bg-[#04142e]/70 px-3 py-1.5 text-[0.62rem] font-black uppercase tracking-[0.14em] text-skala-text backdrop-blur">
+          <span className="absolute left-4 top-4 inline-flex items-center rounded-full border border-white/20 bg-[#04142e]/70 px-3 py-1.5 text-[0.62rem] font-black uppercase tracking-[0.14em] text-skala-text">
             {status}
           </span>
 

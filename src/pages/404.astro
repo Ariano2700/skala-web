@@ -1,0 +1,67 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SectionLabel from "../components/landing/SectionLabel.astro";
+import { FiArrowUpRight, FiHome } from "react-icons/fi";
+
+const pageTitle = "Página no encontrada | Skala Agencia";
+const pageDescription =
+  "La página que buscas no existe o fue movida. Vuelve al inicio o explora el portafolio y los servicios de Skala.";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  robots="noindex, follow"
+>
+  <main class="relative z-10">
+    <section
+      class="mx-auto flex min-h-[70svh] w-full max-w-360 flex-col items-start justify-center px-5 py-24 md:px-12"
+    >
+      <SectionLabel label="Error 404" />
+
+      <h1
+        class="m-0 font-display text-[clamp(3.2rem,10vw,6.5rem)] font-black leading-[0.9] tracking-[-0.06em]"
+        data-reveal
+      >
+        Esta página<br />se fue de Skala.
+      </h1>
+
+      <p
+        class="mt-6 max-w-[52ch] text-[1.05rem] leading-8 text-skala-muted"
+        data-reveal
+        style="--reveal-delay: 90ms;"
+      >
+        El enlace que seguiste no existe, cambió o el proyecto/evento fue
+        retirado. Prueba desde el inicio o revisa nuestro portafolio.
+      </p>
+
+      <div
+        class="mt-10 flex flex-wrap gap-3"
+        data-reveal
+        style="--reveal-delay: 160ms;"
+      >
+        <a
+          href="/"
+          title="Volver al inicio"
+          aria-label="Volver al inicio"
+          class="group inline-flex items-center justify-center gap-3 rounded-full bg-skala-accent px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text-secondary! shadow-[0_18px_35px_rgba(92,216,252,0.22)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+        >
+          <FiHome aria-hidden="true" className="size-4" />
+          <span>Volver al inicio</span>
+        </a>
+        <a
+          href="/portafolio"
+          title="Ver portafolio"
+          aria-label="Ver portafolio"
+          class="group inline-flex items-center justify-center gap-3 rounded-full border border-skala-border-strong bg-white/3 px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] hover:border-skala-accent/40 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+        >
+          <span>Ver portafolio</span>
+          <FiArrowUpRight
+            aria-hidden="true"
+            className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          />
+        </a>
+      </div>
+    </section>
+  </main>
+</Layout>

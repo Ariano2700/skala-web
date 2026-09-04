@@ -23,6 +23,13 @@ export async function buildDynamicNavLinks(): Promise<NavLink[]> {
       { label: "Portafolio", href: "/portafolio" },
       { label: "Más Servicios", href: "/servicios" },
       {
+        label: "Nosotros",
+        href: "/nosotros",
+        subLinks: [
+          { label: "Preguntas Frecuentes", href: "/preguntas-frecuentes" },
+        ],
+      },
+      {
         label: "Cobertura Eventos",
         href: "/cobertura-eventos",
         subLinks,
@@ -47,6 +54,13 @@ export function getStaticNavLinks(): NavLink[] {
     { label: "Contacto", href: "#contacto" },
     { label: "Portafolio", href: "/portafolio" },
     { label: "Más Servicios", href: "/servicios" },
+    {
+      label: "Nosotros",
+      href: "/nosotros",
+      subLinks: [
+        { label: "Preguntas Frecuentes", href: "/preguntas-frecuentes" },
+      ],
+    },
     {
       label: "Cobertura Eventos",
       href: "/cobertura-eventos",

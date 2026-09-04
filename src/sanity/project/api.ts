@@ -7,6 +7,7 @@ import {
 
 const PROJECT_BASE_QUERY = `{
   _id,
+  _updatedAt,
   title,
   slug,
   client,
@@ -35,7 +36,19 @@ const PROJECT_BASE_QUERY = `{
     "alt": alt,
     "caption": caption
   },
-  externalUrl
+  externalUrl,
+  // Antes/Después (slider en la página de detalle): 0, 1 o varios pares.
+  "beforeAfterGallery": beforeAfterGallery[]{
+    title,
+    caption,
+    "before": { "url": before.asset->url, "alt": before.alt },
+    "after": { "url": after.asset->url, "alt": after.alt }
+  },
+  "seo": seo{
+    metaTitle,
+    metaDescription,
+    "ogImage": ogImage{ "url": asset->url }
+  }
 }`;
 
 type PaginatedProjects = {
@@ -48,6 +61,12 @@ type PaginatedProjects = {
 
 const BASE_PROJECT_FILTER = `_type == "project"`;
 const ORDER_BY_TITLE = `order(title asc)`;
+// `_id` como desempate: si dos documentos comparten el mismo `_updatedAt`
+// (a la misma resolución que usa Sanity), el orden entre ellos podría no
+// ser estable entre una consulta y la siguiente. Sin un desempate único,
+// eso puede repetir o saltarse proyectos entre páginas del scroll infinito
+// de /portafolio (justo el bug que hacía aparecer una tarjeta duplicada).
+const ORDER_BY_DATE_DESC = `order(_updatedAt desc, _id asc)`;
 
 export async function getProjectsCount(search?: string): Promise<number> {
   const query = search
@@ -115,7 +134,7 @@ export async function searchProjects(
 }
 
 export async function getAllProjects() {
-  const query = `*[${BASE_PROJECT_FILTER}] | ${ORDER_BY_TITLE} ${PROJECT_BASE_QUERY}`;
+  const query = `*[${BASE_PROJECT_FILTER}] | ${ORDER_BY_DATE_DESC} ${PROJECT_BASE_QUERY}`;
   try {
     const result = await sanityClient.fetch<ProjectSanitySchema[]>(query);
     return mapToProjectList(result);
@@ -182,5 +201,49 @@ export async function getProjectsByCategory(slug?: string) {
   } catch (error) {
     console.error(`Error fetching projects for category ${slug}:`, error);
     return [];
+  }
+}
+
+/**
+ * Página de proyectos por categoría (grilla del portafolio con scroll
+ * infinito): trae solo `limit` proyectos desde `offset`, más el total real
+ * de esa categoría para saber si hay más por cargar. `category` "all" o
+ * vacío no filtra.
+ */
+export async function getProjectsPage({
+  category,
+  offset = 0,
+  limit = 9,
+}: {
+  category?: string;
+  offset?: number;
+  limit?: number;
+}): Promise<{ items: ReturnType<typeof mapToProjectList>; total: number }> {
+  const filter =
+    !category || category === "all"
+      ? BASE_PROJECT_FILTER
+      : `${BASE_PROJECT_FILTER} && $category in categories[]->slug.current`;
+  // Mismo orden que getAllProjects (la fuente del primer lote, ya renderizado
+  // por portafolio.astro): si esta página usara un orden distinto, el
+  // `offset` de acá no correspondería al mismo corte y algunas tarjetas
+  // aparecerían repetidas o se saltarían al hacer scroll.
+  const query = `*[${filter}] | ${ORDER_BY_DATE_DESC} [$offset...$end] ${PROJECT_BASE_QUERY}`;
+  const countQuery = `count(*[${filter}])`;
+  try {
+    const [result, total] = await Promise.all([
+      sanityClient.fetch<ProjectSanitySchema[]>(query, {
+        category,
+        offset,
+        end: offset + limit,
+      }),
+      sanityClient.fetch<number>(countQuery, { category }),
+    ]);
+    return { items: mapToProjectList(result), total };
+  } catch (error) {
+    console.error(
+      `Error fetching projects page (category=${category}, offset=${offset}):`,
+      error,
+    );
+    return { items: [], total: 0 };
   }
 }

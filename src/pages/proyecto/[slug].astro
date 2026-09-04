@@ -1,23 +1,27 @@
 ---
 export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
-import SectionLabel from "../../components/landing/SectionLabel.astro";
 import {
   adaptSanityProjects,
   getPortfolioAccentStyle,
   getCoverMedia,
 } from "../../data/portafolio";
 import { getAllProjects } from "../../sanity/project/api";
-import { FiArrowLeft } from "react-icons/fi";
+import { getOrganizationSchema, organizationRef, SITE_URL } from "../../data/organization";
+import { FiChevronRight, FiTarget, FiCompass, FiCheckCircle } from "react-icons/fi";
 import ProjectCta from "../../components/portfolio/ProjectCta.astro";
+import ProjectGallery from "../../components/portfolio/ProjectGallery.astro";
+import ProjectGalleryLightbox from "../../components/portfolio/ProjectGalleryLightbox";
+import BeforeAfterSlider from "../../components/portfolio/BeforeAfterSlider.astro";
+import RelatedProjects from "../../components/portfolio/RelatedProjects.astro";
+import BrandsMarquee from "../../components/shared/BrandsMarquee.astro";
 
 // Renderizado bajo demanda: Sanity (CMS) en vivo, con respaldo en la data
 // estática local. Cualquier proyecto nuevo en Sanity aparece sin redeploy.
 const { slug } = Astro.params;
 const sanityProjects = await getAllProjects();
-const sanityAdapted = adaptSanityProjects(sanityProjects);
-const fromSanity = sanityAdapted.find((p) => p.id === slug);
-const project = fromSanity
+const allProjects = adaptSanityProjects(sanityProjects);
+const project = allProjects.find((p) => p.id === slug);
 
 if (!project) {
   return new Response("Proyecto no encontrado", {
@@ -27,185 +31,327 @@ if (!project) {
 }
 
 const cover = getCoverMedia(project);
+const accentStyle = getPortfolioAccentStyle(project);
+const d = project.details;
 
-const pageTitle = `${project.title} - Skala Portafolio`;
+// El SEO editorial de Sanity (project.seo) manda si está cargado; si no,
+// cae a los valores derivados del propio proyecto (mismo patrón que
+// cobertura-eventos/[slug].astro con event.seo).
+const pageTitle = project.seo?.metaTitle || `${project.title} - Skala Portafolio`;
 const pageDescription =
-  project.details?.description ||
+  project.seo?.metaDescription ||
+  d?.description ||
   `Proyecto de ${project.categoryLabel} para ${project.client}`;
 const canonicalUrl = new URL(
   `/proyecto/${project.id}/`,
-  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+  Astro.site ?? new URL(SITE_URL),
 ).href;
+// El OG image debe ser una imagen real (no video): SEO de Sanity primero,
+// luego la portada si es imagen, luego mainImage. Si ninguna existe, Layout
+// usa el logo por defecto.
+const ogImage =
+  project.seo?.ogImageUrl ||
+  (cover.type === "image" ? cover.src : undefined) ||
+  project.mainImage;
+
+const keywords = [
+  project.categoryLabel,
+  ...(d?.tools ?? []),
+  project.client,
+  "portafolio Skala",
+]
+  .filter(Boolean)
+  .join(", ");
+
+// Datos de la tira de datos rápidos: se arma dinámicamente porque año y
+// duración son opcionales (evita celdas vacías si un proyecto no los trae).
+const facts = [
+  { label: "Cliente", value: project.client },
+  { label: "Categoría", value: project.categoryLabel },
+  d?.year ? { label: "Año", value: String(d.year) } : null,
+  d?.duration ? { label: "Duración", value: d.duration } : null,
+].filter((f): f is { label: string; value: string } => Boolean(f));
+
+const structuredData = [
+  getOrganizationSchema(),
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Portafolio",
+        item: `${SITE_URL}/portafolio/`,
+      },
+      { "@type": "ListItem", position: 3, name: project.title, item: canonicalUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "@id": `${canonicalUrl}#creative-work`,
+    name: project.title,
+    description: pageDescription,
+    creator: organizationRef,
+    about: project.client,
+    keywords: project.categories.join(", "),
+    dateModified: project.updatedAt,
+    url: canonicalUrl,
+    image: ogImage ? new URL(ogImage, SITE_URL).href : undefined,
+  },
+];
 ---
 
 <Layout
   title={pageTitle}
   description={pageDescription}
   canonicalUrl={canonicalUrl}
+  ogImage={ogImage}
+  keywords={keywords}
   robots="index, follow"
+  structuredData={structuredData}
 >
   <main class="relative z-10">
-    <section
-      class="relative mx-auto w-full max-w-360 px-5 py-12 md:px-12 lg:py-20"
-    >
-      <a
-        href="/portafolio"
-        class="mb-8 inline-flex items-center gap-2 text-sm font-medium text-skala-muted transition-colors hover:text-skala-accent"
-        aria-label="Volver al portafolio"
+    <section class="mx-auto w-full max-w-360 px-5 pt-8 md:px-12">
+      <nav aria-label="Ruta de navegación" data-reveal>
+        <ol class="m-0 flex list-none flex-wrap items-center gap-1.5 p-0 text-sm text-skala-muted">
+          <li><a href="/" class="transition-colors hover:text-skala-accent">Inicio</a></li>
+          <li aria-hidden="true"><FiChevronRight className="h-3.5 w-3.5" /></li>
+          <li><a href="/portafolio/" class="transition-colors hover:text-skala-accent">Portafolio</a></li>
+          <li aria-hidden="true"><FiChevronRight className="h-3.5 w-3.5" /></li>
+          <li class="max-w-[40vw] truncate font-medium text-skala-text sm:max-w-none" aria-current="page">
+            {project.title}
+          </li>
+        </ol>
+      </nav>
+    </section>
+
+    <section class="relative mx-auto w-full max-w-360 px-5 py-8 md:px-12">
+      <div
+        class="relative aspect-video w-full overflow-hidden rounded-4xl border border-skala-border shadow-[0_30px_80px_rgba(0,0,0,0.42)] lg:aspect-21/9"
+        data-reveal
       >
-        <FiArrowLeft className="h-4 w-4" />
-        Volver al portafolio
-      </a>
-
-      <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
-        <div class="relative">
-          <div
-            class="aspect-16/10 w-full overflow-hidden rounded-4xl border border-skala-border shadow-[0_30px_80px_rgba(0,0,0,0.42)]"
+        {
+          cover.type === "image" ? (
+            <img
+              src={cover.src}
+              alt={cover.alt ?? project.title}
+              class="absolute inset-0 h-full w-full object-cover"
+              fetchpriority="high"
+            />
+          ) : (
+            <video
+              src={cover.src}
+              controls
+              muted
+              playsinline
+              preload="metadata"
+              class="absolute inset-0 h-full w-full bg-black object-cover"
+            />
+          )
+        }
+        <div
+          class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(6,10,22,0.05)_0%,rgba(6,10,22,0.32)_46%,rgba(6,10,22,0.9)_100%)]"
+        >
+        </div>
+        <div class="absolute inset-x-0 bottom-0 p-6 md:p-10">
+          <span
+            class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/45 px-3.5 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.16em] text-skala-text backdrop-blur-sm"
           >
-            {
-              cover.type === "image" ? (
-                <img
-                  src={cover.src}
-                  alt={cover.alt ?? project.title}
-                  class="h-full w-full object-cover"
-                />
-              ) : (
-                <video
-                  src={cover.src}
-                  controls
-                  muted
-                  playsinline
-                  preload="metadata"
-                  class="h-full w-full bg-black object-cover"
-                />
-              )
-            }
-            <div
-              class="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,8,8,0.08)_0%,rgba(8,8,8,0.36)_46%,rgba(8,8,8,0.86)_100%)] opacity-90"
-            >
-            </div>
-            <div class="absolute inset-x-0 bottom-0 p-8">
-              <span
-                class="mb-4 inline-flex h-2 w-10 rounded-full"
-                style={getPortfolioAccentStyle(project)}
-              ></span>
-              <p
-                class="m-0 text-[0.68rem] font-black uppercase tracking-[0.22em] text-skala-accent"
-              >
-                {project.categoryLabel}
-              </p>
-              <h1
-                class="mt-3 font-display text-4xl font-black leading-tight tracking-[-0.04em] text-skala-text md:text-5xl"
-              >
-                {project.title}
-              </h1>
-            </div>
-          </div>
+            <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={accentStyle}></span>
+            {project.categoryLabel}
+          </span>
+          <h1
+            class="m-0 max-w-[22ch] font-display text-4xl font-black leading-[1.02] tracking-[-0.045em] text-skala-text md:text-6xl"
+          >
+            {project.title}
+          </h1>
+        </div>
+      </div>
 
-          {
-            project.media.length > 1 && (
-              <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {project.media.map((m) => (
-                  <div class="overflow-hidden rounded-2xl border border-skala-border">
-                    {m.type === "image" ? (
-                      <img
-                        src={m.src}
-                        alt={m.alt ?? project.title}
-                        class="h-28 w-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <video
-                        src={m.src}
-                        muted
-                        loop
-                        playsinline
-                        preload="metadata"
-                        class="h-28 w-full bg-black object-cover"
-                      />
+      <div
+        class="mt-6 flex flex-wrap gap-x-10 gap-y-5 rounded-4xl border border-skala-border bg-white/[0.035] p-6 shadow-[0_20px_60px_rgba(0,22,52,0.2)] md:p-8"
+        aria-label="Datos del proyecto"
+        data-reveal
+        style="--reveal-delay: 80ms;"
+      >
+        {
+          facts.map((fact) => (
+            <div class="min-w-28">
+              <p class="m-0 font-display text-xl font-black tracking-[-0.03em] text-skala-text md:text-2xl">
+                {fact.value}
+              </p>
+              <p class="m-0 mt-1 text-xs uppercase tracking-[0.16em] text-skala-muted">
+                {fact.label}
+              </p>
+            </div>
+          ))
+        }
+
+        {
+          d?.externalUrl && (
+            <a
+              href={d.externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="ml-auto inline-flex h-fit items-center gap-2 self-center rounded-full border border-skala-accent/40 bg-skala-accent/10 px-5 py-2.5 text-sm font-semibold text-skala-accent transition hover:bg-skala-accent hover:text-skala-text-secondary"
+            >
+              Ver publicación
+              <span aria-hidden="true">↗</span>
+            </a>
+          )
+        }
+      </div>
+    </section>
+
+    <section class="mx-auto w-full max-w-360 px-5 py-4 md:px-12">
+      <div class="max-w-[72ch]" data-reveal>
+        {d?.description && (
+          <p class="m-0 text-lg leading-8 text-skala-muted">{d.description}</p>
+        )}
+      </div>
+
+      {
+        project.media.length > 0 && (
+          <div class="mt-14" data-reveal>
+            <h2 class="m-0 mb-5 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
+              Galería
+            </h2>
+            <ProjectGallery media={project.media} title={project.title} />
+          </div>
+        )
+      }
+
+      {
+        (d?.challenge || d?.solution || (d && d.results.length > 0) || (d && d.tools.length > 0)) && (
+          <h2
+            class="m-0 mt-16 border-t border-skala-border pt-10 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl"
+            data-reveal
+          >
+            ¿Quieres conocer más del proyecto? Te contamos
+          </h2>
+        )
+      }
+
+      {
+        (d?.challenge || d?.solution) && (
+          <div class="mt-8 grid gap-5 lg:grid-cols-2">
+            {d?.challenge && (
+              <div
+                class="rounded-4xl border border-skala-border bg-white/3 p-7"
+                data-reveal
+                style="--reveal-delay: 40ms;"
+              >
+                <h3 class="m-0 mb-3 flex items-center gap-2.5 font-display text-lg font-black text-skala-text">
+                  <FiTarget className="h-5 w-5 text-skala-accent" aria-hidden="true" />
+                  El reto
+                </h3>
+                <p class="m-0 text-base leading-7 text-skala-muted">{d.challenge}</p>
+              </div>
+            )}
+
+            {d?.solution && (
+              <div
+                class="rounded-4xl border border-skala-border bg-white/3 p-7"
+                data-reveal
+                style="--reveal-delay: 90ms;"
+              >
+                <h3 class="m-0 mb-3 flex items-center gap-2.5 font-display text-lg font-black text-skala-text">
+                  <FiCompass className="h-5 w-5 text-skala-accent" aria-hidden="true" />
+                  La solución
+                </h3>
+                <p class="m-0 text-base leading-7 text-skala-muted">{d.solution}</p>
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      {
+        d && d.results.length > 0 && (
+          <div class="mt-10" data-reveal>
+            <h3 class="m-0 mb-5 font-display text-lg font-black text-skala-text">Resultados</h3>
+            <ul class="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
+              {d.results.map((result) => (
+                <li class="flex items-start gap-2.5 text-sm leading-6 text-skala-muted">
+                  <FiCheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-skala-accent" aria-hidden="true" />
+                  <span>{result}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        d && d.tools.length > 0 && (
+          <div class="mt-10" data-reveal>
+            <h3 class="m-0 mb-4 font-display text-lg font-black text-skala-text">Herramientas</h3>
+            <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+              {d.tools.map((tool) => (
+                <li class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-skala-muted">
+                  {tool}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        project.beforeAfterGallery && project.beforeAfterGallery.length > 0 && (
+          <div class="mt-14" data-reveal>
+            <h2 class="m-0 mb-2 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
+              Antes y después
+            </h2>
+            <p class="m-0 mb-5 text-sm text-skala-muted">
+              Desliza para comparar cómo empezó y cómo terminó este proyecto.
+            </p>
+
+            {project.beforeAfterGallery.length === 1 ? (
+              <BeforeAfterSlider
+                before={project.beforeAfterGallery[0].before}
+                after={project.beforeAfterGallery[0].after}
+                accent={project.accent}
+                title={project.beforeAfterGallery[0].title || project.title}
+              />
+            ) : (
+              <div class="grid gap-6 md:grid-cols-2">
+                {project.beforeAfterGallery.map((pair) => (
+                  <div>
+                    {pair.title && (
+                      <p class="m-0 mb-3 font-display text-base font-black text-skala-text">
+                        {pair.title}
+                      </p>
+                    )}
+                    <BeforeAfterSlider
+                      before={pair.before}
+                      after={pair.after}
+                      accent={project.accent}
+                      title={pair.title || project.title}
+                    />
+                    {pair.caption && (
+                      <p class="m-0 mt-2 text-xs text-skala-muted">{pair.caption}</p>
                     )}
                   </div>
                 ))}
               </div>
-            )
-          }
-        </div>
-
-        <div class="flex flex-col gap-8">
-          <div>
-            <SectionLabel label="Cliente" />
-            <p class="mt-2 text-xl font-medium text-skala-text">
-              {project.client}
-            </p>
+            )}
           </div>
-
-          {
-            project.details && (
-              <>
-                <div>
-                  <SectionLabel label="Descripción" />
-                  <p class="mt-2 text-base leading-7 text-skala-muted">
-                    {project.details.description}
-                  </p>
-                </div>
-
-                <div>
-                  <SectionLabel label="Desafío" />
-                  <p class="mt-2 text-base leading-7 text-skala-muted">
-                    {project.details.challenge}
-                  </p>
-                </div>
-
-                <div>
-                  <SectionLabel label="Solución" />
-                  <p class="mt-2 text-base leading-7 text-skala-muted">
-                    {project.details.solution}
-                  </p>
-                </div>
-
-                <div>
-                  <SectionLabel label="Resultados" />
-                  <ul class="mt-3 flex flex-col gap-2">
-                    {project.details.results.map((result) => (
-                      <li class="flex items-start gap-2 text-sm text-skala-muted">
-                        <span
-                          class="mt-1.5 h-1.5 w-1.5 rounded-full"
-                          style={getPortfolioAccentStyle(project)}
-                        />
-                        <span>{result}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div class="flex items-center gap-4">
-                  <div>
-                    <SectionLabel label="Herramientas" />
-                    <p class="mt-1 text-sm text-skala-muted">
-                      {project.details.tools.join(", ")}
-                    </p>
-                  </div>
-                  <div class="h-px flex-1 bg-skala-border" />
-                  <div>
-                    <SectionLabel label="Duración" />
-                    <p class="mt-1 text-sm text-skala-muted">
-                      {project.details.duration}
-                    </p>
-                  </div>
-                </div>
-              </>
-            )
-          }
-        </div>
-      </div>
+        )
+      }
     </section>
+
+    <div class="mt-8">
+      <RelatedProjects projects={allProjects} current={project} limit={3} />
+    </div>
+
+    <BrandsMarquee />
 
     <ProjectCta project={project} />
   </main>
-</Layout>
 
-<style>
-  .portfolio-shine {
-    pointer-events: none;
-  }
-</style>
+  <ProjectGalleryLightbox client:load media={project.media} title={project.title} />
+</Layout>

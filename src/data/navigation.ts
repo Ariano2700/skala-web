@@ -13,6 +13,13 @@ export const navLinks: NavLink[] = [
   { label: "Portafolio", href: "/portafolio" },
   { label: "Más Servicios", href: "/servicios" },
   {
+    label: "Nosotros",
+    href: "/nosotros",
+    subLinks: [
+      { label: "Preguntas Frecuentes", href: "/preguntas-frecuentes" },
+    ],
+  },
+  {
     label: "Cobertura Eventos",
     href: "/cobertura-eventos",
     subLinks: [

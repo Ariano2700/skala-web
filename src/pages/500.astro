@@ -1,0 +1,81 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SectionLabel from "../components/landing/SectionLabel.astro";
+import { CONTACT_DATA } from "../data/contact_data";
+import { FiHome, FiRefreshCw } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
+
+const pageTitle = "Error del servidor | Skala Agencia";
+const pageDescription =
+  "Algo falló de nuestro lado al cargar esta página. Prueba de nuevo o escríbenos directo por WhatsApp.";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  robots="noindex, follow"
+>
+  <main class="relative z-10">
+    <section
+      class="mx-auto flex min-h-[70svh] w-full max-w-360 flex-col items-start justify-center px-5 py-24 md:px-12"
+    >
+      <SectionLabel label="Error 500" />
+
+      <h1
+        class="m-0 font-display text-[clamp(2.6rem,7vw,5rem)] font-black leading-[0.9] tracking-[-0.06em]"
+        data-reveal
+      >
+        Se nos cruzó un cable.
+      </h1>
+
+      <p
+        class="mt-6 max-w-[52ch] text-[1.05rem] leading-8 text-skala-muted"
+        data-reveal
+        style="--reveal-delay: 90ms;"
+      >
+        Hubo un problema técnico de nuestro lado, no tuyo. Prueba recargar la
+        página en un momento; si sigue fallando, escríbenos directo y lo
+        resolvemos por WhatsApp.
+      </p>
+
+      <div
+        class="mt-10 flex flex-wrap gap-3"
+        data-reveal
+        style="--reveal-delay: 160ms;"
+      >
+        <a
+          href={CONTACT_DATA.WHATSAPP_LINK(
+            "Hola, entré al sitio y me salió un error. ¿Me ayudan?",
+          )}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Avisar por WhatsApp"
+          aria-label="Avisar por WhatsApp"
+          class="group inline-flex items-center justify-center gap-3 rounded-full bg-skala-accent px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text-secondary! shadow-[0_18px_35px_rgba(92,216,252,0.22)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+        >
+          <FaWhatsapp aria-hidden="true" className="size-4" />
+          <span>Avisar por WhatsApp</span>
+        </a>
+        <a
+          href="/"
+          title="Volver al inicio"
+          aria-label="Volver al inicio"
+          class="group inline-flex items-center justify-center gap-3 rounded-full border border-skala-border-strong bg-white/3 px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] hover:border-skala-accent/40 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+        >
+          <FiHome aria-hidden="true" className="size-4" />
+          <span>Volver al inicio</span>
+        </a>
+        <button
+          type="button"
+          onclick="location.reload()"
+          title="Reintentar"
+          aria-label="Reintentar"
+          class="group inline-flex cursor-pointer items-center justify-center gap-3 rounded-full border border-skala-border-strong bg-white/3 px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] hover:border-skala-accent/40 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+        >
+          <FiRefreshCw aria-hidden="true" className="size-4" />
+          <span>Reintentar</span>
+        </button>
+      </div>
+    </section>
+  </main>
+</Layout>

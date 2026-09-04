@@ -1,0 +1,181 @@
+---
+// Envoltorio compartido por las 4 páginas legales (privacidad, cookies,
+// términos, libro de reclamaciones). El contenido de cada una es texto largo
+// semántico (h2/p/ul) tipeado a mano vía <slot />, estilado acá con un solo
+// bloque <style> en vez de repetir clases de Tailwind en cada párrafo — el
+// mismo criterio que ya usa team.css para su propio bloque, no un patrón
+// nuevo.
+import SectionLabel from "../landing/SectionLabel.astro";
+import { CONTACT_DATA } from "../../data/contact_data";
+import { FaWhatsapp } from "react-icons/fa";
+
+interface Props {
+  kicker: string;
+  title: string;
+  lastUpdated: string;
+  intro: string;
+}
+
+const { kicker, title, lastUpdated, intro } = Astro.props;
+---
+
+<section class="mx-auto w-full max-w-220 px-5 pt-32 pb-8 md:px-12">
+  <SectionLabel label={kicker} />
+  <h1
+    class="m-0 max-w-[22ch] font-display text-[clamp(2rem,4.2vw,3.2rem)] font-black leading-[1.02] tracking-tighter text-skala-text"
+    data-reveal
+    style="--reveal-delay: 90ms;"
+  >
+    {title}
+  </h1>
+  <p
+    class="mt-4 text-xs uppercase tracking-[0.14em] text-skala-muted"
+    data-reveal
+    style="--reveal-delay: 140ms;"
+  >
+    Última actualización: {lastUpdated}
+  </p>
+  <p
+    class="mt-5 max-w-[62ch] text-[1.02rem] leading-8 text-skala-muted"
+    data-reveal
+    style="--reveal-delay: 180ms;"
+  >
+    {intro}
+  </p>
+</section>
+
+<section class="mx-auto w-full max-w-220 px-5 pb-20 md:px-12">
+  <div
+    class="legal-prose rounded-4xl border border-skala-border bg-white/3 p-6 shadow-(--shadow) md:p-10"
+    data-reveal
+    style="--reveal-delay: 220ms;"
+  >
+    <slot />
+  </div>
+
+  <p class="mt-8 text-center text-sm text-skala-muted flex flex-col items-center gap-2 md:flex-row md:justify-center">
+    <span> ¿Alguna duda sobre esto? </span>
+    {" "}
+    <a
+      href={CONTACT_DATA.WHATSAPP_LINK(
+        "Hola, tengo una consulta sobre una de las políticas del sitio.",
+      )}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-1.5 font-bold text-skala-accent transition-colors hover:text-skala-accent!"
+    >
+      <FaWhatsapp aria-hidden="true" className="h-3.5 w-3.5" />
+      Escríbenos por WhatsApp
+    </a>
+  </p>
+</section>
+
+<style>
+  .legal-prose :global(h2) {
+    margin: 2.2rem 0 0.9rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--color-skala-text);
+  }
+
+  .legal-prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .legal-prose :global(h3) {
+    margin: 1.4rem 0 0.6rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-skala-text);
+  }
+
+  .legal-prose :global(p) {
+    margin: 0 0 1rem;
+    line-height: 1.75;
+    color: var(--color-skala-muted);
+  }
+
+  .legal-prose :global(ul),
+  .legal-prose :global(ol) {
+    margin: 0 0 1.2rem;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .legal-prose :global(li) {
+    /* Antes esto era display:flex (bullet + contenido como 2 flex items).
+       Se rompía apenas un <li> mezclaba texto suelto con inline elements
+       (<strong>, <code>, <a>): flex trata cada fragmento de texto y cada
+       elemento inline como su propio flex item, así que el párrafo se
+       partía en pedazos sueltos en vez de fluir como una sola oración
+       (visible en el punto 2 de privacidad/cookies, con <strong>/<code>
+       mezclados; invisible en listas de solo texto plano, que por eso se
+       veían bien). position+padding no toca el flujo inline: el <li>
+       vuelve a ser una sola caja de texto normal, el bullet solo se dibuja
+       encima con ::before. */
+    position: relative;
+    list-style: none;
+    padding-left: 1.4rem;
+    line-height: 1.7;
+    color: var(--color-skala-muted);
+  }
+
+  .legal-prose :global(ul li::before) {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-skala-accent) 70%, transparent);
+  }
+
+  .legal-prose :global(ol) {
+    counter-reset: legal-ol;
+  }
+
+  .legal-prose :global(ol li::before) {
+    counter-increment: legal-ol;
+    content: counter(legal-ol) ".";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-skala-accent);
+  }
+
+  .legal-prose :global(strong) {
+    color: var(--color-skala-text);
+    font-weight: 700;
+  }
+
+  .legal-prose :global(a) {
+    color: var(--color-skala-accent);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(
+      in srgb,
+      var(--color-skala-accent) 40%,
+      transparent
+    );
+  }
+
+  .legal-prose :global(a:hover) {
+    text-decoration-color: var(--color-skala-accent);
+  }
+
+  .legal-prose :global(hr) {
+    margin: 1.8rem 0;
+    border: none;
+    border-top: 1px solid var(--color-skala-border);
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+export const prerender = true;
+import Layout from "../layouts/Layout.astro";
+import FaqSection from "../components/landing/faq/FaqSection.astro";
+import CtaSection from "../components/landing/CtaSection.astro";
+import BrandsMarquee from "../components/shared/BrandsMarquee.astro";
+import { getFaqSchema, faqTotalCount } from "../data/faq";
+import { getOrganizationSchema } from "../data/organization";
+
+const pageTitle = `Preguntas frecuentes (${faqTotalCount}) | Skala Agencia`;
+const pageDescription =
+  "Resolvemos las dudas más comunes sobre producción audiovisual, cobertura de eventos y desarrollo web en Trujillo: precios, alcance y tiempos de entrega reales.";
+const canonicalUrl = new URL(
+  "/preguntas-frecuentes/",
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+const faqKeywords =
+  "preguntas frecuentes skala, cuanto cuesta un video trujillo, precio pagina web peru, cobertura de eventos precio, faq agencia trujillo";
+
+// El FAQPage vive solo acá (única URL donde el contenido visible coincide
+// 1:1 con el schema) — el teaser del home no repite el JSON-LD.
+const structuredData = [getOrganizationSchema(), getFaqSchema()];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  structuredData={structuredData}
+  keywords={faqKeywords}
+  robots="index, follow"
+>
+  <main class="relative z-10 pt-16">
+    <FaqSection headingTag="h1" />
+    <BrandsMarquee />
+    <CtaSection />
+  </main>
+</Layout>

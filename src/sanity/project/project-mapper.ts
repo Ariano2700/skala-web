@@ -18,7 +18,22 @@ export interface ProjectResult {
   text: string;
 }
 
+/** Un par antes/después dentro de `beforeAfterGallery` (schema del Studio). */
+export interface ProjectBeforeAfterPair {
+  title?: string;
+  caption?: string;
+  before?: ProjectImage;
+  after?: ProjectImage;
+}
+
+export interface ProjectSeo {
+  metaTitle?: string;
+  metaDescription?: string;
+  ogImage?: { url?: string };
+}
+
 export interface ProjectSanitySchema extends SanityDocument {
+  _updatedAt: string;
   title: string;
   slug: { current: string };
   client?: string;
@@ -34,10 +49,14 @@ export interface ProjectSanitySchema extends SanityDocument {
   featured?: boolean;
   gallery?: ProjectMedia[];
   externalUrl?: string;
+  beforeAfterGallery?: ProjectBeforeAfterPair[];
+  seo?: ProjectSeo;
 }
 
 export interface Project {
   id: string;
+  /** ISO datetime de la última modificación del documento en Sanity (`_updatedAt`). Usado para el `lastmod` del sitemap. */
+  updatedAt?: string;
   title: string;
   slug: string;
   client?: string;
@@ -53,10 +72,17 @@ export interface Project {
   featured: boolean;
   gallery: ProjectMedia[];
   externalUrl?: string;
+  beforeAfterGallery: ProjectBeforeAfterPair[];
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    ogImageUrl?: string;
+  };
 }
 
 export const mapToProject = (raw: ProjectSanitySchema | null): Project => ({
   id: raw?._id ?? "",
+  updatedAt: raw?._updatedAt,
   title: raw?.title ?? "Sin título",
   slug: raw?.slug?.current ?? "",
   client: raw?.client,
@@ -72,6 +98,14 @@ export const mapToProject = (raw: ProjectSanitySchema | null): Project => ({
   featured: raw?.featured ?? false,
   gallery: raw?.gallery ?? [],
   externalUrl: raw?.externalUrl,
+  beforeAfterGallery: raw?.beforeAfterGallery ?? [],
+  seo: raw?.seo
+    ? {
+        metaTitle: raw.seo.metaTitle,
+        metaDescription: raw.seo.metaDescription,
+        ogImageUrl: raw.seo.ogImage?.url,
+      }
+    : undefined,
 });
 
 export const mapToProjectList = (raw: ProjectSanitySchema[]): Project[] =>

@@ -110,7 +110,7 @@ export default function Carousel({
             type="button"
             aria-label="Anterior"
             onClick={() => onGoTo(current - 1)}
-            className="absolute left-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur transition hover:bg-skala-accent hover:text-skala-text-secondary"
+            className="absolute left-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/50 text-white transition hover:bg-skala-accent hover:text-skala-text-secondary"
           >
             <GrCaretPrevious />
           </button>
@@ -118,7 +118,7 @@ export default function Carousel({
             type="button"
             aria-label="Siguiente"
             onClick={() => onGoTo(current + 1)}
-            className="absolute right-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur transition hover:bg-skala-accent hover:text-skala-text-secondary"
+            className="absolute right-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/50 text-white transition hover:bg-skala-accent hover:text-skala-text-secondary"
           >
             <GrCaretNext />
           </button>

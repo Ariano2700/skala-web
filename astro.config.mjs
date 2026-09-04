@@ -24,6 +24,21 @@ export default defineConfig({
       // Bundling it via esbuild fixes the ESM/CJS interop for Netlify SSR.
       noExternal: ["gsap", "@gsap/react"],
     },
+    optimizeDeps: {
+      // Sin esto, Vite recién "descubre" gsap/SplitText cuando el navegador
+      // pide una página con <Team /> (el único componente que la usa) y
+      // dispara una re-optimización de dependencias a mitad de sesión. Ese
+      // re-optimize reemplaza node_modules/.vite/deps con un rename atómico
+      // que en Windows puede fallar con EPERM (típico en unidades de red o
+      // sincronizadas, ej. Google Drive) si algo más tiene un handle abierto
+      // sobre esa carpeta — el resultado es un 503 en el chunk de
+      // gsap/SplitText y el <script> de Team.astro nunca llega a correr, así
+      // que las fotos del equipo se quedan invisibles (GSAP las deja en
+      // opacity:0 hasta que su timeline de entrada las anima). Declarándolo
+      // acá, Vite lo pre-empaqueta al arrancar el server, no a mitad de una
+      // request.
+      include: ["gsap", "gsap/SplitText", "@gsap/react"],
+    },
   },
   site: "https://skalaagencia.netlify.app",
   output: "server",

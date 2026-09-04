@@ -4,9 +4,10 @@ import Layout from "../layouts/Layout.astro";
 import AboutSection from "../components/landing/AboutSection.astro";
 import ContactSection from "../components/landing/ContactSection.astro";
 import CtaSection from "../components/landing/CtaSection.astro";
-import FaqSection from "../components/landing/faq/FaqSection.astro";
+import FaqTeaser from "../components/landing/faq/FaqTeaser.astro";
 import HeroSection from "../components/landing/HeroSection.astro";
 import MarqueeStrip from "../components/landing/MarqueeStrip.astro";
+import BrandsMarquee from "../components/shared/BrandsMarquee.astro";
 import MoreServicesCta from "../components/landing/MoreServicesCta.astro";
 import PlansSection from "../components/landing/PlansSection.astro";
 import ProcessSection from "../components/landing/ProcessSection.astro";
@@ -16,7 +17,6 @@ import {
   getOrganizationWithTeamSchema,
   organizationRef,
 } from "../data/organization";
-import { getFaqSchema } from "../data/faq";
 const pageTitle = "Skala - Agencia de Branding & Producción Audiovisual";
 const pageDescription =
   "Agencia estratégica en Trujillo, Perú. Especialistas en diseño de marca, fotografía comercial, producción de video para redes sociales y campañas integrales.";
@@ -33,7 +33,6 @@ const homeStructuredData = [
     url: canonicalUrl,
     publisher: organizationRef,
   },
-  getFaqSchema(),
 ];
 ---
 
@@ -47,6 +46,7 @@ const homeStructuredData = [
 >
   <main class="relative z-10">
     <HeroSection />
+    <BrandsMarquee />
     <MarqueeStrip />
     <AboutSection />
     <ServicesSection />
@@ -55,7 +55,7 @@ const homeStructuredData = [
     <ProcessSection />
     <Team />
     <ContactSection />
-    <FaqSection />
+    <FaqTeaser />
     <CtaSection />
   </main>
 </Layout>

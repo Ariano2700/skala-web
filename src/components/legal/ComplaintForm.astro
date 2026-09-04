@@ -1,0 +1,368 @@
+---
+// Formulario público del Libro de Reclamaciones. Postea a la propia API de
+// skala-web (/api/complaints/create), que reenvía server-to-server a
+// manager-skala — este componente nunca toca Sanity ni conoce ningún
+// secreto; solo arma el JSON y lee la respuesta.
+import {
+  FiUser,
+  FiHash,
+  FiMapPin,
+  FiPhone,
+  FiMail,
+  FiBriefcase,
+  FiDollarSign,
+  FiFileText,
+  FiFlag,
+  FiCheck,
+  FiCheckCircle,
+  FiAlertCircle,
+} from "react-icons/fi";
+
+const documentTypes = [
+  { value: "dni", label: "DNI" },
+  { value: "ce", label: "Carné de extranjería" },
+  { value: "pasaporte", label: "Pasaporte" },
+  { value: "ruc", label: "RUC" },
+];
+
+const inputClass =
+  "w-full rounded-2xl border border-skala-border bg-skala-surface px-12 py-3.5 text-sm font-medium text-skala-text placeholder:text-skala-muted focus:outline-none focus:ring-2 focus:ring-skala-accent/50";
+---
+
+<div class="rounded-4xl border border-skala-border bg-white/[0.035] p-5 md:p-7">
+  <form id="complaint-form" novalidate class="flex flex-col gap-5">
+    <!-- Honeypot: invisible para una persona, un bot que autocompleta todo lo llena. -->
+    <div class="absolute -left-[9999px]" aria-hidden="true">
+      <label for="complaint-website">No completar este campo</label>
+      <input
+        type="text"
+        id="complaint-website"
+        name="website"
+        tabindex="-1"
+        autocomplete="off"
+      />
+    </div>
+
+    <fieldset class="border-0 p-0 m-0">
+      <legend class="mb-2.5 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-skala-accent">
+        <span class="h-px w-6 bg-skala-accent/50"></span>
+        Tipo
+      </legend>
+      <div class="grid grid-cols-2 gap-2.5">
+        {
+          [
+            { value: "reclamo", label: "Reclamo", hint: "Disconformidad con el producto o servicio" },
+            { value: "queja", label: "Queja", hint: "Disconformidad con la atención" },
+          ].map((option, index) => (
+            <label class="group relative flex cursor-pointer items-start gap-2.5 rounded-2xl border border-skala-border bg-skala-surface px-3 py-3 transition duration-200 hover:border-skala-accent/40 has-checked:border-skala-accent/70 has-checked:bg-skala-accent-soft">
+              <input
+                type="radio"
+                name="type"
+                value={option.value}
+                required
+                checked={index === 0}
+                class="peer sr-only"
+              />
+              <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-skala-border-strong text-skala-accent transition duration-200 peer-checked:border-skala-accent peer-checked:bg-skala-accent peer-checked:text-skala-text-secondary">
+                <FiCheck className="h-3 w-3 opacity-0 transition-opacity duration-200 peer-checked:opacity-100" />
+              </span>
+              <span class="min-w-0">
+                <span class="block text-sm font-bold text-skala-text">{option.label}</span>
+                <span class="block text-xs text-skala-muted">{option.hint}</span>
+              </span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="relative">
+        <FiUser
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+          aria-hidden="true"
+        />
+        <input
+          type="text"
+          name="fullName"
+          placeholder="Nombre completo"
+          required
+          class={inputClass}
+        />
+      </div>
+      <div class="relative">
+        <FiMail
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+          aria-hidden="true"
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Correo electrónico"
+          required
+          class={inputClass}
+        />
+      </div>
+    </div>
+
+    <fieldset class="border-0 p-0 m-0">
+      <legend class="mb-2.5 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-skala-accent">
+        <span class="h-px w-6 bg-skala-accent/50"></span>
+        Documento de identidad
+      </legend>
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {
+          documentTypes.map((doc, index) => (
+            <label class="group relative flex cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-skala-border bg-skala-surface px-3 py-2.5 text-center transition duration-200 hover:border-skala-accent/40 has-checked:border-skala-accent/70 has-checked:bg-skala-accent-soft">
+              <input
+                type="radio"
+                name="documentType"
+                value={doc.value}
+                required
+                checked={index === 0}
+                class="peer sr-only"
+              />
+              <FiCheck className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity duration-200 peer-checked:opacity-100" />
+              <span class="text-xs font-bold text-skala-text">{doc.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="relative">
+        <FiHash
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+          aria-hidden="true"
+        />
+        <input
+          type="text"
+          name="documentNumber"
+          placeholder="N° de documento"
+          required
+          class={inputClass}
+        />
+      </div>
+      <div class="relative">
+        <FiPhone
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+          aria-hidden="true"
+        />
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Teléfono (opcional)"
+          class={inputClass}
+        />
+      </div>
+    </div>
+
+    <div class="relative">
+      <FiMapPin
+        className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+        aria-hidden="true"
+      />
+      <input
+        type="text"
+        name="address"
+        placeholder="Dirección (opcional)"
+        class={inputClass}
+      />
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="relative">
+        <FiBriefcase
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+          aria-hidden="true"
+        />
+        <input
+          type="text"
+          name="contractedService"
+          placeholder="Servicio contratado"
+          required
+          class={inputClass}
+        />
+      </div>
+      <div class="relative">
+        <FiDollarSign
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-skala-accent"
+          aria-hidden="true"
+        />
+        <input
+          type="number"
+          name="claimedAmount"
+          min="0"
+          step="0.01"
+          inputmode="decimal"
+          placeholder="Monto reclamado en S/ (opcional)"
+          class={inputClass}
+        />
+      </div>
+    </div>
+
+    <div class="relative">
+      <FiFileText
+        className="absolute left-4 top-4 h-5 w-5 text-skala-accent"
+        aria-hidden="true"
+      />
+      <textarea
+        name="detail"
+        placeholder="Detalle del reclamo o queja"
+        rows={4}
+        required
+        class={`${inputClass} resize-none`}
+      ></textarea>
+    </div>
+
+    <div class="relative">
+      <FiFlag
+        className="absolute left-4 top-4 h-5 w-5 text-skala-accent"
+        aria-hidden="true"
+      />
+      <textarea
+        name="consumerRequest"
+        placeholder="¿Qué solución esperas?"
+        rows={3}
+        required
+        class={`${inputClass} resize-none`}
+      ></textarea>
+    </div>
+
+    <p data-complaint-error hidden class="flex items-start gap-2 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+      <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+      <span data-complaint-error-text>
+        No pudimos enviar tu reclamo. Revisa los campos obligatorios e inténtalo de nuevo.
+      </span>
+    </p>
+
+    <button
+      type="submit"
+      data-complaint-submit
+      class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-full bg-skala-accent px-8 py-3.5 font-display text-[0.74rem] font-bold uppercase tracking-[0.16em] text-skala-text-secondary transition duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-skala-accent/70 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <span data-complaint-submit-label>Enviar reclamo</span>
+    </button>
+  </form>
+
+  <div data-complaint-success hidden class="flex flex-col items-center gap-3 py-6 text-center">
+    <span class="flex h-12 w-12 items-center justify-center rounded-full bg-skala-accent/15 text-skala-accent">
+      <FiCheckCircle className="h-6 w-6" aria-hidden="true" />
+    </span>
+    <p class="m-0 font-display text-lg font-black text-skala-text">
+      Reclamo registrado<span data-complaint-number></span>
+    </p>
+    <p class="m-0 max-w-[46ch] text-sm leading-6 text-skala-muted">
+      Lo revisamos y te respondemos al correo o teléfono que dejaste, en un
+      máximo de 15 días hábiles.
+    </p>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById("complaint-form") as HTMLFormElement | null;
+  const successEl = document.querySelector<HTMLElement>("[data-complaint-success]");
+  const errorEl = document.querySelector<HTMLElement>("[data-complaint-error]");
+  const errorTextEl = document.querySelector<HTMLElement>("[data-complaint-error-text]");
+  const submitBtn = document.querySelector<HTMLButtonElement>("[data-complaint-submit]");
+  const submitLabel = document.querySelector<HTMLElement>("[data-complaint-submit-label]");
+  const numberEl = document.querySelector<HTMLElement>("[data-complaint-number]");
+
+  const FIELD_LABELS: Record<string, string> = {
+    type: "el tipo (reclamo/queja)",
+    fullName: "tu nombre completo",
+    documentType: "el tipo de documento",
+    documentNumber: "el número de documento",
+    email: "un correo válido",
+    contractedService: "el servicio contratado",
+    detail: "el detalle del reclamo",
+    consumerRequest: "qué solución esperas",
+    claimedAmount: "un monto reclamado válido",
+  };
+
+  const showError = (message: string) => {
+    if (!errorEl || !errorTextEl) return;
+    errorTextEl.textContent = message;
+    errorEl.hidden = false;
+  };
+
+  const hideError = () => {
+    if (errorEl) errorEl.hidden = true;
+  };
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    hideError();
+
+    const data = new FormData(form);
+    const claimedAmountRaw = (data.get("claimedAmount") as string)?.trim();
+
+    const payload = {
+      type: data.get("type"),
+      fullName: (data.get("fullName") as string)?.trim(),
+      documentType: data.get("documentType"),
+      documentNumber: (data.get("documentNumber") as string)?.trim(),
+      address: (data.get("address") as string)?.trim() || undefined,
+      phone: (data.get("phone") as string)?.trim() || undefined,
+      email: (data.get("email") as string)?.trim(),
+      contractedService: (data.get("contractedService") as string)?.trim(),
+      claimedAmount: claimedAmountRaw ? Number(claimedAmountRaw) : undefined,
+      detail: (data.get("detail") as string)?.trim(),
+      consumerRequest: (data.get("consumerRequest") as string)?.trim(),
+      website: data.get("website"), // honeypot
+    };
+
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitLabel) submitLabel.textContent = "Enviando...";
+
+    try {
+      const response = await fetch("/api/complaints/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json().catch(() => ({ ok: false }));
+
+      if (!response.ok || !result.ok) {
+        if (result.error === "missing_fields" && Array.isArray(result.fields)) {
+          const labels = result.fields.map((f: string) => FIELD_LABELS[f] || f);
+          showError(`Revisa estos campos: ${labels.join(", ")}.`);
+        } else {
+          showError(
+            "No pudimos enviar tu reclamo en este momento. Escríbenos por WhatsApp o email si el problema persiste.",
+          );
+        }
+        return;
+      }
+
+      const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+      if (typeof gtag === "function") {
+        gtag("event", "complaint_submitted", { cta_location: "libro_reclamaciones" });
+      }
+
+      form.hidden = true;
+      if (successEl) {
+        successEl.hidden = false;
+        if (numberEl && result.complaintNumber) {
+          numberEl.textContent = ` N.° ${result.complaintNumber}`;
+        }
+      }
+    } catch (err) {
+      // No asumimos que no se envió: el servidor puede haber procesado el
+      // reclamo igual (crearlo en Sanity) y que solo falle la respuesta al
+      // navegador (visto en dev con el adaptador de Netlify — confirmado
+      // con las mismas request que sí llegan a loguear 200 del lado del
+      // servidor). Reintentar a ciegas arriesga un reclamo duplicado, así
+      // que en vez de invitar a reenviar, se pide verificar primero.
+      console.error("[complaint-form] fetch falló después de enviar:", err);
+      showError(
+        "No pudimos confirmar que tu reclamo se envió correctamente (falló la conexión al recibir la respuesta). Antes de volver a intentarlo, escríbenos por WhatsApp o email para verificar si ya quedó registrado — así evitamos un reclamo duplicado.",
+      );
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitLabel) submitLabel.textContent = "Enviar reclamo";
+    }
+  });
+</script>

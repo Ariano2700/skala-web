@@ -1,0 +1,79 @@
+---
+export const prerender = true;
+import Layout from "../layouts/Layout.astro";
+import LegalLayout from "../components/legal/LegalLayout.astro";
+import ComplaintForm from "../components/legal/ComplaintForm.astro";
+
+const pageTitle = "Libro de Reclamaciones | Skala Agencia";
+const pageDescription =
+  "Registra un reclamo o una queja sobre un servicio de Skala directamente desde este formulario.";
+const canonicalUrl = new URL(
+  "/libro-de-reclamaciones/",
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+const lastUpdated = "3 de septiembre de 2026";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  robots="index, follow"
+>
+  <main class="relative z-10">
+    <LegalLayout
+      kicker="Legal"
+      title="Libro de Reclamaciones"
+      lastUpdated={lastUpdated}
+      intro="Registra un reclamo o una queja sobre un servicio contratado con Skala. Queda anotado con un número de seguimiento y lo revisamos directamente."
+    >
+      <h2>1. Estado actual</h2>
+      <p>
+        Skala es un proyecto en etapa inicial: todavía no cuenta con RUC ni
+        registro formal de empresa, por lo que este formulario aún no es el{" "}
+        <strong>
+          Libro de Reclamaciones Virtual oficial que exige INDECOPI
+        </strong>{" "}
+        (D.S. N.º 011-2011-PCM) a los proveedores formalmente registrados.
+        Preferimos decir esto con claridad antes que mostrar un libro que
+        aparente ser oficial sin serlo todavía — pero cada reclamo o queja
+        que dejes acá sí queda registrado y lo atendemos igual.
+      </p>
+      <p>
+        En cuanto completemos ese registro, este formulario se actualizará
+        al Libro de Reclamaciones Virtual oficial, con nuestro RUC y razón
+        social visibles como exige la norma.
+      </p>
+
+      <h2>2. Tiempo de respuesta</h2>
+      <p>
+        Buscamos responder cualquier reclamo o queja en un máximo de{" "}
+        <strong>15 días hábiles</strong>, confirmando por el correo o
+        teléfono que dejes en el formulario qué acción vamos a tomar.
+      </p>
+
+      <h2>3. Si prefieres un canal externo</h2>
+      <p>
+        Como consumidor, siempre puedes acudir directamente a{" "}
+        <a
+          href="https://www.gob.pe/indecopi"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          INDECOPI
+        </a>{" "}
+        si consideras que un reclamo no fue atendido adecuadamente.
+      </p>
+    </LegalLayout>
+
+    <section class="mx-auto w-full max-w-220 px-5 pb-20 md:px-12">
+      <h2
+        class="mb-6 font-display text-[clamp(1.6rem,2.8vw,2.2rem)] font-black tracking-tighter text-skala-text"
+        data-reveal
+      >
+        Registra tu reclamo o queja
+      </h2>
+      <ComplaintForm />
+    </section>
+  </main>
+</Layout>

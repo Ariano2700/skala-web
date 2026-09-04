@@ -1,0 +1,120 @@
+---
+export const prerender = true;
+import Layout from "../layouts/Layout.astro";
+import LegalLayout from "../components/legal/LegalLayout.astro";
+import { CONTACT_DATA } from "../data/contact_data";
+
+const pageTitle = "Política de Privacidad | Skala Agencia";
+const pageDescription =
+  "Cómo Skala recoge, usa y protege los datos que compartes por el formulario de contacto, WhatsApp o la navegación en el sitio.";
+const canonicalUrl = new URL(
+  "/politica-de-privacidad/",
+  Astro.site ?? new URL("https://skalaagencia.netlify.app"),
+).href;
+const lastUpdated = "3 de septiembre de 2026";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  robots="index, follow"
+>
+  <main class="relative z-10">
+    <LegalLayout
+      kicker="Legal"
+      title="Política de Privacidad"
+      lastUpdated={lastUpdated}
+      intro="Esta política explica qué datos personales recoge Skala cuando visitas el sitio o nos escribes, para qué los usamos y qué puedes hacer si quieres corregirlos o eliminarlos."
+    >
+      <h2>1. Aviso de transparencia</h2>
+      <p>
+        Skala es un proyecto de agencia y productora en etapa inicial,
+        operado por su equipo fundador desde Trujillo, Perú, actualmente en
+        proceso de formalización como empresa. Mientras eso ocurre, esta
+        política se mantiene bajo esos mismos términos: cero venta de datos a
+        terceros y transparencia sobre qué se recoge y para qué. Cuando el
+        proyecto complete su registro formal (RUC y razón social), esta
+        página se actualizará con esos datos.
+      </p>
+
+      <h2>2. Qué datos recogemos</h2>
+      <p>Solo recogemos datos en dos situaciones:</p>
+      <ul>
+        <li>
+          <strong>Cuando nos escribes directamente</strong> (formulario de
+          contacto del sitio, WhatsApp o email): el nombre, número de
+          contacto y/o correo que tú mismo ingreses, más el contenido del
+          mensaje que envíes.
+        </li>
+        <li>
+          <strong>Cuando navegas el sitio y aceptas el aviso de cookies</strong>:
+          datos de uso agregados (páginas vistas, dispositivo, navegador,
+          ubicación aproximada) recogidos por Google Analytics 4. Si rechazas
+          el aviso, esta medición no se activa - ver nuestra{" "}
+          <a href="/politica-de-cookies">Política de Cookies</a>.
+        </li>
+      </ul>
+
+      <h2>3. Cómo usamos tus datos</h2>
+      <ul>
+        <li>Responder tus consultas y armar cotizaciones.</li>
+        <li>Dar seguimiento comercial a un proyecto en curso.</li>
+        <li>
+          Entender qué contenido y servicios generan más interés, para
+          mejorar el sitio (solo con datos agregados de Analytics).
+        </li>
+      </ul>
+
+      <h2>4. Con quién se comparten tus datos</h2>
+      <p>
+        El formulario de contacto de este sitio{" "}
+        <strong>no guarda tus datos en un servidor de Skala</strong>: arma un
+        mensaje con lo que escribes y lo abre directo en tu WhatsApp. A
+        partir de ese momento, la conversación queda en WhatsApp, un servicio
+        operado por Meta bajo su propia política de privacidad.
+      </p>
+      <p>
+        Los datos de navegación (si aceptaste cookies) los procesa{" "}
+        <strong>Google Analytics 4</strong> (Google LLC), bajo su propia
+        política de privacidad. No compartimos ni vendemos tus datos a
+        ningún otro tercero con fines publicitarios.
+      </p>
+
+      <h2>5. Base legal</h2>
+      <p>
+        Los datos que nos escribes directamente se tratan porque tú nos los
+        entregas voluntariamente al iniciar una conversación comercial. Los
+        datos de navegación solo se recogen si das tu consentimiento expreso
+        en el aviso de cookies (Google Consent Mode v2: por defecto todo
+        queda denegado hasta que aceptas).
+      </p>
+
+      <h2>6. Cuánto tiempo conservamos los datos</h2>
+      <p>
+        Las conversaciones de WhatsApp se conservan según tus propias
+        configuraciones de esa app, no las controla Skala. Los datos de
+        Analytics se conservan según el periodo de retención configurado en
+        Google Analytics 4, que puede solicitarse acortar contactándonos.
+      </p>
+
+      <h2>7. Tus derechos</h2>
+      <p>
+        Puedes pedirnos en cualquier momento acceder, corregir o eliminar los
+        datos que nos hayas compartido directamente, o dejar de recibir
+        seguimiento comercial de nuestra parte. Escríbenos a{" "}
+        <a href={`mailto:${CONTACT_DATA.EMAIL_ADDRESS}`}>
+          {CONTACT_DATA.EMAIL_ADDRESS}
+        </a>{" "}
+        o por WhatsApp y lo resolvemos directamente.
+      </p>
+
+      <h2>8. Cambios a esta política</h2>
+      <p>
+        Si actualizamos esta política, cambiaremos la fecha de "Última
+        actualización" al inicio de esta página. Te recomendamos revisarla
+        de vez en cuando si nos escribes con frecuencia.
+      </p>
+    </LegalLayout>
+  </main>
+</Layout>

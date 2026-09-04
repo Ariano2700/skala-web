@@ -1,0 +1,72 @@
+---
+// Grilla de miniaturas de la galería del proyecto. Cada tile abre el
+// lightbox (ProjectGalleryLightbox.tsx, montado una sola vez en la página)
+// vía delegación de eventos sobre `data-gallery-open` + `data-index`.
+import { FaPlay } from "react-icons/fa";
+import type { PortfolioMedia } from "../../data/portafolio";
+
+interface Props {
+  media: PortfolioMedia[];
+  title: string;
+}
+
+const { media, title } = Astro.props as Props;
+const heroTile = media.length >= 3;
+---
+
+{
+  media.length > 0 && (
+    <div
+      class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+      role="list"
+      aria-label={`Galería de ${title}`}
+    >
+      {media.map((item, i) => (
+        <button
+          type="button"
+          class={`group relative isolate overflow-hidden rounded-3xl border border-skala-border bg-skala-surface transition duration-300 hover:-translate-y-1 hover:border-skala-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-skala-accent/70 ${
+            heroTile && i === 0
+              ? "col-span-2 row-span-2 aspect-square"
+              : "aspect-square"
+          }`}
+          data-gallery-open
+          data-index={i}
+          aria-label={
+            item.type === "video"
+              ? `Reproducir video ${i + 1} de ${media.length}`
+              : `Ver imagen ${i + 1} de ${media.length}`
+          }
+          role="listitem"
+        >
+          {item.type === "image" ? (
+            <img
+              src={item.src}
+              alt={item.alt ?? title}
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 h-full w-full scale-100 object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <video
+              src={item.src}
+              muted
+              playsinline
+              preload="metadata"
+              class="absolute inset-0 h-full w-full scale-100 object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          )}
+
+          <div class="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/25" />
+
+          {item.type === "video" && (
+            <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/50 text-white transition-transform duration-300 group-hover:scale-110">
+                <FaPlay className="h-4 w-4 translate-x-0.5" aria-hidden="true" />
+              </span>
+            </span>
+          )}
+        </button>
+      ))}
+    </div>
+  )
+}

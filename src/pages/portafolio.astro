@@ -4,6 +4,7 @@ import PortfolioCta from "../components/portfolio/PortfolioCta.astro";
 import PortfolioFilters from "../components/portfolio/PortfolioFilters.astro";
 import PortfolioGrid from "../components/portfolio/PortfolioGrid.astro";
 import PortfolioHero from "../components/portfolio/PortfolioHero.astro";
+import BrandsMarquee from "../components/shared/BrandsMarquee.astro";
 import { adaptSanityProjects } from "../data/portafolio";
 import { getAllProjects } from "../sanity/project/api";
 import { getOrganizationSchema } from "../data/organization";
@@ -13,6 +14,19 @@ import { getOrganizationSchema } from "../data/organization";
 const sanityProjects = await getAllProjects();
 const sourceProjects =
   sanityProjects.length > 0 ? adaptSanityProjects(sanityProjects) : [];
+
+// La grilla no renderiza los `sourceProjects` completos: solo el primer
+// lote de la categoría activa (?categoria= en la URL). El resto lo pide
+// PortfolioGridClient.tsx a /api/portfolio/projects con scroll infinito,
+// así la carga inicial no manda todas las tarjetas de una sola vez.
+const PAGE_SIZE = 9;
+const initialCategory = Astro.url.searchParams.get("categoria") || "all";
+const initialFiltered =
+  initialCategory === "all"
+    ? sourceProjects
+    : sourceProjects.filter((p) => p.categories.includes(initialCategory));
+const initialItems = initialFiltered.slice(0, PAGE_SIZE);
+const initialTotal = initialFiltered.length;
 
 const pageTitle =
   "Portafolio Skala - Agencia & Productora Audiovisual en Trujillo";
@@ -57,8 +71,14 @@ const structuredData = [
 >
   <main id="top" class="relative z-10">
     <PortfolioHero projects={sourceProjects} />
-    <PortfolioFilters projects={sourceProjects} />
-    <PortfolioGrid projects={sourceProjects} />
+    <PortfolioFilters projects={sourceProjects} total={initialTotal} />
+    <PortfolioGrid
+      initialItems={initialItems}
+      initialTotal={initialTotal}
+      initialCategory={initialCategory}
+      pageSize={PAGE_SIZE}
+    />
+    <BrandsMarquee />
     <PortfolioCta />
   </main>
 </Layout>

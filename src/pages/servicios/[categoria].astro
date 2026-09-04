@@ -1,0 +1,299 @@
+---
+export const prerender = true;
+import Layout from "../../layouts/Layout.astro";
+import SectionLabel from "../../components/landing/SectionLabel.astro";
+import PlanCard from "../../components/shared/PlanCard.astro";
+import PackNotes from "../../components/shared/PackNotes.astro";
+import BrandsMarquee from "../../components/shared/BrandsMarquee.astro";
+import CtaSection from "../../components/landing/CtaSection.astro";
+import FaqItem from "../../components/landing/faq/FaqItem.astro";
+import { FaWhatsapp } from "react-icons/fa";
+import { FiArrowUpRight } from "react-icons/fi";
+import { CONTACT_DATA } from "../../data/contact_data";
+import { serviceCategories, getServiceCategoryBySlug } from "../../data/serviceCategories";
+import { faqClusters } from "../../data/faq";
+import { getOrganizationSchema, SITE_URL } from "../../data/organization";
+
+export async function getStaticPaths() {
+  return serviceCategories.map((category) => ({
+    params: { categoria: category.slug },
+  }));
+}
+
+const { categoria } = Astro.params;
+const category = getServiceCategoryBySlug(categoria as string);
+
+if (!category) {
+  return Astro.redirect("/servicios/", 302);
+}
+
+const canonicalUrl = new URL(
+  `/servicios/${category.slug}/`,
+  Astro.site ?? new URL(SITE_URL),
+).href;
+
+const relatedFaqItems = (category.faqClusterIds ?? []).flatMap(
+  (clusterId) => faqClusters.find((c) => c.id === clusterId)?.items ?? [],
+);
+
+const allPacks = category.sections.flatMap((section) => section.packs);
+
+const buildOffer = (pack: (typeof allPacks)[number]) => {
+  const numbers =
+    pack.price.match(/[\d,]+/g)?.map((n) => Number(n.replace(/,/g, ""))) ?? [];
+  const priceFields =
+    numbers.length >= 2
+      ? {
+          priceSpecification: {
+            "@type": "PriceSpecification",
+            minPrice: numbers[0],
+            maxPrice: numbers[1],
+            priceCurrency: "PEN",
+          },
+        }
+      : numbers.length === 1
+        ? { price: numbers[0], priceCurrency: "PEN" }
+        : {};
+
+  return {
+    "@type": "Offer",
+    itemOffered: {
+      "@type": "Service",
+      name: pack.name,
+      description: pack.tagline,
+    },
+    ...priceFields,
+  };
+};
+
+const structuredData = [
+  getOrganizationSchema(),
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Servicios",
+        item: `${SITE_URL}/servicios/`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: category.navLabel,
+        item: canonicalUrl,
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    serviceType: category.navLabel,
+    provider: { "@id": `${SITE_URL}/#organization` },
+    areaServed: { "@type": "City", name: "Trujillo" },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `Packs de ${category.navLabel} — Skala`,
+      itemListElement: allPacks.map(buildOffer),
+    },
+  },
+];
+---
+
+<Layout
+  title={category.metaTitle}
+  description={category.metaDescription}
+  canonicalUrl={canonicalUrl}
+  structuredData={structuredData}
+  keywords={category.keywords}
+  robots="index, follow"
+>
+  <main class="relative z-10 flex flex-col gap-20 pb-24">
+    <section
+      class="mx-auto grid w-full max-w-360 gap-10 px-5 pt-32 md:px-12 xl:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)] xl:items-center"
+    >
+      <div>
+        <nav
+          aria-label="Ruta de navegación"
+          class="mb-5 flex items-center gap-2 text-xs text-skala-muted"
+        >
+          <a href="/servicios" class="transition-colors hover:text-skala-accent">
+            Servicios
+          </a>
+          <span aria-hidden="true">/</span>
+          <span class="text-skala-text">{category.navLabel}</span>
+        </nav>
+
+        <SectionLabel label={category.kicker} />
+        <h1
+          class="m-0 max-w-[18ch] font-display text-[clamp(2.4rem,4.8vw,4.4rem)] leading-[0.96] tracking-[-0.06em]"
+          data-reveal
+          style="--reveal-delay: 90ms;"
+        >
+          {category.h1}
+        </h1>
+
+        {
+          category.intro.map((paragraph, index) => (
+            <p
+              class="mt-5 max-w-[62ch] text-[1.02rem] leading-8 text-skala-muted"
+              data-reveal
+              style={`--reveal-delay: ${140 + index * 60}ms;`}
+            >
+              {paragraph}
+            </p>
+          ))
+        }
+
+        <div
+          class="mt-8 flex flex-wrap gap-3"
+          data-reveal
+          style="--reveal-delay: 260ms;"
+        >
+          <a
+            href={CONTACT_DATA.WHATSAPP_LINK(category.whatsappMessage)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Cotizar por WhatsApp"
+            aria-label="Cotizar por WhatsApp"
+            data-ga-whatsapp
+            data-ga-location={`servicios_${category.slug}_hero`}
+            data-ga-label={category.navLabel}
+            class="group inline-flex items-center justify-center gap-3 rounded-full bg-skala-accent px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text-secondary! shadow-[0_18px_35px_rgba(92,216,252,0.22)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+          >
+            <FaWhatsapp aria-hidden="true" className="size-4" />
+            <span>Cotizar por WhatsApp</span>
+          </a>
+          <a
+            href="/servicios"
+            title="Ver todos los servicios"
+            aria-label="Ver todos los servicios"
+            class="group inline-flex items-center justify-center gap-3 rounded-full border border-skala-border-strong bg-white/3 px-6 py-4 font-display text-[0.74rem] uppercase tracking-[0.16em] text-skala-text shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] hover:border-skala-accent/40 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-skala-accent/60 active:translate-y-px"
+          >
+            <span>Ver todos los servicios</span>
+          </a>
+        </div>
+      </div>
+
+      <div
+        class="relative flex aspect-square items-center justify-center overflow-hidden rounded-[42px] border border-skala-border bg-skala-bg shadow-(--shadow)"
+        data-reveal
+        style="--reveal-delay: 180ms;"
+        aria-hidden="true"
+      >
+        <div
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_20%,rgba(92,216,252,0.24),transparent_38%),radial-gradient(circle_at_80%_82%,rgba(30,163,232,0.16),transparent_44%)]"
+        >
+        </div>
+        <div
+          class="pointer-events-none absolute inset-6 rounded-[30px] border border-white/8 opacity-70"
+        >
+        </div>
+        <category.icon
+          className="relative h-24 w-24 text-skala-accent opacity-90 category-icon-pulse"
+        />
+      </div>
+    </section>
+
+    {
+      category.sections.map((section) => (
+        <section
+          id={section.id}
+          class="mx-auto flex w-full max-w-360 scroll-mt-36 flex-col gap-7 px-5 md:px-12"
+        >
+          <div class="flex flex-col gap-2">
+            <h2
+              class="m-0 font-display text-[clamp(1.6rem,2.8vw,2.3rem)] font-black tracking-tighter text-skala-text"
+              data-reveal
+            >
+              {section.heading}
+            </h2>
+            {section.description && (
+              <p
+                class="max-w-[62ch] text-sm leading-7 text-skala-muted"
+                data-reveal
+                style="--reveal-delay: 90ms;"
+              >
+                {section.description}
+              </p>
+            )}
+          </div>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {section.packs.map((pack, index) => (
+              <PlanCard
+                plan={pack}
+                index={index}
+                location={`servicios_${category.slug}_${section.id}`}
+              />
+            ))}
+          </div>
+          {section.notesTitle && section.notesItems && (
+            <PackNotes title={section.notesTitle} items={[...section.notesItems]} />
+          )}
+        </section>
+      ))
+    }
+
+    {
+      relatedFaqItems.length > 0 && (
+        <section class="mx-auto w-full max-w-220 px-5 md:px-12">
+          <h2
+            class="m-0 mb-6 font-display text-[clamp(1.6rem,2.8vw,2.2rem)] font-black tracking-tighter text-skala-text"
+            data-reveal
+          >
+            Preguntas sobre {category.navLabel.toLowerCase()}
+          </h2>
+          <div class="flex flex-col gap-3">
+            {relatedFaqItems.slice(0, 5).map((item, index) => (
+              <FaqItem
+                q={item.q}
+                a={item.a}
+                index={index}
+                name={`faq-${category.slug}`}
+              />
+            ))}
+          </div>
+          <p class="mt-6 text-center text-sm text-skala-muted">
+            <a
+              href="/preguntas-frecuentes"
+              class="inline-flex items-center gap-2 font-bold text-skala-accent transition-colors hover:text-skala-text"
+            >
+              Ver todas las preguntas frecuentes
+              <FiArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
+            </a>
+          </p>
+        </section>
+      )
+    }
+
+    <BrandsMarquee />
+
+    <CtaSection />
+  </main>
+</Layout>
+
+<style>
+  .category-icon-pulse {
+    animation: categoryIconPulse 3.4s ease-in-out infinite;
+  }
+
+  @keyframes categoryIconPulse {
+    0%,
+    100% {
+      transform: scale(1);
+      filter: drop-shadow(0 0 0 rgba(92, 216, 252, 0));
+    }
+    50% {
+      transform: scale(1.06);
+      filter: drop-shadow(0 0 28px rgba(92, 216, 252, 0.42));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .category-icon-pulse {
+      animation: none;
+    }
+  }
+</style>

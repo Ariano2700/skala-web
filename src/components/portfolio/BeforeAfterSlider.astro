@@ -1,0 +1,109 @@
+---
+// Slider comparativo antes/después. Solo se usa cuando el proyecto trae
+// `beforeAfter` (par de imágenes desde Sanity); el control real es un
+// <input type="range"> nativo superpuesto y transparente, así el arrastre,
+// el teclado (flechas) y el lector de pantalla funcionan gratis sin lógica
+// de puntero a medida (cumple la alternativa de un solo puntero que pide
+// WCAG 2.2 para gestos de arrastre).
+import { BsArrowLeftRight } from "react-icons/bs";
+import type { PortfolioBeforeAfterImage } from "../../data/portafolio";
+
+interface Props {
+  before: PortfolioBeforeAfterImage;
+  after: PortfolioBeforeAfterImage;
+  accent?: string;
+  title?: string;
+}
+
+const {
+  before,
+  after,
+  accent = "var(--color-skala-accent)",
+  title = "",
+} = Astro.props as Props;
+---
+
+<figure
+  class="group relative m-0 aspect-video w-full touch-pan-y select-none overflow-hidden rounded-4xl border border-skala-border bg-black shadow-[0_24px_70px_rgba(0,0,0,0.3)]"
+  data-before-after
+  style={`--pos: 50%; --ba-accent: ${accent};`}
+>
+  <img
+    src={after.src}
+    alt={after.alt || `${title}, después`}
+    class="pointer-events-none absolute inset-0 h-full w-full object-cover"
+    loading="lazy"
+    decoding="async"
+  />
+
+  <div
+    class="pointer-events-none absolute inset-0 overflow-hidden"
+    style="clip-path: inset(0 calc(100% - var(--pos)) 0 0);"
+    data-before-clip
+  >
+    <img
+      src={before.src}
+      alt={before.alt || `${title}, antes`}
+      class="absolute inset-0 h-full w-full object-cover"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <div
+    class="pointer-events-none absolute inset-y-0 w-0.5 bg-white/85"
+    style="left: var(--pos); transform: translateX(-50%);"
+    data-before-line
+  >
+  </div>
+
+  <div
+    class="pointer-events-none absolute grid h-11 w-11 place-items-center rounded-full border-2 border-white text-skala-text-secondary shadow-[0_8px_24px_rgba(0,0,0,0.4)] transition-transform duration-150 group-active:scale-90"
+    style="left: var(--pos); top: 50%; transform: translate(-50%, -50%); background: var(--ba-accent);"
+    data-before-handle
+  >
+    <BsArrowLeftRight className="h-4 w-4" aria-hidden="true" />
+  </div>
+
+  <span
+    class="pointer-events-none absolute left-4 top-4 rounded-full border border-white/20 bg-black/55 px-3 py-1.5 text-[0.66rem] font-black uppercase tracking-[0.16em] text-white backdrop-blur-sm"
+  >
+    Antes
+  </span>
+  <span
+    class="pointer-events-none absolute right-4 top-4 rounded-full border border-white/20 px-3 py-1.5 text-[0.66rem] font-black uppercase tracking-[0.16em] text-skala-text-secondary backdrop-blur-sm"
+    style={`background: ${accent};`}
+  >
+    Después
+  </span>
+
+  <input
+    type="range"
+    min="0"
+    max="100"
+    value="50"
+    step="1"
+    aria-label={title ? `Comparar antes y después: ${title}` : "Comparar antes y después"}
+    class="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
+    data-before-input
+  />
+</figure>
+
+<script>
+  const instances = document.querySelectorAll<HTMLElement>(
+    "[data-before-after]",
+  );
+
+  instances.forEach((root) => {
+    const input = root.querySelector<HTMLInputElement>("[data-before-input]");
+    if (!input) return;
+
+    const sync = () => {
+      root.style.setProperty("--pos", `${input.value}%`);
+      input.setAttribute("aria-valuetext", `${input.value}% antes`);
+    };
+
+    input.addEventListener("input", sync);
+    sync();
+  });
+</script>
