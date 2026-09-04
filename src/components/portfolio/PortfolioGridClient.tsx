@@ -81,14 +81,14 @@ function Card({ project }: { project: PortfolioProjectItem }) {
 
         <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 lg:p-8">
           <h3 className="m-0 max-w-[20ch] font-display text-2xl font-black leading-tight tracking-[-0.04em] text-skala-text transition-transform duration-500 ease-out group-hover:-translate-y-0.5 md:text-3xl">
-            {project.title}
+            {project.client}
           </h3>
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-4 border-t border-white/8 p-4 sm:p-5">
-        <span className="min-w-0 truncate text-sm text-skala-muted">
-          {project.client}
+        <span className="min-w-0 truncate text-xs text-skala-muted">
+          {project.title}
         </span>
         <span
           className="inline-flex shrink-0 items-center gap-1.5 text-[0.7rem] font-black uppercase tracking-[0.14em]"
