@@ -61,7 +61,7 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
                   >
                     <span>{item.label}</span>
                     <FiChevronDown
-                      className="shrink-0 ml-1 h-3 w-3 opacity-50 transition-transform duration-200 group-hover/link:opacity-100 group-hover/link:rotate-180"
+                      className="desktop-chevron-icon shrink-0 ml-1 h-3 w-3 opacity-50 transition-transform duration-200 ease-[cubic-bezier(0.77,0,0.175,1)] group-hover/link:opacity-100"
                       aria-hidden="true"
                     />
                     <span class="absolute inset-x-4 bottom-1.5 h-px scale-x-0 bg-skala-accent transition-transform duration-300 group-hover/link:scale-x-100" />
@@ -124,7 +124,7 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
 
   <div
     id="mobile-nav"
-    class="fixed inset-x-4 top-19 z-50 hidden overflow-hidden rounded-4xl border border-white/12 bg-[#04142e]/96 p-3 shadow-[0_28px_80px_rgba(0,0,0,0.38)]"
+    class="fixed inset-x-4 top-19 z-50 hidden max-h-[calc(100dvh-5.75rem)] overflow-y-auto overscroll-contain rounded-4xl border border-white/12 bg-[#04142e]/99 p-3 shadow-[0_28px_80px_rgba(0,0,0,0.38)] no-scrollbar"
     data-mobile-nav
   >
     <div class="mobile-nav-panel">
@@ -186,6 +186,26 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
      para ser clicables). La animación de entrada es solo decorativa. */
   .mobile-nav-panel {
     opacity: 1;
+  }
+
+  /* El menú móvil puede crecer más que el alto de la pantalla cuando hay
+     submenús abiertos (Nosotros, Coberturas). Permite scroll interno pero
+     sin mostrar la barra de scroll en ningún navegador. */
+  .no-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Edge legado / IE */
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge Chromium */
+  }
+
+  /* Rotación del chevron del dropdown de desktop atada al estado real
+     (aria-expanded, sincronizado por JS con la visibilidad del submenú) en
+     vez de :hover puro, para que no se "enderece" si el mouse pasa del
+     trigger al contenido del dropdown mientras sigue abierto. */
+  .desktop-submenu-trigger[aria-expanded="true"] .desktop-chevron-icon {
+    transform: rotate(180deg);
   }
 </style>
 
@@ -352,11 +372,13 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
         const showSubmenu = () => {
           clearTimeout(hideTimeout);
           content.classList.remove("hidden");
+          trigger.setAttribute("aria-expanded", "true");
         };
 
         const hideSubmenu = () => {
           hideTimeout = setTimeout(() => {
             content.classList.add("hidden");
+            trigger.setAttribute("aria-expanded", "false");
           }, 150);
         };
 

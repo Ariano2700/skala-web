@@ -48,7 +48,7 @@ const { isMobile, links, depth = 0 } = Astro.props as Props;
                 aria-label={`Expandir submenú ${item.label}`}
               >
                 <FiChevronDown
-                  className="h-5 w-5 opacity-50 transition-transform duration-200"
+                  className="mobile-chevron-icon h-5 w-5 opacity-50 transition-transform duration-200 ease-[cubic-bezier(0.77,0,0.175,1)]"
                   aria-hidden="true"
                 />
               </button>
@@ -64,7 +64,7 @@ const { isMobile, links, depth = 0 } = Astro.props as Props;
             >
               <span>{item.label}</span>
               <FiChevronDown
-                className="shrink-0 ml-1 h-3 w-3 opacity-50 transition-transform duration-200 group-hover/link:opacity-100 group-hover/link:rotate-180"
+                className="desktop-chevron-icon shrink-0 ml-1 h-3 w-3 opacity-50 transition-transform duration-200 ease-[cubic-bezier(0.77,0,0.175,1)] group-hover/link:opacity-100 group-hover/link:rotate-180"
                 aria-hidden="true"
               />
               <span class="absolute inset-x-4 bottom-1.5 h-px scale-x-0 bg-skala-accent transition-transform duration-300 group-hover/link:scale-x-100" />
@@ -133,8 +133,10 @@ const { isMobile, links, depth = 0 } = Astro.props as Props;
     opacity: 1;
   }
 
-  /* Chevron rotation for mobile */
-  .mobile-submenu-toggle[data-open] FiChevronDown {
+  /* Rotación suave del chevron al expandir/colapsar (mobile: toggle por click,
+     desktop: hover). El transition-transform vive en el propio ícono (ver
+     className arriba); aquí solo definimos el estado "abierto". */
+  .mobile-submenu-toggle[data-open] .mobile-chevron-icon {
     transform: rotate(180deg);
   }
 </style>
