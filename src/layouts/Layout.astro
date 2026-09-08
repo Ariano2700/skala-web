@@ -130,7 +130,7 @@ const absoluteOgImage = new URL(ogImage, siteUrl).href;
   >
     <AmbientBackdrop />
     <SiteNav isStatic={false} />
-    <LenisScroll client:idle />
+    <LenisScroll client:media="(pointer: fine)" />
     <slot />
     <SiteFooter isStatic={false} />
     <RevealScript />
