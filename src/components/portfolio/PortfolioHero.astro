@@ -1,6 +1,6 @@
 ---
 import SectionLabel from "../landing/SectionLabel.astro";
-import SkalaWordmark from "../shared/SkalaWordmark.astro";
+import SkalaWordmark from "../shared/SkalaWordmark";
 import { type PortfolioProjectItem } from "../../data/portafolio";
 import PortfolioHeroVisual from "./PortfolioHeroVisual.astro";
 
@@ -32,7 +32,7 @@ const disciplines = new Set(projects.flatMap((p) => p.categories)).size;
         >
           Nuestro trabajo habla por <span class="sr-only">Skala</span>
           <div class="flex items-center gap-2 pb-2 pl-5">
-            <SkalaWordmark />
+            <SkalaWordmark client:load />
           </div>
         </h1>
       </div>
