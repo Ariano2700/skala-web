@@ -2,6 +2,7 @@
 import Image from "astro/components/Image.astro";
 import { heroActions, heroSignals } from "../../data/hero";
 import SkalaWordmark from "../shared/SkalaWordmark.tsx";
+import heroImage from "../../assets/hero_image.png";
 ---
 
 <section
@@ -91,14 +92,13 @@ import SkalaWordmark from "../shared/SkalaWordmark.tsx";
         disableRemotePlayback
         aria-hidden="true"></video> -->
         <Image
-          src="/hero_image.PNG"
+          src={heroImage}
           alt="Hero image"
           title="Hero image"
           class="absolute inset-0 h-full w-full object-cover object-bottom opacity-55 xl:opacity-50"
           loading="eager"
           fetchpriority="high"
-          width={1920}
-          height={1080}
+          quality={80}
         />
 
       <div

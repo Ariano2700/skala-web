@@ -4,6 +4,7 @@
 // vía delegación de eventos sobre `data-gallery-open` + `data-index`.
 import { FaPlay } from "react-icons/fa";
 import type { PortfolioMedia } from "../../data/portafolio";
+import { sanityImageUrl, sanitySrcSet } from "../../lib/sanity-image";
 
 interface Props {
   media: PortfolioMedia[];
@@ -42,7 +43,13 @@ const heroTile = media.length >= 3;
         >
           {item.type === "image" ? (
             <img
-              src={item.src}
+              src={sanityImageUrl(item.src, { width: 500 })}
+              srcset={sanitySrcSet(item.src, [300, 500, 800])}
+              sizes={
+                heroTile && i === 0
+                  ? "(max-width: 640px) 100vw, (max-width: 1024px) 66vw, 50vw"
+                  : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              }
               alt={item.alt ?? title}
               loading="lazy"
               decoding="async"

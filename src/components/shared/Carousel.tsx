@@ -2,6 +2,7 @@ import { useRef } from "react";
 import type { PortfolioProjectItem } from "../portfolio/portfolio-data";
 import { FaPlay, FaPause } from "react-icons/fa";
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
+import { sanityImageUrl, sanitySrcSet } from "../../lib/sanity-image";
 
 type ProjectMedia = PortfolioProjectItem["media"][number];
 
@@ -62,7 +63,9 @@ export default function Carousel({
           >
             {m.type === "image" ? (
               <img
-                src={m.src}
+                src={sanityImageUrl(m.src, { width: 1400, quality: 70 })}
+                srcSet={sanitySrcSet(m.src, [800, 1200, 1600], 70)}
+                sizes="92vw"
                 alt={m.alt ?? title}
                 className="h-full w-full object-contain"
                 loading="lazy"
