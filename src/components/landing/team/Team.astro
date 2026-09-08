@@ -88,9 +88,6 @@ import "./team.css";
 
 <script>
   import gsap from "gsap";
-  import { SplitText } from "gsap/SplitText";
-
-  gsap.registerPlugin(SplitText);
 
   document.addEventListener("DOMContentLoaded", () => {
     const teamSection = document.querySelector(".team");
@@ -103,31 +100,74 @@ import "./team.css";
     const nameElements = document.querySelectorAll(".profile-names .name");
     const nameSpans = document.querySelectorAll(".profile-names .name span");
 
-    // Split text into characters. Por defecto SplitText inyecta un
-    // aria-label (con el texto original) en cada span destino y un
-    // aria-hidden="true" en cada letra suelta, para que el lector de
-    // pantalla lea la palabra completa en vez de letra por letra. Ese
-    // aria-label solo es válido en elementos con un rol que permita
-    // nombre-por-autor (los <span> sin rol lo prohíben) — por eso llevan
-    // role="group" en el markup de arriba.
-    nameSpans.forEach((span) => {
-      const split = new SplitText(span, { type: "chars" });
-      split.chars.forEach((char) => {
-        char.classList.add("letter");
+    // Set initial state for images (solo escritura, no dispara reflow: es
+    // seguro dejarlo en la carga inicial).
+    gsap.set(profileImages, {
+      scale: 0.8,
+      opacity: 0,
+    });
+
+    // Todo lo demás (SplitText + la animación de entrada) se posterga hasta
+    // que la sección esté a punto de entrar en pantalla. SplitText mide
+    // layout de cada letra que genera (fuerza reflows — ver auditoría
+    // "Redistribución forzada" de Lighthouse) y hacerlo para el equipo
+    // completo apenas carga la página competía por el hilo principal con
+    // todo lo demás (FCP/LCP/TBT), aunque la sección todavía no fuera
+    // visible. rootMargin la dispara un poco antes de que se vea, así el
+    // split ya está listo cuando el usuario llega.
+    let initialized = false;
+
+    const initTeamText = async () => {
+      if (initialized) return;
+      initialized = true;
+
+      const { SplitText } = await import("gsap/SplitText");
+      gsap.registerPlugin(SplitText);
+
+      // Split text into characters. Por defecto SplitText inyecta un
+      // aria-label (con el texto original) en cada span destino y un
+      // aria-hidden="true" en cada letra suelta, para que el lector de
+      // pantalla lea la palabra completa en vez de letra por letra. Ese
+      // aria-label solo es válido en elementos con un rol que permita
+      // nombre-por-autor (los <span> sin rol lo prohíben) — por eso llevan
+      // role="group" en el markup de arriba.
+      nameSpans.forEach((span) => {
+        const split = new SplitText(span, { type: "chars" });
+        split.chars.forEach((char) => {
+          char.classList.add("letter");
+        });
       });
-    });
 
-    // Set initial positions for GSAP animations
-    const defaultLetters = nameElements[0].querySelectorAll(".letter");
-    gsap.set(defaultLetters, { y: "0%" });
+      // Set initial positions for GSAP animations
+      const defaultLetters = nameElements[0].querySelectorAll(".letter");
+      gsap.set(defaultLetters, { y: "0%" });
 
-    // Hide all other names initially
-    nameElements.forEach((nameEl, index) => {
-      if (index > 0) {
-        const letters = nameEl.querySelectorAll(".letter");
-        gsap.set(letters, { y: "100%" });
-      }
-    });
+      // Hide all other names initially
+      nameElements.forEach((nameEl, index) => {
+        if (index > 0) {
+          const letters = nameEl.querySelectorAll(".letter");
+          gsap.set(letters, { y: "100%" });
+        }
+      });
+
+      setupHoverInteractions(defaultLetters);
+    };
+
+    // Dispara la preparación (SplitText) apenas la sección está a 600px de
+    // entrar en pantalla, para que el split ya esté listo (sin jank) cuando
+    // el observer de abajo dispare la animación de entrada real.
+    const prepObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          initTeamText();
+          prepObserver.disconnect();
+        }
+      },
+      { threshold: 0, rootMargin: "600px 0px" },
+    );
+    if (teamSection) {
+      prepObserver.observe(teamSection);
+    }
 
     // Intersection Observer for entrance animations
     const observerOptions = {
@@ -138,50 +178,52 @@ import "./team.css";
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // Animate entrance
-          const tl = gsap.timeline();
+          initTeamText().then(() => {
+            // Animate entrance
+            const tl = gsap.timeline();
 
-          // Header animation
-          tl.to(teamHeader, {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-          })
-            // Images animation
-            .to(
-              profileImagesContainer,
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: "power2.out",
-              },
-              "-=0.4",
-            )
-            // Individual images stagger
-            .to(
-              profileImages,
-              {
-                scale: 1,
-                opacity: 1,
-                duration: 0.6,
-                ease: "back.out(1.7)",
-                stagger: 0.1,
-              },
-              "-=0.6",
-            )
-            // Names container animation
-            .to(
-              profileNamesContainer,
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: "power2.out",
-              },
-              "-=0.4",
-            );
+            // Header animation
+            tl.to(teamHeader, {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power2.out",
+            })
+              // Images animation
+              .to(
+                profileImagesContainer,
+                {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.8,
+                  ease: "power2.out",
+                },
+                "-=0.4",
+              )
+              // Individual images stagger
+              .to(
+                profileImages,
+                {
+                  scale: 1,
+                  opacity: 1,
+                  duration: 0.6,
+                  ease: "back.out(1.7)",
+                  stagger: 0.1,
+                },
+                "-=0.6",
+              )
+              // Names container animation
+              .to(
+                profileNamesContainer,
+                {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.8,
+                  ease: "power2.out",
+                },
+                "-=0.4",
+              );
+          });
 
           // Disconnect observer after animation
           observer.disconnect();
@@ -189,18 +231,13 @@ import "./team.css";
       });
     }, observerOptions);
 
-    // Set initial state for images
-    gsap.set(profileImages, {
-      scale: 0.8,
-      opacity: 0,
-    });
-
     // Start observing
     if (teamSection) {
       observer.observe(teamSection);
     }
 
     // Hover interactions (desktop) and touch interactions (mobile/tablet)
+    function setupHoverInteractions(defaultLetters: NodeListOf<Element>) {
     if (window.innerWidth >= 900) {
       // Desktop interactions
       profileImages.forEach((img, index) => {
@@ -409,6 +446,7 @@ import "./team.css";
           currentActiveLetters = null;
         }
       });
+    }
     }
   });
 </script>

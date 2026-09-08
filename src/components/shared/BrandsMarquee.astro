@@ -11,6 +11,7 @@
 // (grayscale + brightness-0 + invert) en reposo, y muestran su color real
 // al hacer hover. Es el mismo patrón que usan Linear/Stripe en sus tiras
 // de "clientes que confían en nosotros".
+import { Image } from "astro:assets";
 import { brands } from "../../data/brands";
 
 interface Props {
@@ -71,9 +72,11 @@ const track = [...half, ...half];
             aria-label={brand.name}
             class="flex h-14 w-36 shrink-0 items-center justify-center sm:h-20 sm:w-40"
           >
-            <img
+            <Image
               src={brand.logo}
               alt={brand.name}
+              width={160}
+              height={160}
               loading="lazy"
               decoding="async"
               class="max-h-full max-w-full object-contain opacity-55 grayscale brightness-0 invert transition duration-300 hover:opacity-100 hover:filter-none"
