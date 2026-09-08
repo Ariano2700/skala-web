@@ -41,31 +41,6 @@ const absoluteOgImage = new URL(ogImage, siteUrl).href;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
 
-    <!--
-      Sólo la home usa [data-hero-overlap-wrapper] (ver HeroOverlapReveal.astro),
-      pero esto vive acá en <head>, antes de que ese nodo exista en el DOM, a
-      propósito: fija --hero-overlap-offset en :root ANTES de que el parser
-      llegue al wrapper, así el CSS de abajo (.hero-overlap-wrapper en
-      index.astro) lo pinta ya en su posición final desde el primer frame —
-      sin JS de por medio y sin depender de qué tan rápido cargue GSAP. Antes
-      esa posición inicial la fijaba gsap.set() al cargar el chunk de
-      ScrollTrigger; correr eso más tarde (para no competir con FCP/LCP, ver
-      HeroOverlapReveal.astro) sin esto habría hecho que el panel se viera un
-      instante en su posición normal del documento y luego "saltara" —
-      layout shift. En páginas sin ese wrapper esta variable simplemente no
-      la usa nadie.
-    -->
-    <script is:inline>
-      if (
-        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ) {
-        document.documentElement.style.setProperty(
-          "--hero-overlap-offset",
-          "-" + window.innerHeight + "px",
-        );
-      }
-    </script>
-
     <Analytics />
 
     <title>{title}</title>

@@ -39,75 +39,43 @@
   ).matches;
 
   if (hero && overlapWrapper && !reduceMotion) {
-    // ScrollTrigger.create({ pin: true, ... }) fuerza un layout/reflow de
-    // toda la página (mide todo lo que hay que pinnear y desplazar) — es
-    // lo que Lighthouse marcaba como "Redistribución forzada" y como el
-    // grueso de "Minimiza el trabajo del hilo principal" en mobile. Antes
-    // corría apenas cargaba la página, compitiendo directo con FCP/LCP.
-    // El wrapper ya nace en su posición final vía CSS puro (ver
-    // --hero-overlap-offset en Layout.astro + el estilo de
-    // .hero-overlap-wrapper en index.astro), así que retrasar esto no causa
-    // ningún salto visual — solo saca ese costo del camino crítico del
-    // primer pintado. Si el usuario hace scroll o toca la pantalla antes de
-    // que el navegador quede idle, se inicializa al toque en vez de esperar.
-    let initialized = false;
+    (async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      gsap.registerPlugin(ScrollTrigger);
 
-    const initScrollTrigger = () => {
-      if (initialized) return;
-      initialized = true;
+      // "bottom top" - "bottom bottom" siempre da exactamente un alto de
+      // viewport, sea cual sea el alto real del hero — por eso el offset
+      // del wrapper se mide contra el viewport y no contra el hero.
+      const syncOffset = () => {
+        gsap.set(overlapWrapper, { y: -window.innerHeight });
+      };
+      syncOffset();
 
-      (async () => {
-        const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-          import("gsap"),
-          import("gsap/ScrollTrigger"),
-        ]);
-        gsap.registerPlugin(ScrollTrigger);
+      const fade = gsap
+        .timeline({ paused: true })
+        .to(hero, { opacity: 0, scale: 0.92, y: -60, ease: "none" });
 
-        // "bottom top" - "bottom bottom" siempre da exactamente un alto de
-        // viewport, sea cual sea el alto real del hero — por eso el offset
-        // del wrapper se mide contra el viewport y no contra el hero.
-        const syncOffset = () => {
-          gsap.set(overlapWrapper, { y: -window.innerHeight });
-        };
-        syncOffset();
+      const trigger = ScrollTrigger.create({
+        trigger: hero,
+        start: "bottom bottom",
+        end: "bottom top",
+        pin: true,
+        anticipatePin: 1,
+        scrub: 0.35,
+        animation: fade,
+        onRefreshInit: syncOffset,
+      });
 
-        const fade = gsap
-          .timeline({ paused: true })
-          .to(hero, { opacity: 0, scale: 0.92, y: -60, ease: "none" });
-
-        const trigger = ScrollTrigger.create({
-          trigger: hero,
-          start: "bottom bottom",
-          end: "bottom top",
-          pin: true,
-          anticipatePin: 1,
-          scrub: 0.35,
-          animation: fade,
-          onRefreshInit: syncOffset,
-        });
-
-        window.addEventListener(
-          "pagehide",
-          () => {
-            trigger.kill();
-          },
-          { once: true },
-        );
-      })();
-    };
-
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(initScrollTrigger, { timeout: 1500 });
-    } else {
-      setTimeout(initScrollTrigger, 200);
-    }
-    window.addEventListener("scroll", initScrollTrigger, {
-      once: true,
-      passive: true,
-    });
-    window.addEventListener("touchstart", initScrollTrigger, {
-      once: true,
-      passive: true,
-    });
+      window.addEventListener(
+        "pagehide",
+        () => {
+          trigger.kill();
+        },
+        { once: true },
+      );
+    })();
   }
 </script>
