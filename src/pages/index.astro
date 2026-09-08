@@ -75,5 +75,15 @@ const homeStructuredData = [
   .hero-overlap-wrapper {
     position: relative;
     z-index: 2;
+    /*
+      --hero-overlap-offset la fija un script en <head> (Layout.astro) antes
+      de que este nodo exista, así ya nace en su posición final — el
+      fallback 0px es lo correcto para prefers-reduced-motion (donde ese
+      script no la fija) y para el instante antes de que corra cualquier
+      script. HeroOverlapReveal.astro toma el control de esta misma
+      transformación (gsap.set con el mismo valor) una vez que crea el
+      efecto de scroll.
+    */
+    transform: translateY(var(--hero-overlap-offset, 0px));
   }
 </style>
