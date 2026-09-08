@@ -1,5 +1,47 @@
 @import "tailwindcss";
 
+/*
+  Fuente de reemplazo métricamente ajustada a Unbounded (ver --font-display
+  más abajo). Mientras Unbounded todavía no cargó, el navegador pinta los
+  títulos con esta — que usa Arial como fuente real pero con su caja de
+  texto (ascent/descent/line-gap/ancho medio) reescalada para calzar casi
+  exacto con la de Unbounded. Sin esto, el fallback (Arial vía
+  "sans-serif") ocupa menos alto que Unbounded, así que en cuanto la fuente
+  real termina de cargar y hace swap, el <h1> del hero cambia de alto y
+  empuja todo lo que viene después — eso es lo que Lighthouse marcaba como
+  CLS causado por "Web font" en .hero-overlap-wrapper (el bloque completo
+  de después del hero, que se corre entero). Valores calculados con fontkit
+  a partir de las métricas reales de Unbounded (v12, peso variable) y de
+  Arial (la fuente del sistema a la que "sans-serif" resuelve en la
+  mayoría de navegadores/SO) — ver la fórmula en
+  https://developer.chrome.com/blog/font-fallbacks.
+*/
+@font-face {
+  font-family: "Unbounded Fallback";
+  src: local("Arial");
+  size-adjust: 83.63%;
+  ascent-override: 118.98%;
+  descent-override: 29.3%;
+  line-gap-override: 0%;
+}
+
+/*
+  Mismo tratamiento que "Unbounded Fallback" de arriba, pero para
+  Instrument Sans — el texto de cuerpo (párrafos, roles del equipo, FAQ,
+  etc.) en TODO el bloque .hero-overlap-wrapper. Esta es la que más pesa:
+  Unbounded solo reflowea un par de títulos, pero Instrument Sans está en
+  decenas de párrafos a lo largo de toda esa sección, así que su swap sin
+  ajustar es la mayor parte del salto que medía CLS.
+*/
+@font-face {
+  font-family: "Instrument Sans Fallback";
+  src: local("Arial");
+  size-adjust: 62.39%;
+  ascent-override: 155.48%;
+  descent-override: 40.07%;
+  line-gap-override: 0%;
+}
+
 :root {
   --bg: #04142e;
   --bg-soft: #071a3a;
@@ -41,8 +83,8 @@
   --color-skala-logo-bg: var(--logo-bg);
   --color-skala-shadow: var(--shadow);
   --color-skala-shadow-accent: var(--shadow-accent);
-  --font-sans: "Instrument Sans", sans-serif;
-  --font-display: "Unbounded", sans-serif;
+  --font-sans: "Instrument Sans", "Instrument Sans Fallback", sans-serif;
+  --font-display: "Unbounded", "Unbounded Fallback", sans-serif;
 }
 
 html {
@@ -56,7 +98,7 @@ body {
     radial-gradient(circle at 82% 8%, rgba(92, 216, 252, 0.16), transparent 28%),
     radial-gradient(circle at 10% 78%, rgba(30, 163, 232, 0.13), transparent 30%),
     linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 42%, var(--bg-soft) 100%);
-  font-family: "Instrument Sans", sans-serif;
+  font-family: "Instrument Sans", "Instrument Sans Fallback", sans-serif;
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
