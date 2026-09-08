@@ -22,7 +22,7 @@ export default defineConfig({
       // gsap ships ESM in index.js but its package.json lacks "type": "module",
       // so Node fails to load it as externalized CJS in the SSR bundle.
       // Bundling it via esbuild fixes the ESM/CJS interop for Netlify SSR.
-      noExternal: ["gsap", "@gsap/react"],
+      noExternal: ["gsap"],
     },
     optimizeDeps: {
       // Sin esto, Vite recién "descubre" gsap/SplitText cuando el navegador
@@ -37,7 +37,7 @@ export default defineConfig({
       // opacity:0 hasta que su timeline de entrada las anima). Declarándolo
       // acá, Vite lo pre-empaqueta al arrancar el server, no a mitad de una
       // request.
-      include: ["gsap", "gsap/SplitText", "gsap/ScrollTrigger", "@gsap/react"],
+      include: ["gsap", "gsap/SplitText", "gsap/ScrollTrigger"],
     },
   },
   site: "https://skalaagencia.netlify.app",
