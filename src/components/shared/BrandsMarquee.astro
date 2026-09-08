@@ -16,11 +16,16 @@ import { brands } from "../../data/brands";
 interface Props {
   title?: string;
   subtitle?: string;
+  // Sólo la portada la activa: convierte la sección en el panel que se
+  // sobrepone al hero al hacer scroll (ver HeroOverlapReveal.astro). El resto
+  // de páginas sigue usando el componente tal cual, sin este tratamiento.
+  overlap?: boolean;
 }
 
 const {
   title = "Marcas que confían en nosotros",
   subtitle = "Conoce a los negocios que ya confiaron en nuestro trabajo.",
+  overlap = false,
 } = Astro.props;
 
 // Repetimos la lista base varias veces por mitad para que la tira se sienta
@@ -32,9 +37,13 @@ const track = [...half, ...half];
 ---
 
 <section
-  class="relative z-10 mx-auto w-full max-w-360 px-5 py-14 md:px-12 md:py-20"
+  class:list={[
+    "relative z-10 mx-auto w-full max-w-360 px-5 py-14 md:px-12 md:py-20",
+    overlap && "hero-overlap-panel",
+  ]}
   aria-label={title}
-  data-reveal
+  data-reveal={!overlap}
+  data-hero-overlap={overlap}
 >
   <div class="mb-10 text-center">
     <h2
@@ -97,5 +106,38 @@ const track = [...half, ...half];
   /* Pausa el recorrido al pasar el mouse: da tiempo a mirar un logo puntual. */
   [data-brand-track]:hover {
     animation-play-state: paused;
+  }
+
+  /*
+    Panel que se sobrepone al hero de la portada (HeroOverlapReveal.astro
+    le da la posición inicial vía transform; aquí sólo el aspecto de "tarjeta"
+    que hace legible el efecto: esquinas redondeadas arriba, superficie propia
+    y una sombra que la despega del hero que va desapareciendo debajo).
+  */
+  .hero-overlap-panel {
+    position: relative;
+    z-index: 2;
+    border-radius: 2.25rem 2.25rem 0 0;
+    background: linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 100%);
+    box-shadow: 0 -48px 90px rgba(2, 9, 22, 0.5);
+  }
+
+  .hero-overlap-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(92, 216, 252, 0.45),
+      transparent
+    );
+  }
+
+  @media (min-width: 768px) {
+    .hero-overlap-panel {
+      border-radius: 3rem 3rem 0 0;
+    }
   }
 </style>

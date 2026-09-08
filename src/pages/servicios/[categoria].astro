@@ -129,7 +129,7 @@ const structuredData = [
         <SectionLabel label={category.kicker} />
         <h1
           class="m-0 max-w-[18ch] font-display text-[clamp(2.4rem,4.8vw,4.4rem)] leading-[0.96] tracking-[-0.06em]"
-          data-reveal
+          data-reveal="left"
           style="--reveal-delay: 90ms;"
         >
           {category.h1}
@@ -139,7 +139,7 @@ const structuredData = [
           category.intro.map((paragraph, index) => (
             <p
               class="mt-5 max-w-[62ch] text-[1.02rem] leading-8 text-skala-muted"
-              data-reveal
+              data-reveal="left"
               style={`--reveal-delay: ${140 + index * 60}ms;`}
             >
               {paragraph}
@@ -149,7 +149,7 @@ const structuredData = [
 
         <div
           class="mt-8 flex flex-wrap gap-3"
-          data-reveal
+          data-reveal="left"
           style="--reveal-delay: 260ms;"
         >
           <a
@@ -179,7 +179,7 @@ const structuredData = [
 
       <div
         class="relative flex aspect-square items-center justify-center overflow-hidden rounded-[42px] border border-skala-border bg-skala-bg shadow-(--shadow)"
-        data-reveal
+        data-reveal="right"
         style="--reveal-delay: 180ms;"
         aria-hidden="true"
       >
@@ -206,14 +206,14 @@ const structuredData = [
           <div class="flex flex-col gap-2">
             <h2
               class="m-0 font-display text-[clamp(1.6rem,2.8vw,2.3rem)] font-black tracking-tighter text-skala-text"
-              data-reveal
+              data-reveal="fade"
             >
               {section.heading}
             </h2>
             {section.description && (
               <p
                 class="max-w-[62ch] text-sm leading-7 text-skala-muted"
-                data-reveal
+                data-reveal="fade"
                 style="--reveal-delay: 90ms;"
               >
                 {section.description}
@@ -241,7 +241,7 @@ const structuredData = [
         <section class="mx-auto w-full max-w-220 px-5 md:px-12">
           <h2
             class="m-0 mb-6 font-display text-[clamp(1.6rem,2.8vw,2.2rem)] font-black tracking-tighter text-skala-text"
-            data-reveal
+            data-reveal="fade"
           >
             Preguntas sobre {category.navLabel.toLowerCase()}
           </h2>

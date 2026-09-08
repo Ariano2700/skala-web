@@ -13,7 +13,7 @@ const splitX = wordmarkWidth / 2;
 
 export default function SkalaWordmark() {
   const wordmarkRef = useRef<SVGSVGElement | null>(null);
-  const filterId = `skala-wordmark-glow-${useId().replaceAll(":", "")}`;
+  const uid = `skala-wordmark-${useId().replaceAll(":", "")}`;
 
   useGSAP(
     () => {
@@ -34,7 +34,7 @@ export default function SkalaWordmark() {
 
       gsap.set([leftHalf, rightHalf], {
         autoAlpha: 0,
-        filter: "blur(18px)",
+        scale: 0.92,
       });
 
       gsap
@@ -49,14 +49,14 @@ export default function SkalaWordmark() {
         .fromTo(
           leftHalf,
           {
-            x: -92,
+            x: -36,
             autoAlpha: 0,
-            filter: "blur(18px)",
+            scale: 0.92,
           },
           {
             autoAlpha: 1,
             x: 0,
-            filter: "blur(0px)",
+            scale: 1,
             duration: 0.82,
           },
           0,
@@ -64,14 +64,14 @@ export default function SkalaWordmark() {
         .fromTo(
           rightHalf,
           {
-            x: 92,
+            x: 36,
             autoAlpha: 0,
-            filter: "blur(18px)",
+            scale: 0.92,
           },
           {
             autoAlpha: 1,
             x: 0,
-            filter: "blur(0px)",
+            scale: 1,
             duration: 0.82,
           },
           0.08,
@@ -119,24 +119,10 @@ export default function SkalaWordmark() {
       focusable="false"
     >
       <defs>
-        <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feColorMatrix
-            in="blur"
-            type="matrix"
-            values="0 0 0 0 0.3608 0 0 0 0 0.8471 0 0 0 0 0.9882 0 0 0 0.55 0"
-            result="glow"
-          />
-          <feMerge>
-            <feMergeNode in="glow" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-
-        <clipPath id={`${filterId}-left`}>
+        <clipPath id={`${uid}-left`}>
           <rect x="0" y="0" width={splitX} height={wordmarkHeight} />
         </clipPath>
-        <clipPath id={`${filterId}-right`}>
+        <clipPath id={`${uid}-right`}>
           <rect x={splitX} y="0" width={splitX} height={wordmarkHeight} />
         </clipPath>
       </defs>
@@ -145,13 +131,13 @@ export default function SkalaWordmark() {
         className="skala-half skala-half-left"
         d={logoPath}
         fill="currentColor"
-        clipPath={`url(#${filterId}-left)`}
+        clipPath={`url(#${uid}-left)`}
       />
       <path
         className="skala-half skala-half-right"
         d={logoPath}
         fill="currentColor"
-        clipPath={`url(#${filterId}-right)`}
+        clipPath={`url(#${uid}-right)`}
       />
     </svg>
   );

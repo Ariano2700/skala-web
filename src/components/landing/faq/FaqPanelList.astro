@@ -16,21 +16,32 @@ const { clusters, activeId } = Astro.props;
 ---
 
 {
-  clusters.map((cluster) => (
-    <div
-      class="mx-auto flex max-w-215 flex-col gap-3"
-      data-faq-panel={cluster.id}
-      hidden={cluster.id !== activeId}
-    >
-      {cluster.items.map((item, index) => (
-        <FaqItem
-          q={item.q}
-          a={item.a}
-          defaultOpen={index === 0}
-          index={index}
-          name={`faq-${cluster.id}`}
-        />
-      ))}
-    </div>
-  ))
+  /*
+    Los paneles se apilan en la misma celda de grid (col/row-start-1) a
+    propósito: así el saliente y el entrante pueden coexistir visibles un
+    instante durante el crossfade (ver script en FaqSection.astro) sin que
+    el layout salte, en vez de que uno desaparezca antes de que el otro
+    ocupe su lugar.
+  */
 }
+<div class="relative grid">
+  {
+    clusters.map((cluster) => (
+      <div
+        class="faq-panel col-start-1 row-start-1 mx-auto flex max-w-215 flex-col gap-3"
+        data-faq-panel={cluster.id}
+        hidden={cluster.id !== activeId}
+      >
+        {cluster.items.map((item, index) => (
+          <FaqItem
+            q={item.q}
+            a={item.a}
+            defaultOpen={index === 0}
+            index={index}
+            name={`faq-${cluster.id}`}
+          />
+        ))}
+      </div>
+    ))
+  }
+</div>

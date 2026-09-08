@@ -1,0 +1,81 @@
+---
+// Sólo se usa en la portada, justo después de <HeroSection /> + el wrapper
+// data-hero-overlap-wrapper (BrandsMarquee overlap + el resto de secciones).
+//
+// Efecto: al bajar el scroll, el hero se queda fijo un viewport de alto
+// mientras se desvanece/encoge (eso sí lo scrubea GSAP, sólo opacity/scale/y),
+// y el wrapper siguiente sube y lo cubre — empezando por BrandsMarquee, que
+// ya lleva su look de "tarjeta" (ver el <style> de BrandsMarquee.astro).
+//
+// start/end van del final del hero, no del principio ("bottom bottom" →
+// "bottom top"), a propósito: en xl el hero es 2 columnas y mide ~1
+// viewport, así que esto coincide casi con "top top" (scroll 0) — pero
+// antes de xl el layout se apila (texto y luego .hero-showcase, el video)
+// y el hero mide bastante más que un viewport. Con "top top" el pin
+// arrancaba de inmediato y dejaba el showcase atrapado fuera de vista,
+// tapado por el panel entrante sin que el usuario llegara a verlo. Al
+// anclar el pin al FINAL del hero, el usuario primero scrollea normal por
+// todo el contenido (incluido el showcase) y sólo el último tramo — un
+// viewport exacto, sea cual sea el alto real del hero — se congela y
+// desvanece.
+//
+// El pin (pinSpacing:true, el default) reserva automáticamente el espacio
+// correcto para TODO lo que viene después, así que el deslizamiento del
+// wrapper no necesita scrub ni cálculo por frame: es un translateY
+// constante (== un viewport) fijado una vez, y el scroll nativo hace el
+// resto — gratis y sin jank. Si se aplicara sólo a BrandsMarquee (en vez de
+// a todo el wrapper) quedaría un hueco entre BrandsMarquee y la sección
+// siguiente; por eso el translateY va en el wrapper completo.
+---
+
+<script>
+  const hero = document.querySelector<HTMLElement>("[data-hero-pin]");
+  const overlapWrapper = document.querySelector<HTMLElement>(
+    "[data-hero-overlap-wrapper]",
+  );
+
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  if (hero && overlapWrapper && !reduceMotion) {
+    (async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      gsap.registerPlugin(ScrollTrigger);
+
+      // "bottom top" - "bottom bottom" siempre da exactamente un alto de
+      // viewport, sea cual sea el alto real del hero — por eso el offset
+      // del wrapper se mide contra el viewport y no contra el hero.
+      const syncOffset = () => {
+        gsap.set(overlapWrapper, { y: -window.innerHeight });
+      };
+      syncOffset();
+
+      const fade = gsap
+        .timeline({ paused: true })
+        .to(hero, { opacity: 0, scale: 0.92, y: -60, ease: "none" });
+
+      const trigger = ScrollTrigger.create({
+        trigger: hero,
+        start: "bottom bottom",
+        end: "bottom top",
+        pin: true,
+        anticipatePin: 1,
+        scrub: 0.35,
+        animation: fade,
+        onRefreshInit: syncOffset,
+      });
+
+      window.addEventListener(
+        "pagehide",
+        () => {
+          trigger.kill();
+        },
+        { once: true },
+      );
+    })();
+  }
+</script>

@@ -35,12 +35,13 @@ const related = [...shared, ...rest].slice(0, limit);
       <h2
         id="related-projects-title"
         class="m-0 mb-8 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl"
+        data-reveal="fade"
       >
         Más proyectos
       </h2>
 
       <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {related.map((project) => {
+        {related.map((project, index) => {
           const cover = getCoverMedia(project);
           const accentStyle = getPortfolioAccentStyle(project);
           return (
@@ -48,6 +49,8 @@ const related = [...shared, ...rest].slice(0, limit);
               href={`/proyecto/${project.id}/`}
               class="group relative flex flex-col overflow-hidden rounded-3xl border border-skala-border bg-[#0c1730] transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-skala-accent/70"
               aria-label={`Ver proyecto: ${project.title}`}
+              data-reveal="scale"
+              style={`--reveal-delay: ${index * 90}ms;`}
             >
               <div class="relative aspect-4/3 overflow-hidden bg-skala-surface">
                 {cover.type === "image" ? (

@@ -1,11 +1,13 @@
 ---
+import Image from "astro/components/Image.astro";
 import { heroActions, heroSignals } from "../../data/hero";
 import SkalaWordmark from "../shared/SkalaWordmark.tsx";
 ---
 
 <section
-  class="relative mx-auto grid min-h-svh w-full max-w-360 grid-cols-1 gap-10 px-5 pb-10 pt-24 md:px-12 xl:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] xl:items-center xl:gap-16"
+  class="hero-pin relative mx-auto grid min-h-svh w-full max-w-360 grid-cols-1 gap-10 px-5 pb-16 md:pb-30 pt-24 md:px-12 xl:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] xl:items-center xl:gap-16"
   id="top"
+  data-hero-pin
 >
   <div class="relative">
     <div
@@ -76,7 +78,7 @@ import SkalaWordmark from "../shared/SkalaWordmark.tsx";
       class="absolute inset-0 overflow-hidden rounded-[inherit] border border-skala-border bg-skala-bg shadow-(--shadow) contain-[layout_paint]"
       aria-hidden="true"
     >
-      <video
+      <!-- <video
         data-hero-video
         class="absolute inset-0 h-full w-full object-cover object-center opacity-55 xl:opacity-50"
         src="/video_hero.mp4"
@@ -87,7 +89,17 @@ import SkalaWordmark from "../shared/SkalaWordmark.tsx";
         preload="metadata"
         disablepictureinpicture
         disableRemotePlayback
-        aria-hidden="true"></video>
+        aria-hidden="true"></video> -->
+        <Image
+          src="/hero_image.PNG"
+          alt="Hero image"
+          title="Hero image"
+          class="absolute inset-0 h-full w-full object-cover object-bottom opacity-55 xl:opacity-50"
+          loading="eager"
+          fetchpriority="high"
+          width={1920}
+          height={1080}
+        />
 
       <div
         class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(92,216,252,0.22),transparent_34%),radial-gradient(circle_at_82%_78%,rgba(30,163,232,0.13),transparent_42%),linear-gradient(180deg,rgba(4,20,46,0.02),rgba(4,20,46,0.78))]"
@@ -221,6 +233,16 @@ import SkalaWordmark from "../shared/SkalaWordmark.tsx";
       animation: none !important;
       transition-duration: 0.01ms !important;
     }
+  }
+
+  /*
+    El fundido + pin al hacer scroll (HeroOverlapReveal.astro) sólo transforma
+    opacity/transform del propio .hero-pin — will-change queda fijo aquí porque
+    es una única sección por página, no una lista, así que el costo de memoria
+    es despreciable.
+  */
+  .hero-pin {
+    will-change: opacity, transform;
   }
 
   @keyframes heroShowcaseIn {

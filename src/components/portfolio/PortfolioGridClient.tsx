@@ -20,23 +20,72 @@ interface Props {
 const pluralize = (amount: number) =>
   `${amount} proyecto${amount !== 1 ? "s" : ""}`;
 
+// Un solo IntersectionObserver compartido por TODAS las tarjetas (no uno
+// por tarjeta): se crea la primera vez que hace falta y se reusa. Cada
+// tarjeta nueva (primera tanda, scroll infinito, cambio de filtro) se suma
+// con .observe() apenas monta, vía el ref de <Card>; en cuanto entra en
+// pantalla se le pone .is-visible y se deja de observar (reveal de una
+// sola vez, mismo criterio que RevealScript.astro).
+let cardRevealObserver: IntersectionObserver | null | undefined;
+
+function getCardRevealObserver() {
+  if (cardRevealObserver !== undefined) return cardRevealObserver;
+
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  cardRevealObserver = reduceMotion
+    ? null
+    : new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+      );
+
+  return cardRevealObserver;
+}
+
 // Tarjeta de proyecto: mismo diseño y clases que PortfolioCard.astro. Se
 // reimplementa acá (en vez de reusar el .astro) porque esta grilla se
 // recompone en el cliente a medida que se cargan más páginas — el mismo
 // patrón ya usado en EventGallery.tsx para la galería de un evento.
-function Card({ project }: { project: PortfolioProjectItem }) {
+function Card({
+  project,
+  index,
+}: {
+  project: PortfolioProjectItem;
+  index: number;
+}) {
   const cover = getCoverMedia(project);
   const mediaCount = countMedia(project);
   const hasMultiple = project.media.length > 1;
   const accentStyle = getPortfolioAccentStyle(project);
   const cardStyle = {
     "--card-accent": project.accent || "var(--color-skala-accent)",
+    // Stagger acotado a la fila visible (12 cols): la tanda que entra en
+    // pantalla junta (misma página del scroll infinito) cae en cascada en
+    // vez de aparecer toda de golpe.
+    "--reveal-delay": `${(index % 12) * 45}ms`,
   } as React.CSSProperties;
+
+  const cardRef = useCallback((node: HTMLAnchorElement | null) => {
+    if (!node) return;
+    const observer = getCardRevealObserver();
+    if (observer) observer.observe(node);
+    else node.classList.add("is-visible"); // prefers-reduced-motion
+  }, []);
 
   return (
     <a
+      ref={cardRef}
       href={`/proyecto/${project.id}/`}
-      className={`portfolio-card group relative isolate flex flex-col overflow-hidden rounded-4xl border border-skala-border bg-[#0c1730] text-left shadow-[0_24px_70px_rgba(0,0,0,0.22)] transition-[transform,box-shadow,border-color] duration-500 ease-out hover:-translate-y-1.5 hover:shadow-[0_32px_90px_rgba(0,0,0,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-skala-accent/70 ${getPortfolioGridClass(project)}`}
+      className={`portfolio-card portfolio-card-reveal group relative isolate flex flex-col overflow-hidden rounded-4xl border border-skala-border bg-[#0c1730] text-left shadow-[0_24px_70px_rgba(0,0,0,0.22)] transition-[transform,box-shadow,border-color] duration-500 ease-out hover:-translate-y-1.5 hover:shadow-[0_32px_90px_rgba(0,0,0,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-skala-accent/70 ${getPortfolioGridClass(project)}`}
       style={cardStyle}
       aria-label={`Ver proyecto: ${project.title} (${project.categoryLabel})`}
     >
@@ -163,8 +212,8 @@ export default function PortfolioGridClient({
   return (
     <>
       <div className="portfolio-grid grid grid-cols-12 gap-4">
-        {items.map((project) => (
-          <Card key={project.id} project={project} />
+        {items.map((project, index) => (
+          <Card key={project.id} project={project} index={index} />
         ))}
       </div>
 

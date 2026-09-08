@@ -207,6 +207,44 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
   .desktop-submenu-trigger[aria-expanded="true"] .desktop-chevron-icon {
     transform: rotate(180deg);
   }
+
+  /* Popover: escala desde el trigger (arriba), no desde el centro. */
+  .desktop-submenu-content {
+    transform-origin: top center;
+    opacity: 0;
+    transform: scale(0.96) translateY(-6px);
+    transition:
+      opacity 160ms var(--ease-out),
+      transform 160ms var(--ease-out);
+  }
+
+  .desktop-submenu-content.is-open {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-submenu-content {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  /*
+    [data-reveal].is-visible (global.css) trae transform + clip-path para
+    animar la entrada — cualquiera de las dos, aunque sea un valor "de
+    identidad" que no cambia nada visualmente, convierte al elemento en
+    containing block para sus descendientes position:fixed/absolute (ver
+    MDN "Identifying the containing block"). El header aloja al menú mobile
+    (fixed) y a los submenús de escritorio (absolute): con eso puesto,
+    dejan de posicionarse contra el viewport y quedan atrapados dentro de
+    la cajita de 64px del header — se ven cortados o directamente no
+    aparecen. El header no necesita el "sube y aparece": con fade alcanza.
+  */
+  header[data-reveal] {
+    transform: none !important;
+    clip-path: none !important;
+  }
 </style>
 
 <script>
@@ -368,17 +406,32 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
 
       if (trigger && content) {
         let hideTimeout: ReturnType<typeof setTimeout>;
+        let closeAnimTimeout: ReturnType<typeof setTimeout>;
 
         const showSubmenu = () => {
           clearTimeout(hideTimeout);
+          clearTimeout(closeAnimTimeout);
           content.classList.remove("hidden");
+          // Doble rAF: un solo rAF no alcanza de forma confiable — el
+          // navegador puede recalcular estilos una sola vez para "hidden
+          // recién quitado" + "is-open recién sumado" si ambos cambios
+          // caen en el mismo paso de render, y entonces la transición
+          // arranca ya en su estado final (se ve cortado/parpadea en vez
+          // de animar). El segundo rAF garantiza que el estado "cerrado"
+          // ya se pintó antes de pedir el estado "abierto".
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => content.classList.add("is-open"));
+          });
           trigger.setAttribute("aria-expanded", "true");
         };
 
         const hideSubmenu = () => {
           hideTimeout = setTimeout(() => {
-            content.classList.add("hidden");
+            content.classList.remove("is-open");
             trigger.setAttribute("aria-expanded", "false");
+            closeAnimTimeout = setTimeout(() => {
+              content.classList.add("hidden");
+            }, 160);
           }, 150);
         };
 

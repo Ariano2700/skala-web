@@ -25,19 +25,21 @@ const disciplines = new Set(projects.flatMap((p) => p.categories)).size;
 <section id="portafolio" class="relative z-10 overflow-hidden py-20 md:py-36">
   <div class="mx-auto max-w-360 px-5 md:px-12">
     <div class="relative grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
-      <div data-reveal>
+      <div data-reveal="left">
         <SectionLabel label="Portfolio" />
         <h1
           class="m-0 max-w-[12ch] font-display text-[clamp(3.4rem,7vw,7.7rem)] font-black leading-[0.88] tracking-[-0.065em] text-skala-text text-wrap:balance"
         >
           Nuestro trabajo habla por <span class="sr-only">Skala</span>
-          <SkalaWordmark client:load />
+          <div class="flex items-center gap-2 pb-2 pl-5">
+            <SkalaWordmark client:load />
+          </div>
         </h1>
       </div>
 
       <div
         class="relative flex flex-col gap-6"
-        data-reveal
+        data-reveal="right"
         style="--reveal-delay: 120ms;"
       >
         <PortfolioHeroVisual />
@@ -102,7 +104,7 @@ const disciplines = new Set(projects.flatMap((p) => p.categories)).size;
 
     <div
       class="mt-10 flex flex-col gap-4 border-t border-skala-border/80 pt-8 md:flex-row md:items-center md:justify-between"
-      data-reveal
+      data-reveal="fade"
       style="--reveal-delay: 180ms;"
     >
       <div class="flex flex-wrap gap-3">

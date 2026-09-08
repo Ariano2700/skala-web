@@ -37,7 +37,20 @@ export default function EventGallery({
   });
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
   const activeItem = activeIndex !== null ? items[activeIndex] : null;
+
+  // El overlay se monta/desmonta condicionalmente (React), así que a
+  // diferencia de un toggle de clase la salida no tiene "después" donde
+  // animar: se retrasa el unmount lo que dura la transición de salida
+  // (ver .event-lightbox-* en global.css) en vez de quitarlo de una.
+  const closeLightbox = () => {
+    setIsClosing(true);
+    window.setTimeout(() => {
+      setActiveIndex(null);
+      setIsClosing(false);
+    }, 180);
+  };
 
   return (
     <section
@@ -99,15 +112,18 @@ export default function EventGallery({
 
       {activeItem && activeIndex !== null && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#04142e]/90 p-4"
+          className={`lightbox-overlay fixed inset-0 z-50 flex items-center justify-center bg-[#04142e]/90 p-4 ${isClosing ? "is-closing" : ""}`}
           role="dialog"
           aria-modal="true"
-          onClick={() => setActiveIndex(null)}
+          onClick={closeLightbox}
         >
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="lightbox-panel relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
-              onClick={() => setActiveIndex(null)}
+              onClick={closeLightbox}
               aria-label="Cerrar galería"
               className="absolute right-3 top-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-[#04142e] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-skala-accent/60"
             >

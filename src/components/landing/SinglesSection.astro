@@ -20,7 +20,7 @@ import { singleServices } from "../../data/services";
       </h2>
       <p
         class="mt-5 max-w-[56ch] text-[1.05rem] leading-8 text-skala-muted"
-        data-reveal
+        data-reveal="fade"
         style="--reveal-delay: 120ms;"
       >
         Contrata piezas individuales sin compromiso mensual. Ideal para
@@ -34,7 +34,7 @@ import { singleServices } from "../../data/services";
       singleServices.map((service, index) => (
         <article
           class="group relative overflow-hidden rounded-[28px] border border-skala-border bg-[linear-gradient(180deg,rgba(8,24,52,0.72),rgba(4,20,46,0.86))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35 hover:bg-skala-accent/5"
-          data-reveal
+          data-reveal="scale"
           style={`--reveal-delay: ${index * 55}ms;`}
         >
           <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(92,216,252,0.12),transparent_36%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -94,12 +94,13 @@ import { singleServices } from "../../data/services";
 >
   <div
     class="absolute inset-0 bg-[#020a1a]/80"
+    data-service-modal-backdrop
     data-service-modal-close
   >
   </div>
 
   <div
-    class="relative w-full max-w-md rounded-4xl border border-skala-border bg-skala-surface-strong p-6 shadow-[0_28px_80px_rgba(0,0,0,0.45)]"
+    class="service-modal-panel relative w-full max-w-md rounded-4xl border border-skala-border bg-skala-surface-strong p-6 shadow-[0_28px_80px_rgba(0,0,0,0.45)]"
     data-service-modal-panel
   >
     <button
@@ -177,24 +178,55 @@ import { singleServices } from "../../data/services";
     "[data-service-modal-close]",
   );
 
+  const panel = modal?.querySelector<HTMLElement>("[data-service-modal-panel]");
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
   let selectedService = "";
+  let closeTimer = 0;
 
   const openModal = (serviceName: string) => {
     if (!modal || !modalName) return;
+    window.clearTimeout(closeTimer);
     selectedService = serviceName;
     modalName.textContent = serviceName;
     modal.classList.remove("hidden");
     modal.classList.add("flex");
+    // Doble rAF: un solo rAF no garantiza que el navegador pinte "flex sin
+    // .is-open" antes de sumar la clase — si ambos cambios se resuelven en
+    // el mismo paso de render, la transición arranca ya en su estado final.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => modal.classList.add("is-open"));
+    });
     document.body.classList.add("overflow-hidden");
     modalForm?.querySelector<HTMLInputElement>("input[name='name']")?.focus();
   };
 
   const closeModal = () => {
     if (!modal) return;
-    modal.classList.add("hidden");
-    modal.classList.remove("flex");
+    modal.classList.remove("is-open");
     document.body.classList.remove("overflow-hidden");
     modalForm?.reset();
+
+    const hide = () => {
+      window.clearTimeout(closeTimer);
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    };
+
+    if (reduceMotion || !panel) {
+      hide();
+      return;
+    }
+
+    // Se apoya en el transitionend del panel (no del backdrop) porque es la
+    // transición más larga de las dos — así "hidden" llega justo cuando la
+    // salida terminó de verse, ni antes (corte brusco) ni después (clicks
+    // fantasma sobre un modal ya invisible).
+    window.clearTimeout(closeTimer);
+    panel.addEventListener("transitionend", hide, { once: true });
+    closeTimer = window.setTimeout(hide, 250);
   };
 
   openButtons.forEach((btn) => {
@@ -248,3 +280,38 @@ import { singleServices } from "../../data/services";
     closeModal();
   });
 </script>
+
+<style>
+  /* Fundido del backdrop + el panel entra con scale (nunca desde 0, ver
+     emil-design-eng): together leen como un modal que aparece "hacia" el
+     usuario en vez de simplemente encenderse. */
+  [data-service-modal-backdrop] {
+    opacity: 0;
+    transition: opacity 200ms var(--ease-out);
+  }
+
+  .service-modal-panel {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    transition:
+      opacity 200ms var(--ease-out),
+      transform 220ms var(--ease-out);
+  }
+
+  [data-service-modal].is-open [data-service-modal-backdrop] {
+    opacity: 1;
+  }
+
+  [data-service-modal].is-open .service-modal-panel {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-service-modal-backdrop],
+    .service-modal-panel {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

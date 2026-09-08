@@ -37,7 +37,7 @@ export default defineConfig({
       // opacity:0 hasta que su timeline de entrada las anima). Declarándolo
       // acá, Vite lo pre-empaqueta al arrancar el server, no a mitad de una
       // request.
-      include: ["gsap", "gsap/SplitText", "@gsap/react"],
+      include: ["gsap", "gsap/SplitText", "gsap/ScrollTrigger", "@gsap/react"],
     },
   },
   site: "https://skalaagencia.netlify.app",

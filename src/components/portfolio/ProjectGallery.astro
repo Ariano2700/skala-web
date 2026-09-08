@@ -31,6 +31,8 @@ const heroTile = media.length >= 3;
           }`}
           data-gallery-open
           data-index={i}
+          data-reveal="scale"
+          style={`--reveal-delay: ${(i % 8) * 60}ms;`}
           aria-label={
             item.type === "video"
               ? `Reproducir video ${i + 1} de ${media.length}`

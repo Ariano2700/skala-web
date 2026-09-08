@@ -93,6 +93,46 @@ const defaultCluster = faqClusters[0];
     indicator.style.opacity = "1";
   };
 
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  let panelSwitchTimer = 0;
+
+  const switchPanel = (clusterId: string) => {
+    const nextPanel = panels.find((p) => p.dataset.faqPanel === clusterId);
+    const currentPanel = panels.find((p) => !p.hidden);
+    if (!nextPanel || nextPanel === currentPanel) return;
+
+    if (reduceMotion) {
+      panels.forEach((panel) => {
+        panel.hidden = panel !== nextPanel;
+      });
+      return;
+    }
+
+    window.clearTimeout(panelSwitchTimer);
+    // Sin esto, un click rápido en dos tabs seguidos dejaría el panel de la
+    // primera a medio desvanecer, colgado en el DOM (is-leaving) para
+    // siempre porque su propio timeout ya fue reemplazado por este.
+    panels.forEach((panel) => {
+      if (panel !== currentPanel && panel !== nextPanel) panel.hidden = true;
+      panel.classList.remove("is-leaving", "is-entering");
+    });
+
+    nextPanel.hidden = false;
+    nextPanel.classList.add("is-entering");
+    currentPanel?.classList.add("is-leaving");
+
+    requestAnimationFrame(() => nextPanel.classList.remove("is-entering"));
+
+    panelSwitchTimer = window.setTimeout(() => {
+      if (currentPanel) {
+        currentPanel.hidden = true;
+        currentPanel.classList.remove("is-leaving");
+      }
+    }, 200);
+  };
+
   const setActiveCluster = (clusterId: string) => {
     let activeTab: HTMLButtonElement | undefined;
 
@@ -103,9 +143,7 @@ const defaultCluster = faqClusters[0];
       if (isActive) activeTab = tab;
     });
 
-    panels.forEach((panel) => {
-      panel.hidden = panel.dataset.faqPanel !== clusterId;
-    });
+    switchPanel(clusterId);
 
     if (activeTab) {
       const activePanel = panels.find((p) => p.dataset.faqPanel === clusterId);

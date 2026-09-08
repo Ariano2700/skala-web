@@ -85,6 +85,22 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+/*
+  Sistema de entrada por scroll (RevealScript.astro sólo agrega/observa
+  [data-reveal] y alterna .is-visible — todo el "cómo" vive acá, en CSS puro,
+  así que sumar una variante nueva no toca JS). Todas las variantes animan
+  nada más que opacity/transform/clip-path (compositor, sin reflow) y usan
+  la misma curva --ease-out; alternarlas evita que toda la página se sienta
+  con el mismo "sube y aparece" repetido de principio a fin:
+    - (sin valor) / "up"   → el default de siempre: sube + fade. Texto suelto.
+    - "fade"               → sólo opacity, sin movimiento. Bloques grandes
+                              donde el desplazamiento se sentiría pesado.
+    - "scale"              → crece desde 0.9 + fade. Tarjetas, iconos, medios.
+    - "left" / "right"     → entra desde el margen. Bloques alternados
+                              (texto/imagen) para dar un ritmo izq-der.
+    - "clip"               → cortina de abajo hacia arriba (clip-path) + un
+                              scale sutil. Paneles de imagen/video grandes.
+*/
 [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 24px, 0) scale(0.985);
@@ -95,9 +111,36 @@ a {
   will-change: opacity, transform;
 }
 
+[data-reveal="fade"] {
+  transform: none;
+}
+
+[data-reveal="scale"] {
+  transform: scale(0.9);
+}
+
+[data-reveal="left"] {
+  transform: translate3d(-34px, 0, 0);
+}
+
+[data-reveal="right"] {
+  transform: translate3d(34px, 0, 0);
+}
+
+[data-reveal="clip"] {
+  transform: scale(1.03);
+  clip-path: inset(0 0 100% 0);
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 0.9s var(--ease-out),
+    clip-path 0.9s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
 .is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
+  clip-path: inset(0 0 0 0);
 }
 
 .reveal-complete {
@@ -154,6 +197,134 @@ a {
   50% {
     transform: translateY(-16px) rotate(1deg);
   }
+}
+
+/*
+  Entrada de las tarjetas del portafolio (PortfolioGridClient.tsx): cada
+  tarjeta es SU PROPIO [data-reveal] — un IntersectionObserver por tarjeta
+  (compartido, creado una vez) le suma .is-visible cuando ENTRA EN PANTALLA,
+  no cuando monta. Así la primera tanda anima en cascada al hacerla visible
+  scrolleando, y las tandas nuevas del scroll infinito (o de cambiar de
+  filtro) hacen lo mismo apenas se agregan — sin esperar a que toda la
+  grilla ya esté "vista" ni animar de golpe fuera de pantalla. No puede
+  usar el genérico RevealScript.astro/[data-reveal] porque ese observer
+  sólo mira el DOM una vez al cargar la página y no vuelve a mirar: las
+  tarjetas que llegan después por scroll infinito nunca las vería.
+*/
+.portfolio-card-reveal {
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.portfolio-card-reveal.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/*
+  Entrada de las tarjetas de cobertura-eventos (EventCard.astro). A
+  diferencia del portafolio, acá SÍ alcanza con animar al pintar: no hay
+  scroll infinito, todos los eventos ya están en el DOM desde el server y
+  sólo se ocultan/muestran por filtro — por eso el gating es a nivel de
+  sección (#eventos-grid.in-view más abajo) y no por tarjeta.
+*/
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.event-card {
+  animation: cardIn 0.6s var(--ease-out) both;
+}
+
+/*
+  #eventos-grid arranca pausada y el <script> de EventGrid.astro suma
+  "in-view" recién cuando un IntersectionObserver confirma que la sección
+  es visible — si no, al estar debajo del pliegue, la animación (dispara
+  al pintar, no al hacer scroll) ya terminó antes de que el usuario llegue
+  a verla. Va acá sin scopear (no en el <style> de EventGrid.astro) porque
+  EventCard.astro es un componente HIJO — el scope de Astro sólo alcanza
+  elementos del propio template, así que una regla scopeada ahí nunca
+  llegaría a las tarjetas.
+*/
+#eventos-grid .event-card {
+  animation-play-state: paused;
+}
+
+#eventos-grid.in-view .event-card {
+  animation-play-state: running;
+}
+
+/*
+  Lightbox de EventGallery.tsx y ProjectGalleryLightbox.tsx: ambos se
+  montan/desmontan condicionalmente (no hay clase que togglear), así que la
+  entrada usa @starting-style (soporte amplio ya) y la salida se apoya en la
+  clase .is-closing que cada componente suma un momento antes de desmontar
+  de verdad (ver closeLightbox/close en cada uno).
+*/
+.lightbox-overlay {
+  opacity: 1;
+  transition: opacity 200ms var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+  }
+}
+
+.lightbox-overlay.is-closing {
+  opacity: 0;
+}
+
+.lightbox-panel {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 220ms var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+.lightbox-overlay.is-closing .lightbox-panel {
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+/*
+  Crossfade entre paneles del FAQ al cambiar de tab (FaqSection.astro).
+  Los paneles ya están apilados en la misma celda de grid (FaqPanelList.astro)
+  así que animar sólo opacity/transform acá alcanza para que el saliente y el
+  entrante se crucen en el aire en vez de que uno reemplace al otro de golpe.
+*/
+.faq-panel {
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+
+.faq-panel.is-leaving {
+  opacity: 0;
+  transform: translate3d(0, -6px, 0);
+  pointer-events: none;
+}
+
+.faq-panel.is-entering {
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
 }
 
 @keyframes pulseGlow {

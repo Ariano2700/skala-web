@@ -15,6 +15,7 @@ interface Props {
 // estático y liviano.
 export default function ProjectGalleryLightbox({ media, title }: Props) {
   const [open, setOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState<number | null>(null);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
@@ -36,9 +37,16 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
 
   const close = useCallback(() => {
     pauseVideos();
-    setOpen(false);
     setPlaying(null);
-    document.body.classList.remove("overflow-hidden");
+    // Igual que EventGallery.tsx: se retrasa el unmount (setOpen(false)) lo
+    // que dura la salida en CSS (.lightbox-*, global.css) en vez de cortar
+    // de golpe.
+    setIsClosing(true);
+    window.setTimeout(() => {
+      setOpen(false);
+      setIsClosing(false);
+      document.body.classList.remove("overflow-hidden");
+    }, 180);
   }, [pauseVideos]);
 
   const handlePlay = useCallback((index: number) => {
@@ -80,7 +88,7 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-60 flex items-center justify-center p-4"
+      className={`lightbox-overlay fixed inset-0 z-60 flex items-center justify-center p-4 ${isClosing ? "is-closing" : ""}`}
       data-gallery-lightbox
       role="dialog"
       aria-modal="true"
@@ -92,7 +100,7 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
         aria-hidden="true"
       />
 
-      <div className="relative flex w-full max-w-4xl flex-col overflow-hidden rounded-4xl border border-skala-border bg-black shadow-[0_28px_80px_rgba(0,0,0,0.5)]">
+      <div className="lightbox-panel relative flex w-full max-w-4xl flex-col overflow-hidden rounded-4xl border border-skala-border bg-black shadow-[0_28px_80px_rgba(0,0,0,0.5)]">
         <button
           type="button"
           onClick={close}

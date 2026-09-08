@@ -97,10 +97,15 @@ const { events = [] } = Astro.props;
       if (matches) {
         card.hidden = false;
         card.classList.remove("event-card-hiding");
-        card.style.animationDelay = `${visible * delayStep}s`;
+        // El shorthand "animation" expande a todos sus longhand (incluido
+        // animation-delay) dentro del mismo inline style: si el delay se
+        // asigna antes de "none"/"" queda pisado. Por eso va después, ya
+        // reseteada la animación, en el mismo frame (sin pintar de por
+        // medio) para que sí se respete el stagger.
         card.style.animation = "none";
         requestAnimationFrame(() => {
           card.style.animation = "";
+          card.style.animationDelay = `${visible * delayStep}s`;
         });
         visible += 1;
       } else {
@@ -140,10 +145,46 @@ const { events = [] } = Astro.props;
     );
     if (activeButton) applyFilter(initialFilter, activeButton);
   }
+
+  // .event-card corre por CSS animation (arranca sola al pintar), pero si
+  // la grilla está debajo del pliegue esa animación ya terminó mucho antes
+  // de que el usuario llegue a verla scrolleando — no se nota nada. Se
+  // pausa por defecto (ver <style> de acá abajo) y recién corre cuando la
+  // sección entra en pantalla.
+  const eventsSection = document.getElementById("eventos-grid");
+  if (eventsSection) {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      eventsSection.classList.add("in-view");
+    } else {
+      const gridObserver = new IntersectionObserver(
+        (entries, currentObserver) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            eventsSection.classList.add("in-view");
+            currentObserver.disconnect();
+          });
+        },
+        { threshold: 0.1, rootMargin: "0px 0px -10% 0px" },
+      );
+      gridObserver.observe(eventsSection);
+    }
+  }
 </script>
 
 <style>
   .event-card[hidden] {
     display: none;
   }
+
+  /*
+    El play-state (según #eventos-grid.in-view) vive en global.css sin
+    scopear, no acá: EventCard.astro es un componente hijo, así que una
+    regla scopeada en el <style> de EventGrid.astro nunca llega a las
+    tarjetas que ese hijo renderiza — el scope de Astro sólo cubre
+    elementos del propio template del archivo.
+  */
 </style>

@@ -45,11 +45,11 @@ const filters: { label: string; value: string; accent?: string }[] = [
     class="mx-auto flex max-w-360 flex-wrap items-center gap-3 px-5 md:px-12"
   >
     {
-      filters.map((filter) => {
+      filters.map((filter, index) => {
         const isActive = filter.value === activeFilter;
         const accentVar = filter.accent
-          ? `--filter-accent: ${filter.accent};`
-          : "";
+          ? `--filter-accent: ${filter.accent}; --reveal-delay: ${index * 45}ms;`
+          : `--reveal-delay: ${index * 45}ms;`;
         return (
           <a
             href={`?categoria=${filter.value}`}
@@ -60,6 +60,7 @@ const filters: { label: string; value: string; accent?: string }[] = [
             }`}
             style={accentVar}
             data-filter={filter.value}
+            data-reveal="scale"
             aria-pressed={isActive ? "true" : "false"}
           >
             {filter.label}
@@ -71,6 +72,7 @@ const filters: { label: string; value: string; accent?: string }[] = [
     <span
       class="ml-auto text-xs font-medium uppercase tracking-[0.16em] text-skala-muted"
       data-filter-count
+      data-reveal="fade"
     >
       {`${events.length} eventos`}
     </span>

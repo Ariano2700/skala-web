@@ -1,5 +1,9 @@
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { useEffect, useRef } from "react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function LenisScroll() {
   const initialized = useRef(false);
@@ -24,12 +28,17 @@ function LenisScroll() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
-    let rafId = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
+    // Sin esto, ScrollTrigger escucha el evento "scroll" nativo y queda un
+    // frame por detrás del scroll suavizado de Lenis: cualquier scrub (como
+    // el fundido del hero en HeroOverlapReveal.astro) se ve con micro-tirones.
+    // Enganchar ambos al mismo ticker de GSAP los mantiene en el mismo reloj.
+    lenis.on("scroll", ScrollTrigger.update);
+
+    const onTick = (time: number) => {
+      lenis.raf(time * 1000);
     };
-    rafId = requestAnimationFrame(raf);
+    gsap.ticker.add(onTick);
+    gsap.ticker.lagSmoothing(0);
 
     const handleAnchorClick = (e: Event) => {
       const target = e.target as HTMLElement;
@@ -50,7 +59,7 @@ function LenisScroll() {
     document.addEventListener("click", handleAnchorClick);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      gsap.ticker.remove(onTick);
       document.removeEventListener("click", handleAnchorClick);
       lenis.destroy();
     };

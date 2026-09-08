@@ -115,7 +115,7 @@ const structuredData = [
 >
   <main class="relative z-10 pt-12">
     <section class="mx-auto w-full max-w-360 px-5 pt-8 md:px-12">
-      <nav aria-label="Ruta de navegación" data-reveal>
+      <nav aria-label="Ruta de navegación" class="project-intro-in">
         <ol class="m-0 flex list-none flex-wrap items-center gap-1.5 p-0 text-sm text-skala-muted">
           <li><a href="/" class="transition-colors hover:text-skala-accent">Inicio</a></li>
           <li aria-hidden="true"><FiChevronRight className="h-3.5 w-3.5" /></li>
@@ -130,8 +130,8 @@ const structuredData = [
 
     <section class="relative mx-auto w-full max-w-360 px-5 py-8 md:px-12">
       <div
-        class="relative aspect-video w-full overflow-hidden rounded-4xl border border-skala-border shadow-[0_30px_80px_rgba(0,0,0,0.42)] lg:aspect-21/9"
-        data-reveal
+        class="project-cover-in relative aspect-video w-full overflow-hidden rounded-4xl border border-skala-border shadow-[0_30px_80px_rgba(0,0,0,0.42)] lg:aspect-21/9"
+        style="--reveal-delay: 60ms;"
       >
         {
           cover.type === "image" ? (
@@ -172,10 +172,9 @@ const structuredData = [
       </div>
 
       <div
-        class="mt-6 flex flex-wrap gap-x-10 gap-y-5 rounded-4xl border border-skala-border bg-white/[0.035] p-6 shadow-[0_20px_60px_rgba(0,22,52,0.2)] md:p-8"
+        class="project-intro-in mt-6 flex flex-wrap gap-x-10 gap-y-5 rounded-4xl border border-skala-border bg-white/[0.035] p-6 shadow-[0_20px_60px_rgba(0,22,52,0.2)] md:p-8"
         aria-label="Datos del proyecto"
-        data-reveal
-        style="--reveal-delay: 80ms;"
+        style="--reveal-delay: 120ms;"
       >
         {
           facts.map((fact) => (
@@ -215,8 +214,11 @@ const structuredData = [
 
       {
         project.media.length > 0 && (
-          <div class="mt-14" data-reveal>
-            <h2 class="m-0 mb-5 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
+          <div class="mt-14">
+            <h2
+              class="m-0 mb-5 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl"
+              data-reveal="fade"
+            >
               Galería
             </h2>
             <ProjectGallery media={project.media} title={project.title} />
@@ -241,7 +243,7 @@ const structuredData = [
             {d?.challenge && (
               <div
                 class="rounded-4xl border border-skala-border bg-white/3 p-7"
-                data-reveal
+                data-reveal="left"
                 style="--reveal-delay: 40ms;"
               >
                 <h3 class="m-0 mb-3 flex items-center gap-2.5 font-display text-lg font-black text-skala-text">
@@ -255,7 +257,7 @@ const structuredData = [
             {d?.solution && (
               <div
                 class="rounded-4xl border border-skala-border bg-white/3 p-7"
-                data-reveal
+                data-reveal="right"
                 style="--reveal-delay: 90ms;"
               >
                 <h3 class="m-0 mb-3 flex items-center gap-2.5 font-display text-lg font-black text-skala-text">
@@ -271,7 +273,7 @@ const structuredData = [
 
       {
         d && d.results.length > 0 && (
-          <div class="mt-10" data-reveal>
+          <div class="mt-10" data-reveal="fade">
             <h3 class="m-0 mb-5 font-display text-lg font-black text-skala-text">Resultados</h3>
             <ul class="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
               {d.results.map((result) => (
@@ -287,7 +289,7 @@ const structuredData = [
 
       {
         d && d.tools.length > 0 && (
-          <div class="mt-10" data-reveal>
+          <div class="mt-10" data-reveal="scale">
             <h3 class="m-0 mb-4 font-display text-lg font-black text-skala-text">Herramientas</h3>
             <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
               {d.tools.map((tool) => (
@@ -302,7 +304,7 @@ const structuredData = [
 
       {
         project.beforeAfterGallery && project.beforeAfterGallery.length > 0 && (
-          <div class="mt-14" data-reveal>
+          <div class="mt-14" data-reveal="clip">
             <h2 class="m-0 mb-2 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
               Antes y después
             </h2>
@@ -355,3 +357,59 @@ const structuredData = [
 
   <ProjectGalleryLightbox client:load media={project.media} title={project.title} />
 </Layout>
+
+<style>
+  /*
+    El breadcrumb, la portada y la barra de datos son visibles desde el
+    primer pintado (no requieren scroll) — el mismo caso que .hero-intro en
+    HeroSection.astro, y con la misma razón: si dependen de [data-reveal]
+    (RevealScript.astro + IntersectionObserver) quedan a merced de que ese
+    JS cargue y corra antes de pintar; cualquier demora ahí (red lenta,
+    hilo principal ocupado) se ve como que la portada "no aparece". Con
+    keyframes puros arrancan solas apenas el navegador pinta, sin esperar
+    ningún script.
+  */
+  .project-intro-in {
+    animation: projectFadeUp 0.7s var(--ease-out, ease) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  @keyframes projectFadeUp {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 20px, 0) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+
+  .project-cover-in {
+    animation: projectCoverIn 0.85s var(--ease-out, ease) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  @keyframes projectCoverIn {
+    from {
+      opacity: 0;
+      transform: scale(1.03);
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-intro-in,
+    .project-cover-in {
+      animation: none;
+      opacity: 1;
+      transform: none;
+      clip-path: none;
+    }
+  }
+</style>

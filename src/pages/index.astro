@@ -5,6 +5,7 @@ import AboutSection from "../components/landing/AboutSection.astro";
 import ContactSection from "../components/landing/ContactSection.astro";
 import CtaSection from "../components/landing/CtaSection.astro";
 import FaqTeaser from "../components/landing/faq/FaqTeaser.astro";
+import HeroOverlapReveal from "../components/landing/HeroOverlapReveal.astro";
 import HeroSection from "../components/landing/HeroSection.astro";
 import MarqueeStrip from "../components/landing/MarqueeStrip.astro";
 import BrandsMarquee from "../components/shared/BrandsMarquee.astro";
@@ -46,16 +47,33 @@ const homeStructuredData = [
 >
   <main class="relative z-10">
     <HeroSection />
-    <BrandsMarquee />
-    <MarqueeStrip />
-    <AboutSection />
-    <ServicesSection />
-    <PlansSection />
-    <MoreServicesCta />
-    <ProcessSection />
-    <Team />
-    <ContactSection />
-    <FaqTeaser />
-    <CtaSection />
+    <div class="hero-overlap-wrapper" data-hero-overlap-wrapper>
+      <BrandsMarquee overlap />
+      <MarqueeStrip />
+      <AboutSection />
+      <ServicesSection />
+      <PlansSection />
+      <MoreServicesCta />
+      <ProcessSection />
+      <Team />
+      <ContactSection />
+      <FaqTeaser />
+      <CtaSection />
+    </div>
+    <HeroOverlapReveal />
   </main>
 </Layout>
+
+<style>
+  /*
+    HeroOverlapReveal.astro le da a este wrapper un translateY constante
+    (== alto del hero) para que BrandsMarquee arranque oculto bajo el
+    viewport y el scroll nativo lo revele al subir — moviendo el wrapper
+    completo (no sólo BrandsMarquee) se evita que quede un hueco entre
+    BrandsMarquee y las secciones que le siguen.
+  */
+  .hero-overlap-wrapper {
+    position: relative;
+    z-index: 2;
+  }
+</style>
