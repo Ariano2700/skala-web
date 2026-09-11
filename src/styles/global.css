@@ -171,7 +171,14 @@ a {
 
 [data-reveal="clip"] {
   transform: scale(1.03);
-  clip-path: inset(0 0 100% 0);
+  /* 99%, no 100%: un inset de 100% dejaría el elemento con área cero, y
+     Chrome excluye esa área del cálculo de IntersectionObserver — el propio
+     clip-path lo esconde de su propio observer, así que nunca cruza el
+     threshold y .is-visible jamás llega (la sección se queda invisible para
+     siempre, el bug real detrás de "el antes y después no aparece"). Con
+     99% sobrevive una tira de ~1% de alto, invisible a simple vista pero
+     con área > 0 para que el observer pueda detectar la intersección. */
+  clip-path: inset(0 0 99% 0);
   transition:
     opacity 0.6s var(--ease-out),
     transform 0.9s var(--ease-out),
@@ -437,8 +444,18 @@ a {
   background: transparent;
 }
 [data-before-after] input[type="range"]::-webkit-slider-thumb {
+  /*
+    NO 100%: un thumb tan ancho como el track entero deja rango de
+    movimiento cero (trackWidth - thumbWidth = 0), y Chrome calcula el
+    valor durante el arrastre dividiendo por ese rango — con 0 el
+    resultado colapsa siempre al mismo extremo, así que el drag se
+    sentía "pegado" mostrando sólo "después". Con un thumb angosto (el
+    <input> ya cubre toda la figura, así que se puede arrastrar desde
+    cualquier punto) el cálculo vuelve a tener rango real y el arrastre
+    responde en todo el 0-100.
+  */
   -webkit-appearance: none;
-  width: 100%;
+  width: 2px;
   height: 100%;
   background: transparent;
   cursor: ew-resize;
