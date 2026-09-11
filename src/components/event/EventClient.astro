@@ -19,25 +19,37 @@ const { clients } = Astro.props;
   </p>
   <div class="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4">
     {
-      clients.map((client) => (
-        <div
-          class="flex items-center gap-2.5 opacity-80 transition hover:opacity-100"
-          title={client.name}
-        >
-          {client.logoUrl ? (
-            <img
-              src={client.logoUrl}
-              alt={client.name}
-              class="h-20 w-auto object-contain rounded-lg"
-              loading="lazy"
-            />
-          ) : (
-            <span class="font-display text-sm font-black uppercase tracking-[0.08em] text-skala-text">
-              {client.name}
-            </span>
-          )}
-        </div>
-      ))
+      clients.map((client) => {
+        const content = client.logoUrl ? (
+          <img
+            src={client.logoUrl}
+            alt={client.name}
+            class="h-20 w-auto object-contain rounded-lg"
+            loading="lazy"
+          />
+        ) : (
+          <span class="font-display text-sm font-black uppercase tracking-[0.08em] text-skala-text">
+            {client.name}
+          </span>
+        );
+
+        return client.slug ? (
+          <a
+            href={`/clientes/${client.slug}/`}
+            class="flex items-center gap-2.5 opacity-80 transition hover:opacity-100"
+            title={client.name}
+          >
+            {content}
+          </a>
+        ) : (
+          <div
+            class="flex items-center gap-2.5 opacity-80 transition hover:opacity-100"
+            title={client.name}
+          >
+            {content}
+          </div>
+        );
+      })
     }
   </div>
 </section>

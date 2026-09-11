@@ -1,0 +1,274 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import {
+  adaptSanityProjects,
+  getCoverMedia,
+  getPortfolioAccentStyle,
+} from "../../data/portafolio";
+import { getClientBySlug } from "../../sanity/client/api";
+import { getProjectsByClientId } from "../../sanity/project/api";
+import { getEventsByClientId } from "../../sanity/event/api";
+import { CLIENT_TYPE_LABELS } from "../../sanity/client/client-mapper";
+import { getOrganizationSchema, SITE_URL } from "../../data/organization";
+import EventCard from "../../components/event/EventCard.astro";
+import {
+  FiArrowUpRight,
+  FiGlobe,
+  FiInstagram,
+  FiFacebook,
+} from "react-icons/fi";
+import { SiTiktok } from "react-icons/si";
+
+// SSR bajo demanda, mismo patrón que /proyecto/[slug] y /cobertura-eventos/[slug]:
+// hereda `output: "server"` de astro.config.mjs, sin `prerender = true`, para
+// que un cliente nuevo o editado en Sanity se vea en la siguiente visita sin
+// redeploy.
+const { slug } = Astro.params;
+const client = await getClientBySlug(slug as string);
+
+if (!client) {
+  return Astro.redirect("/clientes/", 302);
+}
+
+const [sanityProjects, events] = await Promise.all([
+  getProjectsByClientId(client.id),
+  getEventsByClientId(client.id),
+]);
+const projects = adaptSanityProjects(sanityProjects);
+
+const pageTitle = `${client.name} | Clientes Skala`;
+const pageDescription =
+  client.bio ||
+  `Proyectos y coberturas de Skala para ${client.business || client.name}.`;
+const canonicalUrl = new URL(
+  `/clientes/${client.slug}/`,
+  Astro.site ?? new URL(SITE_URL),
+).href;
+const ogImage = client.logoUrl;
+
+const structuredData = [
+  getOrganizationSchema(),
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": `${canonicalUrl}#profile`,
+    name: client.name,
+    description: pageDescription,
+    url: canonicalUrl,
+    ...(client.logoUrl ? { image: client.logoUrl } : {}),
+  },
+];
+
+const socialLinks = [
+  client.social?.website && { icon: FiGlobe, href: client.social.website, label: "Sitio web" },
+  client.social?.instagram && { icon: FiInstagram, href: client.social.instagram, label: "Instagram" },
+  client.social?.facebook && { icon: FiFacebook, href: client.social.facebook, label: "Facebook" },
+  client.social?.tiktok && { icon: SiTiktok, href: client.social.tiktok, label: "TikTok" },
+].filter(Boolean) as { icon: any; href: string; label: string }[];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImage}
+  structuredData={structuredData}
+  robots="index, follow"
+>
+  <main id="top" class="relative z-10 pt-12">
+    <section class="mx-auto w-full max-w-360 px-5 pt-8 md:px-12">
+      <nav aria-label="Ruta de navegación">
+        <ol class="m-0 flex list-none flex-wrap items-center gap-1.5 p-0 text-sm text-skala-muted">
+          <li><a href="/" class="transition-colors hover:text-skala-accent">Inicio</a></li>
+          <li aria-hidden="true">/</li>
+          <li><a href="/clientes/" class="transition-colors hover:text-skala-accent">Clientes</a></li>
+          <li aria-hidden="true">/</li>
+          <li class="max-w-[40vw] truncate font-medium text-skala-text sm:max-w-none" aria-current="page">
+            {client.name}
+          </li>
+        </ol>
+      </nav>
+    </section>
+
+    <section class="relative z-10 overflow-hidden pb-10 pt-6 md:pb-16 md:pt-8">
+      {/* Ambiente de marca: cuando hay logo, la propia marca del cliente se
+          agranda y desenfoca como fondo — textura que viene del propio
+          cliente, no un adorno genérico. Sin logo, cae al glow de acento ya
+          usado en el resto del sitio (PortfolioHeroVisual). */}
+      <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        {client.logoUrl ? (
+          <img
+            src={client.logoUrl}
+            alt=""
+            class="absolute -top-32 right-[-8%] h-[30rem] w-[30rem] max-w-none scale-125 object-contain opacity-[0.18] blur-3xl saturate-150 md:right-[2%] md:h-[38rem] md:w-[38rem]"
+          />
+        ) : (
+          <div class="absolute -top-24 right-[12%] h-96 w-96 rounded-full bg-skala-accent/10 blur-3xl" />
+        )}
+        <div class="absolute inset-0 bg-linear-to-b from-transparent via-[#04142e]/45 to-[#04142e]" />
+      </div>
+
+      <div class="mx-auto w-full max-w-360 px-5 md:px-12">
+        <div class="flex flex-wrap items-center gap-2.5" data-reveal>
+          {client.clientType && (
+            <span class="inline-flex items-center rounded-full border border-skala-accent/35 bg-skala-accent/10 px-4 py-2 text-[0.68rem] font-black uppercase tracking-[0.16em] text-skala-accent">
+              {CLIENT_TYPE_LABELS[client.clientType]}
+            </span>
+          )}
+          {client.category && (
+            <span class="inline-flex items-center rounded-full border border-skala-border px-3 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-skala-muted">
+              {client.category}
+            </span>
+          )}
+        </div>
+
+        <div class="mt-6 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div class="flex items-end gap-5" data-reveal="left" style="--reveal-delay: 60ms;">
+            {client.logoUrl && (
+              <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-skala-border-strong bg-white/[0.06] p-3 shadow-[0_18px_42px_rgba(92,216,252,0.16)] md:h-28 md:w-28">
+                <img
+                  src={client.logoUrl}
+                  alt={client.name}
+                  class="h-full w-full object-contain"
+                />
+              </div>
+            )}
+            <div class="min-w-0">
+              <h1 class="m-0 font-display text-[clamp(2.4rem,6vw,4.6rem)] font-black leading-[0.94] tracking-[-0.05em] text-skala-text text-wrap:balance">
+                {client.name}
+              </h1>
+              {client.business && (
+                <p class="mt-2 text-base font-medium text-skala-accent md:text-lg">
+                  {client.business}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {socialLinks.length > 0 && (
+            <div class="flex flex-wrap gap-3" data-reveal="right" style="--reveal-delay: 120ms;">
+              {socialLinks.map(({ icon: Icon, href, label }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  class="flex h-10 w-10 items-center justify-center rounded-full border border-skala-border text-skala-muted transition-colors hover:border-skala-accent/50 hover:text-skala-accent"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {client.bio && (
+          <p
+            class="mt-6 max-w-[62ch] text-base leading-8 text-skala-muted md:text-lg"
+            data-reveal="fade"
+            style="--reveal-delay: 100ms;"
+          >
+            {client.bio}
+          </p>
+        )}
+
+        {(projects.length > 0 || events.length > 0) && (
+          <div
+            class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-skala-border/80 pt-6"
+            data-reveal="fade"
+            style="--reveal-delay: 180ms;"
+          >
+            {projects.length > 0 && (
+              <span class="inline-flex items-baseline gap-2 text-sm text-skala-muted">
+                <span class="font-display text-2xl font-black tracking-[-0.04em] text-skala-text">
+                  {projects.length}
+                </span>
+                {projects.length === 1 ? "proyecto" : "proyectos"}
+              </span>
+            )}
+            {events.length > 0 && (
+              <span class="inline-flex items-baseline gap-2 text-sm text-skala-muted">
+                <span class="font-display text-2xl font-black tracking-[-0.04em] text-skala-text">
+                  {events.length}
+                </span>
+                {events.length === 1 ? "evento coberturado" : "eventos coberturados"}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+
+    {projects.length > 0 && (
+      <section class="mx-auto w-full max-w-360 px-5 pb-4 md:px-12" aria-labelledby="client-projects-title">
+        <h2 id="client-projects-title" class="m-0 mb-6 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
+          Proyectos
+        </h2>
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => {
+            const cover = getCoverMedia(project);
+            const accentStyle = getPortfolioAccentStyle(project);
+            return (
+              <a
+                href={`/proyecto/${project.id}/`}
+                class="group relative flex flex-col overflow-hidden rounded-3xl border border-skala-border bg-[#0c1730] transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35"
+                aria-label={`Ver proyecto: ${project.title}`}
+              >
+                <div class="relative aspect-4/3 overflow-hidden bg-skala-surface">
+                  {cover.type === "image" ? (
+                    <img
+                      src={cover.src}
+                      alt={cover.alt ?? project.title}
+                      loading="lazy"
+                      class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <video
+                      src={cover.src}
+                      muted
+                      loop
+                      playsinline
+                      preload="metadata"
+                      class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  )}
+                  <span class="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/45 px-3 py-1 text-[0.62rem] font-black uppercase tracking-[0.14em] text-skala-text">
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={accentStyle} />
+                    {project.categoryLabel}
+                  </span>
+                </div>
+                <div class="flex items-center justify-between gap-3 p-5">
+                  <h3 class="m-0 truncate font-display text-lg font-black tracking-[-0.03em] text-skala-text">
+                    {project.title}
+                  </h3>
+                  <FiArrowUpRight className="h-4 w-4 shrink-0 text-skala-accent" aria-hidden="true" />
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    {events.length > 0 && (
+      <section class="mx-auto w-full max-w-360 px-5 py-8 md:px-12" aria-labelledby="client-events-title">
+        <h2 id="client-events-title" class="m-0 mb-6 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
+          Eventos
+        </h2>
+        <div class="grid grid-cols-12 gap-4">
+          {events.map((event, index) => <EventCard event={event} index={index} />)}
+        </div>
+      </section>
+    )}
+
+    {projects.length === 0 && events.length === 0 && (
+      <section class="mx-auto w-full max-w-360 px-5 py-16 md:px-12">
+        <div class="rounded-3xl border border-skala-border bg-white/[0.035] p-12 text-center">
+          <p class="m-0 text-sm leading-7 text-skala-muted">
+            Todavía no hay proyectos o eventos publicados para {client.name}.
+          </p>
+        </div>
+      </section>
+    )}
+  </main>
+</Layout>

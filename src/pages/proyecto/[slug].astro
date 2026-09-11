@@ -8,7 +8,13 @@ import {
 } from "../../data/portafolio";
 import { getAllProjects } from "../../sanity/project/api";
 import { getOrganizationSchema, organizationRef, SITE_URL } from "../../data/organization";
-import { FiChevronRight, FiTarget, FiCompass, FiCheckCircle } from "react-icons/fi";
+import {
+  FiChevronRight,
+  FiTarget,
+  FiCompass,
+  FiCheckCircle,
+  FiArrowUpRight,
+} from "react-icons/fi";
 import ProjectCta from "../../components/portfolio/ProjectCta.astro";
 import ProjectGallery from "../../components/portfolio/ProjectGallery.astro";
 import ProjectGalleryLightbox from "../../components/portfolio/ProjectGalleryLightbox";
@@ -63,10 +69,19 @@ const keywords = [
   .filter(Boolean)
   .join(", ");
 
+// El cliente se separa del resto de datos rápidos: cuando está vinculado a
+// un cliente registrado (con logo), se muestra como una credencial de marca
+// en vez de una celda de texto más — visualmente distinto de un cliente en
+// texto libre, que se queda como dato plano.
+const clientFact = {
+  value: project.client,
+  href: project.clientSlug ? `/clientes/${project.clientSlug}/` : undefined,
+  logoUrl: project.clientLogoUrl,
+};
+
 // Datos de la tira de datos rápidos: se arma dinámicamente porque año y
 // duración son opcionales (evita celdas vacías si un proyecto no los trae).
 const facts = [
-  { label: "Cliente", value: project.client },
   { label: "Categoría", value: project.categoryLabel },
   d?.year ? { label: "Año", value: String(d.year) } : null,
   d?.duration ? { label: "Duración", value: d.duration } : null,
@@ -176,6 +191,49 @@ const structuredData = [
         aria-label="Datos del proyecto"
         style="--reveal-delay: 120ms;"
       >
+        {
+          clientFact.logoUrl && clientFact.href ? (
+            <a
+              href={clientFact.href}
+              class="group flex items-center gap-3 rounded-2xl border border-skala-accent/25 bg-skala-accent/5 px-4 py-3 transition duration-300 hover:-translate-y-0.5 hover:border-skala-accent/50 hover:bg-skala-accent/10"
+              aria-label={`Ver cliente: ${clientFact.value}`}
+            >
+              <img
+                src={clientFact.logoUrl}
+                alt={clientFact.value}
+                class="h-11 w-11 shrink-0 rounded-xl border border-skala-border bg-white/5 object-contain p-1.5"
+              />
+              <span class="min-w-0">
+                <span class="block truncate font-display text-lg font-black tracking-[-0.03em] text-skala-text md:text-xl">
+                  {clientFact.value}
+                </span>
+                <span class="mt-0.5 flex items-center gap-1 text-xs uppercase tracking-[0.16em] text-skala-muted transition-colors group-hover:text-skala-accent">
+                  Cliente
+                  <FiArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                </span>
+              </span>
+            </a>
+          ) : (
+            <div class="min-w-28">
+              {clientFact.href ? (
+                <a
+                  href={clientFact.href}
+                  class="m-0 font-display text-xl font-black tracking-[-0.03em] text-skala-text transition-colors hover:text-skala-accent md:text-2xl"
+                >
+                  {clientFact.value}
+                </a>
+              ) : (
+                <p class="m-0 font-display text-xl font-black tracking-[-0.03em] text-skala-text md:text-2xl">
+                  {clientFact.value}
+                </p>
+              )}
+              <p class="m-0 mt-1 text-xs uppercase tracking-[0.16em] text-skala-muted">
+                Cliente
+              </p>
+            </div>
+          )
+        }
+
         {
           facts.map((fact) => (
             <div class="min-w-28">

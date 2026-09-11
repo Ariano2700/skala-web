@@ -85,7 +85,7 @@ function Card({
     <a
       ref={cardRef}
       href={`/proyecto/${project.id}/`}
-      className={`portfolio-card portfolio-card-reveal group relative isolate flex flex-col overflow-hidden rounded-4xl border border-skala-border bg-[#0c1730] text-left shadow-[0_24px_70px_rgba(0,0,0,0.22)] transition-[transform,box-shadow,border-color] duration-500 ease-out hover:-translate-y-1.5 hover:shadow-[0_32px_90px_rgba(0,0,0,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-skala-accent/70 ${getPortfolioGridClass(project)}`}
+      className={`portfolio-card portfolio-card-reveal group relative isolate flex flex-col overflow-hidden rounded-4xl border border-skala-border bg-[#0c1730] text-left transition-[transform,box-shadow,border-color] duration-500 ease-out hover:-translate-y-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-skala-accent/70 ${getPortfolioGridClass(project)}`}
       style={cardStyle}
       aria-label={`Ver proyecto: ${project.title} (${project.categoryLabel})`}
     >
@@ -113,7 +113,13 @@ function Card({
 
         <div className="pointer-events-none absolute -inset-x-1/2 -top-1/2 h-[220%] w-[70%] rotate-[-24deg] bg-linear-to-r from-transparent via-white/12 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:animate-[shineSweep_1.15s_ease]" />
 
-        <div className="pointer-events-none absolute inset-0 rounded-4xl opacity-0 shadow-[inset_0_0_0_1.5px_var(--card-accent)] transition-opacity duration-500 group-hover:opacity-70" />
+        {/* El marco de acento en hover vive dentro del contenedor de imagen
+            (arriba de la tarjeta), no de la tarjeta completa: solo sus
+            esquinas superiores coinciden con el borde real de la tarjeta
+            (rounded-4xl en el <a>); la esquina inferior es una división
+            interna con el panel de texto, así que va recta — redondearla
+            ahí se veía como una esquina de más, suelta a mitad de tarjeta. */}
+        <div className="pointer-events-none absolute inset-0 rounded-t-4xl opacity-0 shadow-[inset_0_0_0_1.5px_var(--card-accent)] transition-opacity duration-500 group-hover:opacity-70" />
 
         <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-[0.66rem] font-black uppercase tracking-[0.16em] text-skala-text">
           <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={accentStyle} />

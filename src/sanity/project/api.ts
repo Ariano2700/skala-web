@@ -11,6 +11,13 @@ const PROJECT_BASE_QUERY = `{
   title,
   slug,
   client,
+  "clientRef": clientRef->{
+    "_id": _id,
+    name,
+    "slug": slug.current,
+    business,
+    "logoUrl": logo.asset->url
+  },
   "categories": categories[]->{
     "id": _id,
     title,
@@ -245,5 +252,19 @@ export async function getProjectsPage({
       error,
     );
     return { items: [], total: 0 };
+  }
+}
+
+/** Proyectos vinculados a un cliente registrado (página de perfil `/clientes/[slug]`). */
+export async function getProjectsByClientId(clientId: string) {
+  const query = `*[${BASE_PROJECT_FILTER} && clientRef._ref == $clientId] | order(year desc) ${PROJECT_BASE_QUERY}`;
+  try {
+    const result = await sanityClient.fetch<ProjectSanitySchema[]>(query, {
+      clientId,
+    });
+    return mapToProjectList(result);
+  } catch (error) {
+    console.error(`Error fetching projects for client ${clientId}:`, error);
+    return [];
   }
 }

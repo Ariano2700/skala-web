@@ -55,6 +55,7 @@ const event_BASE_QUERY = `{
   "clients": clients[]->{
     _id,
     name,
+    "slug": slug.current,
     business,
     "logo": logo{ "url": asset->url },
     social
@@ -275,6 +276,20 @@ export async function getEventsInfiniteScroll({
   } catch (error) {
     console.error("Error fetching events for infinite scroll:", error);
     return { data: [], lastId: null };
+  }
+}
+
+/** Eventos donde participa un cliente registrado (página de perfil `/clientes/[slug]`). */
+export async function getEventsByClientId(clientId: string) {
+  const query = `*[${BASE_event_FILTER} && published == true && $clientId in clients[]._ref] | ${ORDER_BY_DATE} ${event_BASE_QUERY}`;
+  try {
+    const result = await sanityClient.fetch<EventSanitySchema[]>(query, {
+      clientId,
+    });
+    return mapToEventList(result);
+  } catch (error) {
+    console.error(`Error fetching events for client ${clientId}:`, error);
+    return [];
   }
 }
 

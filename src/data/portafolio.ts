@@ -30,6 +30,12 @@ export interface PortfolioProject {
   id: string;
   title: string;
   client: string;
+  /** Slug del cliente registrado (schema `client`), si el proyecto está
+   * vinculado a uno. Permite enlazar a `/clientes/[slug]` en el detalle. */
+  clientSlug?: string;
+  /** Logo del cliente registrado, si tiene uno cargado. Distingue en el
+   * detalle un cliente vinculado (con marca visible) de uno en texto libre. */
+  clientLogoUrl?: string;
   mainImage?: string;
   /** ISO datetime de la última modificación en Sanity (ausente en proyectos de la data estática). Usado para el `lastmod` del sitemap. */
   updatedAt?: string;
@@ -199,6 +205,8 @@ export const adaptSanityProject = (
     id: project.slug || project.id,
     title: project.title,
     client: project.client ?? "Skala",
+    clientSlug: project.clientRef?.slug,
+    clientLogoUrl: project.clientRef?.logoUrl,
     mainImage: project.mainImage?.url,
     updatedAt: project.updatedAt,
     categories,

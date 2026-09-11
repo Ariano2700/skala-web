@@ -1,0 +1,91 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getClientsWithPublicContent } from "../../sanity/client/api";
+import { getOrganizationSchema, SITE_URL } from "../../data/organization";
+
+// SSR bajo demanda, mismo patrón que /portafolio y /cobertura-eventos.
+const clients = await getClientsWithPublicContent();
+
+const pageTitle = "Clientes - Marcas que confían en Skala | Skala Agencia";
+const pageDescription =
+  "Conoce a las marcas y clientes con los que trabajamos en Skala: proyectos y coberturas de eventos realizados para cada uno.";
+const canonicalUrl = new URL("/clientes/", Astro.site ?? new URL(SITE_URL)).href;
+
+const structuredData = [
+  getOrganizationSchema(),
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${canonicalUrl}#client-list`,
+    name: "Clientes de Skala",
+    numberOfItems: clients.length,
+    itemListElement: clients.map((client, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: new URL(`/clientes/${client.slug}/`, Astro.site ?? SITE_URL).href,
+      name: client.name,
+    })),
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  structuredData={structuredData}
+  robots="index, follow"
+>
+  <main id="top" class="relative z-10 pt-16 pb-28">
+    <section class="mx-auto w-full max-w-360 px-5 md:px-12">
+      <div class="mb-12 max-w-[60ch]">
+        <h1 class="m-0 font-display text-4xl font-black tracking-[-0.04em] text-skala-text md:text-5xl">
+          Clientes
+        </h1>
+        <p class="mx-auto mt-4 text-sm leading-6 text-skala-muted md:text-base">
+          Marcas y negocios que ya confiaron en Skala. Entra a cada perfil para
+          ver sus proyectos y coberturas.
+        </p>
+      </div>
+
+      {clients.length > 0 ? (
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {clients.map((client) => (
+            <a
+              href={`/clientes/${client.slug}/`}
+              class="group flex flex-col items-center gap-3 rounded-3xl border border-skala-border bg-white/[0.035] p-6 text-center transition duration-300 hover:-translate-y-1 hover:border-skala-accent/35"
+              aria-label={`Ver cliente: ${client.name}`}
+            >
+              {client.logoUrl ? (
+                <img
+                  src={client.logoUrl}
+                  alt={client.name}
+                  loading="lazy"
+                  class="h-16 w-16 rounded-2xl border border-skala-border bg-white/5 object-contain p-2"
+                />
+              ) : (
+                <div class="flex h-16 w-16 items-center justify-center rounded-2xl border border-skala-border bg-white/5 font-display text-lg font-black text-skala-text">
+                  {client.name.charAt(0)}
+                </div>
+              )}
+              <div class="min-w-0">
+                <p class="m-0 truncate font-display text-sm font-black tracking-[-0.02em] text-skala-text">
+                  {client.name}
+                </p>
+                {client.business && (
+                  <p class="m-0 mt-0.5 truncate text-xs text-skala-muted">{client.business}</p>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="rounded-3xl border border-skala-border bg-white/[0.035] p-12 text-center">
+          <p class="m-0 text-sm leading-7 text-skala-muted">
+            Todavía no hay clientes publicados.
+          </p>
+        </div>
+      )}
+    </section>
+  </main>
+</Layout>

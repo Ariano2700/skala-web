@@ -40,6 +40,8 @@ export interface RawGalleryItem {
 export interface EventClientRef {
   id?: string;
   name: string;
+  /** Slug del cliente registrado, para enlazar a `/clientes/[slug]`. */
+  slug?: string;
   business?: string;
   logoUrl?: string;
   social?: {
@@ -132,6 +134,7 @@ export interface EventSanitySchema extends SanityDocument {
   clients?: Array<{
     _id?: string;
     name?: string;
+    slug?: string;
     business?: string;
     logo?: { url?: string };
     social?: EventClientRef["social"];
@@ -211,6 +214,7 @@ export const mapToEvent = (raw: EventSanitySchema | null): Event => {
     ? raw!.clients!.map((c) => ({
         id: c?._id,
         name: c?.name ?? "Sin nombre",
+        slug: c?.slug,
         business: c?.business,
         logoUrl: c?.logo?.url,
         social: c?.social,

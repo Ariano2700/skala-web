@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { adaptSanityProjects } from "../data/portafolio";
 import { getAllProjects } from "../sanity/project/api";
 import { getAllEvents } from "../sanity/event/api";
+import { getClientsWithPublicContent } from "../sanity/client/api";
 import { serviceCategories } from "../data/serviceCategories";
 
 interface SitemapImage {
@@ -26,6 +27,7 @@ const staticPages: SitemapEntry[] = [
   { loc: "/portafolio/", changefreq: "monthly", priority: 0.9 },
   { loc: "/servicios/", changefreq: "monthly", priority: 0.9 },
   { loc: "/cobertura-eventos/", changefreq: "weekly", priority: 0.8 },
+  { loc: "/clientes/", changefreq: "weekly", priority: 0.6 },
   { loc: "/nosotros/", changefreq: "monthly", priority: 0.7 },
   { loc: "/preguntas-frecuentes/", changefreq: "monthly", priority: 0.7 },
   ...serviceCategories.map(
@@ -106,7 +108,19 @@ export const GET: APIRoute = async ({ site }) => {
       : undefined,
   }));
 
-  const pages = [...staticPages, ...projectPages, ...eventPages];
+  const clients = await getClientsWithPublicContent();
+  const clientPages: SitemapEntry[] = clients.map((client) => ({
+    loc: `/clientes/${client.slug}/`,
+    changefreq: "weekly",
+    priority: 0.5,
+  }));
+
+  const pages = [
+    ...staticPages,
+    ...projectPages,
+    ...eventPages,
+    ...clientPages,
+  ];
 
   return new Response(getSiteMap(baseUrl, pages), {
     headers: {
