@@ -285,6 +285,49 @@ const structuredData = [
       }
 
       {
+        project.beforeAfterGallery && project.beforeAfterGallery.length > 0 && (
+          <div class="mt-14" data-reveal="clip">
+            <h2 class="m-0 mb-2 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
+              Antes y después
+            </h2>
+            <p class="m-0 mb-5 text-sm text-skala-muted">
+              Desliza para comparar cómo empezó y cómo terminó este proyecto.
+            </p>
+
+            {project.beforeAfterGallery.length === 1 ? (
+              <BeforeAfterSlider
+                before={project.beforeAfterGallery[0].before}
+                after={project.beforeAfterGallery[0].after}
+                accent={project.accent}
+                title={project.beforeAfterGallery[0].title || project.title}
+              />
+            ) : (
+              <div class="grid gap-6 md:grid-cols-2">
+                {project.beforeAfterGallery.map((pair) => (
+                  <div>
+                    {pair.title && (
+                      <p class="m-0 mb-3 font-display text-base font-black text-skala-text">
+                        {pair.title}
+                      </p>
+                    )}
+                    <BeforeAfterSlider
+                      before={pair.before}
+                      after={pair.after}
+                      accent={project.accent}
+                      title={pair.title || project.title}
+                    />
+                    {pair.caption && (
+                      <p class="m-0 mt-2 text-xs text-skala-muted">{pair.caption}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      {
         (d?.challenge || d?.solution || (d && d.results.length > 0) || (d && d.tools.length > 0)) && (
           <h2
             class="m-0 mt-16 border-t border-skala-border pt-10 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl"
@@ -356,49 +399,6 @@ const structuredData = [
                 </li>
               ))}
             </ul>
-          </div>
-        )
-      }
-
-      {
-        project.beforeAfterGallery && project.beforeAfterGallery.length > 0 && (
-          <div class="mt-14" data-reveal="clip">
-            <h2 class="m-0 mb-2 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
-              Antes y después
-            </h2>
-            <p class="m-0 mb-5 text-sm text-skala-muted">
-              Desliza para comparar cómo empezó y cómo terminó este proyecto.
-            </p>
-
-            {project.beforeAfterGallery.length === 1 ? (
-              <BeforeAfterSlider
-                before={project.beforeAfterGallery[0].before}
-                after={project.beforeAfterGallery[0].after}
-                accent={project.accent}
-                title={project.beforeAfterGallery[0].title || project.title}
-              />
-            ) : (
-              <div class="grid gap-6 md:grid-cols-2">
-                {project.beforeAfterGallery.map((pair) => (
-                  <div>
-                    {pair.title && (
-                      <p class="m-0 mb-3 font-display text-base font-black text-skala-text">
-                        {pair.title}
-                      </p>
-                    )}
-                    <BeforeAfterSlider
-                      before={pair.before}
-                      after={pair.after}
-                      accent={project.accent}
-                      title={pair.title || project.title}
-                    />
-                    {pair.caption && (
-                      <p class="m-0 mt-2 text-xs text-skala-muted">{pair.caption}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         )
       }
