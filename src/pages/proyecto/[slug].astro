@@ -294,35 +294,32 @@ const structuredData = [
               Desliza para comparar cómo empezó y cómo terminó este proyecto.
             </p>
 
-            {project.beforeAfterGallery.length === 1 ? (
-              <BeforeAfterSlider
-                before={project.beforeAfterGallery[0].before}
-                after={project.beforeAfterGallery[0].after}
-                accent={project.accent}
-                title={project.beforeAfterGallery[0].title || project.title}
-              />
-            ) : (
-              <div class="grid gap-6 md:grid-cols-2">
-                {project.beforeAfterGallery.map((pair) => (
-                  <div>
-                    {pair.title && (
-                      <p class="m-0 mb-3 font-display text-base font-black text-skala-text">
-                        {pair.title}
-                      </p>
-                    )}
-                    <BeforeAfterSlider
-                      before={pair.before}
-                      after={pair.after}
-                      accent={project.accent}
-                      title={pair.title || project.title}
-                    />
-                    {pair.caption && (
-                      <p class="m-0 mt-2 text-xs text-skala-muted">{pair.caption}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+            {/*
+              Una sola columna siempre, incluso con varios pares: en 2
+              columnas cada comparación queda muy angosta para notar el
+              antes/después (el punto entero de este slider). A todo el
+              ancho del contenido, cada par respira mejor.
+            */}
+            <div class="grid grid-cols-1 gap-10">
+              {project.beforeAfterGallery.map((pair) => (
+                <div>
+                  {pair.title && (
+                    <p class="m-0 mb-3 font-display text-base font-black text-skala-text">
+                      {pair.title}
+                    </p>
+                  )}
+                  <BeforeAfterSlider
+                    before={pair.before}
+                    after={pair.after}
+                    accent={project.accent}
+                    title={pair.title || project.title}
+                  />
+                  {pair.caption && (
+                    <p class="m-0 mt-2 text-xs text-skala-muted">{pair.caption}</p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )
       }

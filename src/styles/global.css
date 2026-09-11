@@ -444,8 +444,18 @@ a {
   background: transparent;
 }
 [data-before-after] input[type="range"]::-webkit-slider-thumb {
+  /*
+    NO 100%: un thumb tan ancho como el track entero deja rango de
+    movimiento cero (trackWidth - thumbWidth = 0), y Chrome calcula el
+    valor durante el arrastre dividiendo por ese rango — con 0 el
+    resultado colapsa siempre al mismo extremo, así que el drag se
+    sentía "pegado" mostrando sólo "después". Con un thumb angosto (el
+    <input> ya cubre toda la figura, así que se puede arrastrar desde
+    cualquier punto) el cálculo vuelve a tener rango real y el arrastre
+    responde en todo el 0-100.
+  */
   -webkit-appearance: none;
-  width: 100%;
+  width: 2px;
   height: 100%;
   background: transparent;
   cursor: ew-resize;
