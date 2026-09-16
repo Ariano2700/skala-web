@@ -10,6 +10,7 @@ import fisioHelp from "../assets/brands/fisio_help.png";
 import isaacNewton from "../assets/brands/isaac_newton.png";
 import pucaraMarketing from "../assets/brands/pucara_marketing.png";
 import nocheEterna from "../assets/brands/noche_eterna.png";
+import lions from "../assets/brands/lions.png";
 
 export interface Brand {
   name: string;
@@ -18,8 +19,25 @@ export interface Brand {
 }
 
 export const brands: Brand[] = [
-  { name: "Fisio Help", logo: fisioHelp, url: "https://www.instagram.com/fisiohelptrujillo/" },
-  { name: "Colegio Isaac Newton", logo: isaacNewton, url: "https://www.instagram.com/coleisaacnewton/" },
-  { name: "Pucará Marketing", logo: pucaraMarketing, url: "https://www.instagram.com/pucaramarketing/" },
-  {name: "Noche Eterna", logo: nocheEterna, url: "https://www.tiktok.com/@nocheternaorq" }
+  {
+    name: "Fisio Help",
+    logo: fisioHelp,
+    url: "https://www.instagram.com/fisiohelptrujillo/",
+  },
+  {
+    name: "Colegio Isaac Newton",
+    logo: isaacNewton,
+    url: "https://www.instagram.com/coleisaacnewton/",
+  },
+  {
+    name: "Pucará Marketing",
+    logo: pucaraMarketing,
+    url: "https://www.instagram.com/pucaramarketing/",
+  },
+  {
+    name: "Noche Eterna",
+    logo: nocheEterna,
+    url: "https://www.tiktok.com/@nocheternaorq",
+  },
+  { name: "Lions", logo: lions, url: "https://www.instagram.com/lions_cti/" },
 ];
