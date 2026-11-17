@@ -200,7 +200,7 @@ const structuredData = [
           clientFact.logoUrl && clientFact.href ? (
             <a
               href={clientFact.href}
-              class="group flex items-center gap-3 rounded-2xl border border-skala-accent/25 bg-skala-accent/5 px-4 py-3 transition duration-300 hover:-translate-y-0.5 hover:border-skala-accent/50 hover:bg-skala-accent/10"
+              class="group flex min-w-0 max-w-full items-center gap-3 rounded-2xl border border-skala-accent/25 bg-skala-accent/5 px-4 py-3 transition duration-300 hover:-translate-y-0.5 hover:border-skala-accent/50 hover:bg-skala-accent/10"
               aria-label={`Ver cliente: ${clientFact.value}`}
             >
               <img
@@ -212,7 +212,7 @@ const structuredData = [
                 class="h-11 w-11 shrink-0 rounded-xl border border-skala-border bg-white/5 object-contain p-1.5"
               />
               <span class="min-w-0">
-                <span class="block truncate font-display text-lg font-black tracking-[-0.03em] text-skala-text md:text-xl">
+                <span class="block wrap-anywhere font-display text-lg font-black tracking-[-0.03em] text-skala-text md:text-xl">
                   {clientFact.value}
                 </span>
                 <span class="mt-0.5 flex items-center gap-1 text-xs uppercase tracking-[0.16em] text-skala-muted transition-colors group-hover:text-skala-accent">
@@ -222,7 +222,7 @@ const structuredData = [
               </span>
             </a>
           ) : (
-            <div class="min-w-28">
+            <div class="min-w-28 max-w-full wrap-anywhere">
               {clientFact.href ? (
                 <a
                   href={clientFact.href}
@@ -244,7 +244,7 @@ const structuredData = [
 
         {
           facts.map((fact) => (
-            <div class="min-w-28">
+            <div class="min-w-28 max-w-full wrap-anywhere">
               <p class="m-0 font-display text-xl font-black tracking-[-0.03em] text-skala-text md:text-2xl">
                 {fact.value}
               </p>

@@ -211,6 +211,18 @@ a {
   animation-play-state: paused !important;
 }
 
+/*
+  Sin scroll horizontal en mobile: las entradas [data-reveal="left|right"]
+  arrancan desplazadas ±34px, y mientras no se revelan sobresalen del borde
+  de la pantalla. overflow-x: hidden en <body> lo oculta en desktop, pero en
+  mobile el navegador igual deja arrastrar la página hacia el costado.
+  `clip` (no `hidden`) recorta sin crear un contenedor de scroll, así que
+  no rompe el position: sticky del hero (HeroOverlapReveal.astro).
+*/
+main {
+  overflow-x: clip;
+}
+
 /* Las secciones ancladas no quedan tapadas por la barra fija (mobile/desktop). */
 :where(section[id], [id]) {
   scroll-margin-top: 5.5rem;
