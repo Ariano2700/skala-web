@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { IoMdClose } from "react-icons/io";
 import { useInfiniteGallery } from "../../hooks/useInfiniteGallery";
 import type { EventMediaItem } from "../../sanity/event/event-mapper";
 import { sanityImageUrl, sanitySrcSet } from "../../lib/sanity-image";
+import { lockScroll, unlockScroll } from "../../lib/scroll-lock";
+import VideoPlayer from "../shared/VideoPlayer";
 
 interface Props {
   /** Primer lote, ya recortado y renderizado desde el .astro que lo hospeda. */
@@ -51,6 +54,22 @@ export default function EventGallery({
       setIsClosing(false);
     }, 180);
   };
+
+  // Mientras el visor está abierto la página de fondo no scrollea (ni con
+  // la rueda, ni con touch, ni con Lenis en desktop) y Escape lo cierra.
+  const isOpen = activeIndex !== null;
+  useEffect(() => {
+    if (!isOpen) return;
+    lockScroll();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      unlockScroll();
+    };
+  }, [isOpen]);
 
   return (
     <section
@@ -110,9 +129,15 @@ export default function EventGallery({
         </p>
       )}
 
-      {activeItem && activeIndex !== null && (
+      {/*
+        Portal a <body>: renderizado acá adentro, el overlay quedaba atrapado
+        en el contexto de apilamiento de <main class="relative z-10"> — por
+        debajo del header fijo (z-50) aunque tuviera su propio z-index, y la
+        parte superior de las imágenes altas quedaba tapada por el header.
+      */}
+      {activeItem && activeIndex !== null && createPortal(
         <div
-          className={`lightbox-overlay fixed inset-0 z-50 flex items-center justify-center bg-[#04142e]/90 p-4 ${isClosing ? "is-closing" : ""}`}
+          className={`lightbox-overlay fixed inset-0 z-60 flex items-center justify-center bg-[#04142e]/90 p-4 ${isClosing ? "is-closing" : ""}`}
           role="dialog"
           aria-modal="true"
           onClick={closeLightbox}
@@ -156,11 +181,13 @@ export default function EventGallery({
             )}
 
             {activeItem.kind === "video" ? (
-              <video
+              <VideoPlayer
+                key={activeItem.url}
                 src={activeItem.url}
-                controls
                 autoPlay
-                className="max-h-[90vh] max-w-[92vw] rounded-2xl"
+                label={activeItem.alt || `Video de ${title}`}
+                wrapperClassName="rounded-2xl"
+                className="block max-h-[90vh] max-w-[92vw]"
               />
             ) : (
               <img
@@ -175,7 +202,8 @@ export default function EventGallery({
               />
             )}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </section>
   );

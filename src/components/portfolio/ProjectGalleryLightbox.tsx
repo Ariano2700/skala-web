@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { IoIosClose } from "react-icons/io";
 import type { PortfolioMedia } from "../../data/portafolio";
 import Carousel from "../shared/Carousel";
+import { lockScroll, unlockScroll } from "../../lib/scroll-lock";
 
 interface Props {
   media: PortfolioMedia[];
@@ -17,7 +19,6 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [current, setCurrent] = useState(0);
-  const [playing, setPlaying] = useState<number | null>(null);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const total = media.length;
 
@@ -29,7 +30,6 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
     (index: number) => {
       if (total === 0) return;
       pauseVideos();
-      setPlaying(null);
       setCurrent(((index % total) + total) % total);
     },
     [total, pauseVideos],
@@ -37,7 +37,6 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
 
   const close = useCallback(() => {
     pauseVideos();
-    setPlaying(null);
     // Igual que EventGallery.tsx: se retrasa el unmount (setOpen(false)) lo
     // que dura la salida en CSS (.lightbox-*, global.css) en vez de cortar
     // de golpe.
@@ -45,19 +44,8 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
     window.setTimeout(() => {
       setOpen(false);
       setIsClosing(false);
-      document.body.classList.remove("overflow-hidden");
     }, 180);
   }, [pauseVideos]);
-
-  const handlePlay = useCallback((index: number) => {
-    videoRefs.current[index]?.play();
-    setPlaying(index);
-  }, []);
-
-  const handlePause = useCallback((index: number) => {
-    videoRefs.current[index]?.pause();
-    setPlaying(null);
-  }, []);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -67,11 +55,18 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
       const index = Number(trigger.dataset.index ?? 0);
       setCurrent(Number.isFinite(index) ? index : 0);
       setOpen(true);
-      document.body.classList.add("overflow-hidden");
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, []);
+
+  // Bloqueo de scroll mientras está abierto: antes era sólo
+  // body.overflow-hidden, que no frena a Lenis (scroll suave en desktop).
+  useEffect(() => {
+    if (!open) return;
+    lockScroll();
+    return unlockScroll;
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -86,7 +81,9 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
 
   if (!open || total === 0) return null;
 
-  return (
+  // Portal a <body>: fuera del <main class="relative z-10">, así el z-60
+  // sí queda por encima del header fijo (z-50).
+  return createPortal(
     <div
       className={`lightbox-overlay fixed inset-0 z-60 flex items-center justify-center p-4 ${isClosing ? "is-closing" : ""}`}
       data-gallery-lightbox
@@ -119,13 +116,11 @@ export default function ProjectGalleryLightbox({ media, title }: Props) {
           current={current}
           total={total}
           title={title}
-          playing={playing}
           videoRefs={videoRefs}
           onGoTo={goTo}
-          onPlay={handlePlay}
-          onPause={handlePause}
         />
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
