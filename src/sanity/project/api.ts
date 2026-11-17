@@ -268,3 +268,43 @@ export async function getProjectsByClientId(clientId: string) {
     return [];
   }
 }
+
+// Para "Proyectos relacionados" sólo hace falta la portada de cada tarjeta
+// (mainImage o el primer item de la galería, ver getCoverMedia), no la
+// galería completa ni el antes/después de cada proyecto.
+const PROJECT_CARD_QUERY = PROJECT_BASE_QUERY.replace(
+  `"gallery": gallery[]{`,
+  `"gallery": gallery[0...1]{`,
+).replace(
+  /"beforeAfterGallery": beforeAfterGallery\[\]\{[\s\S]*?\r?\n  \},\r?\n/,
+  "",
+);
+
+/**
+ * Datos de /proyecto/[slug] en UNA sola consulta: el proyecto completo +
+ * el resto de proyectos (versión liviana de tarjeta) para elegir los
+ * relacionados. Antes la página traía getAllProjects() — todos los
+ * proyectos con su galería completa — sólo para mostrar uno.
+ * `$slug` también matchea `_id`: en el portafolio un proyecto sin slug usa
+ * su _id como id (ver adaptSanityProject).
+ */
+export async function getProjectPageData(slug: string) {
+  const match = `(slug.current == $slug || _id == $slug)`;
+  const query = `{
+    "project": *[${BASE_PROJECT_FILTER} && ${match}] | ${ORDER_BY_DATE_DESC} [0] ${PROJECT_BASE_QUERY},
+    "others": *[${BASE_PROJECT_FILTER} && !${match}] | ${ORDER_BY_DATE_DESC} ${PROJECT_CARD_QUERY}
+  }`;
+  try {
+    const result = await sanityClient.fetch<{
+      project: ProjectSanitySchema | null;
+      others: ProjectSanitySchema[];
+    }>(query, { slug });
+    return {
+      project: result.project ? mapToProject(result.project) : null,
+      others: mapToProjectList(result.others ?? []),
+    };
+  } catch (error) {
+    console.error(`Error fetching project page data for ${slug}:`, error);
+    return { project: null, others: [] };
+  }
+}

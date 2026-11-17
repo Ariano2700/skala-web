@@ -2,11 +2,13 @@
 export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
 import {
+  adaptSanityProject,
   adaptSanityProjects,
   getPortfolioAccentStyle,
   getCoverMedia,
 } from "../../data/portafolio";
-import { getAllProjects } from "../../sanity/project/api";
+import { getProjectPageData } from "../../sanity/project/api";
+import { sanityImageUrl, sanitySrcSet } from "../../lib/sanity-image";
 import { getOrganizationSchema, organizationRef, SITE_URL } from "../../data/organization";
 import {
   FiChevronRight,
@@ -25,9 +27,10 @@ import BrandsMarquee from "../../components/shared/BrandsMarquee.astro";
 // Renderizado bajo demanda: Sanity (CMS) en vivo, con respaldo en la data
 // estática local. Cualquier proyecto nuevo en Sanity aparece sin redeploy.
 const { slug } = Astro.params;
-const sanityProjects = await getAllProjects();
-const allProjects = adaptSanityProjects(sanityProjects);
-const project = allProjects.find((p) => p.id === slug);
+// Una sola consulta: este proyecto + tarjetas livianas del resto (para
+// "Proyectos relacionados"), en vez de traer todos los proyectos completos.
+const pageData = await getProjectPageData(slug ?? "");
+const project = pageData.project ? adaptSanityProject(pageData.project) : null;
 
 if (!project) {
   return new Response("Proyecto no encontrado", {
@@ -151,7 +154,9 @@ const structuredData = [
         {
           cover.type === "image" ? (
             <img
-              src={cover.src}
+              src={sanityImageUrl(cover.src, { width: 1440, quality: 80 })}
+              srcset={sanitySrcSet(cover.src, [480, 768, 1080, 1440, 1920], 80)}
+              sizes="(min-width: 1440px) 1344px, (min-width: 768px) calc(100vw - 96px), calc(100vw - 40px)"
               alt={cover.alt ?? project.title}
               class="absolute inset-0 h-full w-full object-cover"
               fetchpriority="high"
@@ -199,8 +204,11 @@ const structuredData = [
               aria-label={`Ver cliente: ${clientFact.value}`}
             >
               <img
-                src={clientFact.logoUrl}
+                src={sanityImageUrl(clientFact.logoUrl, { width: 96 })}
                 alt={clientFact.value}
+                width="44"
+                height="44"
+                loading="lazy"
                 class="h-11 w-11 shrink-0 rounded-xl border border-skala-border bg-white/5 object-contain p-1.5"
               />
               <span class="min-w-0">
@@ -402,7 +410,7 @@ const structuredData = [
     </section>
 
     <div class="mt-8">
-      <RelatedProjects projects={allProjects} current={project} limit={3} />
+      <RelatedProjects projects={adaptSanityProjects(pageData.others)} current={project} limit={3} />
     </div>
 
     <BrandsMarquee />
@@ -410,7 +418,7 @@ const structuredData = [
     <ProjectCta project={project} />
   </main>
 
-  <ProjectGalleryLightbox client:load media={project.media} title={project.title} />
+  <ProjectGalleryLightbox client:idle media={project.media} title={project.title} />
 </Layout>
 
 <style>
