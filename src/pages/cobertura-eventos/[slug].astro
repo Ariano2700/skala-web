@@ -92,7 +92,7 @@ const galleryFirstPage = event.gallery.slice(0, GALLERY_PAGE_SIZE);
     <EventDetailHero event={event} />
     {event.clients.length > 0 && <EventClient clients={event.clients} />}
     <EventGallery
-      client:load
+      client:visible
       gallery={galleryFirstPage}
       total={event.gallery.length}
       eventSlug={event.slug}

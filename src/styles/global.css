@@ -150,7 +150,11 @@ a {
     opacity 0.7s var(--ease-out),
     transform 0.7s var(--ease-out);
   transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
+  /* Sin will-change acá: con ~40 [data-reveal] en la portada, dejarlo fijo
+     desde la carga crea ~40 capas de GPU de entrada (mucha memoria en
+     mobile y compositing más lento durante el scroll). La transition de
+     opacity/transform ya promueve el elemento al compositor sola mientras
+     anima, así que la entrada se ve exactamente igual. */
 }
 
 [data-reveal="fade"] {
@@ -194,6 +198,17 @@ a {
 
 .reveal-complete {
   will-change: auto;
+}
+
+/*
+  Animaciones infinitas (marquees, brillos) que no están en pantalla: se
+  pausan para no gastar frames. RevealScript.astro alterna data-offscreen
+  con un IntersectionObserver sobre [data-pause-offscreen]; al volver a
+  entrar siguen desde donde quedaron (no se nota el corte, nadie las veía).
+*/
+[data-pause-offscreen][data-offscreen],
+[data-pause-offscreen][data-offscreen] * {
+  animation-play-state: paused !important;
 }
 
 /* Las secciones ancladas no quedan tapadas por la barra fija (mobile/desktop). */
@@ -267,7 +282,9 @@ a {
     opacity 0.7s var(--ease-out),
     transform 0.7s var(--ease-out);
   transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
+  /* Sin will-change fijo (mismo motivo que [data-reveal]): con el scroll
+     infinito se acumulaban decenas de tarjetas, cada una como capa de GPU
+     permanente. La transition ya las promueve sola mientras animan. */
 }
 
 .portfolio-card-reveal.is-visible {

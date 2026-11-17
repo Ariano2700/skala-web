@@ -1,0 +1,151 @@
+---
+// Versión CSS pura del wordmark animado (antes SkalaWordmark.tsx con
+// React + GSAP + client:idle). En la portada era la ÚNICA isla de React en
+// mobile: hidratarla bajaba y ejecutaba React + GSAP justo cuando el usuario
+// empezaba a hacer scroll. Esta versión replica la misma línea de tiempo
+// (mismos tiempos, desplazamientos, escalas y curvas) con @keyframes:
+//
+//   mitad izq.  0.00–0.82s  x -36→0, scale .92→1, opacity 0→1  (power3.out)
+//   mitad der.  0.08–0.90s  x  36→0, scale .92→1, opacity 0→1  (power3.out)
+//   svg         0.82–1.02s  scale 1→1.04                         (power2.out)
+//   svg         1.02–1.47s  scale 1.04→1.025                     (power3.out)
+//   mitades     1.47–1.65s  x izq. →1, x der. →-2                (power2.out)
+//
+// Los x van en unidades del viewBox (igual que GSAP, que en <path> escribe
+// el atributo transform en coordenadas de usuario): en CSS sobre un
+// elemento SVG 1px == 1 unidad de usuario, así que el desplazamiento real
+// en pantalla es idéntico.
+import fullLogo from "../../icons/logotype.svg?raw";
+
+const logoPath =
+  fullLogo.match(/<path\b[^>]*>/)?.[0].match(/d="([^"]+)"/)?.[1] ?? "";
+const wordmarkWidth = 1628;
+const wordmarkHeight = 741;
+const splitX = wordmarkWidth / 2;
+const uid = `skala-wordmark-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<svg
+  class="skala-wordmark text-skala-accent pointer-events-none inline-block h-2em w-[3.45em] translate-y-[0.08em] align-[-0.1em] overflow-visible"
+  viewBox={`0 0 ${wordmarkWidth} ${wordmarkHeight}`}
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <clipPath id={`${uid}-left`}>
+      <rect x="0" y="0" width={splitX} height={wordmarkHeight}></rect>
+    </clipPath>
+    <clipPath id={`${uid}-right`}>
+      <rect x={splitX} y="0" width={splitX} height={wordmarkHeight}></rect>
+    </clipPath>
+  </defs>
+
+  <path
+    class="skala-half skala-half-left"
+    d={logoPath}
+    fill="currentColor"
+    clip-path={`url(#${uid}-left)`}></path>
+  <path
+    class="skala-half skala-half-right"
+    d={logoPath}
+    fill="currentColor"
+    clip-path={`url(#${uid}-right)`}></path>
+</svg>
+
+<style>
+  /*
+    Retraso de arranque: con client:idle la animación empezaba recién
+    cuando React terminaba de hidratar (≈ cuando el título del hero ya iba
+    entrando). Este delay mantiene esa sensación de "el logo llega un
+    instante después que el texto".
+  */
+  .skala-wordmark {
+    --wordmark-delay: 0.35s;
+    animation: skalaWordmarkPop 1.47s linear var(--wordmark-delay) both;
+  }
+
+  .skala-half {
+    /* El bbox del <path> es el logo completo (el clip no lo recorta), así
+       que el origen 50% 50% es el centro del logo — igual que en GSAP. */
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+
+  .skala-half-left {
+    animation: skalaHalfLeft 1.65s linear var(--wordmark-delay) both;
+  }
+
+  .skala-half-right {
+    animation: skalaHalfRight 1.65s linear var(--wordmark-delay) both;
+  }
+
+  /* power3.out ≈ cubic-bezier(0.215, 0.61, 0.355, 1)
+     power2.out ≈ cubic-bezier(0.25, 0.46, 0.45, 0.94) */
+  @keyframes skalaHalfLeft {
+    0% {
+      opacity: 0;
+      transform: translateX(-36px) scale(0.92);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    49.697% /* 0.82s */ {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    89.091% /* 1.47s */ {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(1px) scale(1);
+    }
+  }
+
+  @keyframes skalaHalfRight {
+    0%,
+    4.848% /* 0.08s */ {
+      opacity: 0;
+      transform: translateX(36px) scale(0.92);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    54.545% /* 0.90s */ {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    89.091% /* 1.47s */ {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(-2px) scale(1);
+    }
+  }
+
+  /* `scale` (propiedad individual) y no `transform`, para no pisar el
+     translate-y de Tailwind v4 (que usa la propiedad `translate`). */
+  @keyframes skalaWordmarkPop {
+    0%,
+    55.782% /* 0.82s */ {
+      scale: 1;
+      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    69.388% /* 1.02s */ {
+      scale: 1.04;
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    100% {
+      scale: 1.025;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skala-wordmark,
+    .skala-half-left,
+    .skala-half-right {
+      animation: none;
+    }
+  }
+</style>

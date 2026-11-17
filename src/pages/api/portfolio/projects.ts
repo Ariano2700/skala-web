@@ -32,6 +32,9 @@ export const GET: APIRoute = async ({ url }) => {
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "public, max-age=30",
+        // Mismo criterio que las páginas SSR (src/middleware.ts).
+        "Netlify-CDN-Cache-Control":
+          "public, durable, s-maxage=60, stale-while-revalidate=86400",
       },
     },
   );
