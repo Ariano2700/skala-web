@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import type { PortfolioProjectItem } from "../portfolio/portfolio-data";
-import { FaPlay, FaPause } from "react-icons/fa";
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
 import { sanityImageUrl, sanitySrcSet } from "../../lib/sanity-image";
+import VideoPlayer from "./VideoPlayer";
 
 type ProjectMedia = PortfolioProjectItem["media"][number];
 
@@ -11,11 +11,8 @@ interface CarouselProps {
   current: number;
   total: number;
   title: string;
-  playing: number | null;
   videoRefs: React.RefObject<Array<HTMLVideoElement | null>>;
   onGoTo: (index: number) => void;
-  onPlay: (index: number) => void;
-  onPause: (index: number) => void;
 }
 
 export default function Carousel({
@@ -23,11 +20,8 @@ export default function Carousel({
   current,
   total,
   title,
-  playing,
   videoRefs,
   onGoTo,
-  onPause,
-  onPlay,
 }: CarouselProps) {
   const startX = useRef(0);
   const dragging = useRef(false);
@@ -71,37 +65,14 @@ export default function Carousel({
                 loading="lazy"
               />
             ) : (
-              <div className="relative flex h-full w-full items-center justify-center">
-                <video
-                  ref={(el) => {
-                    videoRefs.current[i] = el;
-                  }}
-                  src={m.src}
-                  playsInline
-                  preload="metadata"
-                  className="h-full w-full object-contain"
-                  data-slide-video
-                />
-                {playing !== i ? (
-                  <button
-                    type="button"
-                    aria-label="Reproducir video"
-                    className="absolute inline-flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-skala-accent/90 text-skala-text-secondary shadow-[0_10px_30px_rgba(92,216,252,0.3)] transition hover:scale-105"
-                    onClick={() => onPlay(i)}
-                  >
-                    <FaPlay />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    aria-label="Pausar video"
-                    className="absolute inline-flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-skala-accent/90 text-skala-text-secondary shadow-[0_10px_30px_rgba(92,216,252,0.3)] transition hover:scale-105"
-                    onClick={() => onPause(i)}
-                  >
-                    <FaPause />
-                  </button>
-                )}
-              </div>
+              <VideoPlayer
+                src={m.src}
+                label={m.alt ?? `Video de ${title}`}
+                wrapperClassName="h-full w-full"
+                videoRef={(el) => {
+                  videoRefs.current[i] = el;
+                }}
+              />
             )}
           </div>
         );
@@ -126,7 +97,10 @@ export default function Carousel({
             <GrCaretNext />
           </button>
           <div
-            className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5"
+            className={`absolute left-1/2 z-10 flex -translate-x-1/2 gap-1.5 transition-[bottom] duration-300 ${
+              // En un video, por encima de su barra de controles.
+              media[current]?.type === "video" ? "bottom-21" : "bottom-3"
+            }`}
             data-carousel-dots
           >
             {media.map((_, i) => (

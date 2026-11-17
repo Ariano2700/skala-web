@@ -43,6 +43,9 @@ function LenisScroll() {
       // el fundido del hero en HeroOverlapReveal.astro) se ve con micro-tirones.
       // Enganchar ambos al mismo ticker de GSAP los mantiene en el mismo reloj.
       lenis.on("scroll", ScrollTrigger.update);
+      // Expuesto para lib/scroll-lock.ts: los modales lo pausan mientras
+      // están abiertos (Lenis ignora el overflow: hidden).
+      window.__lenis = lenis;
 
       const onTick = (time: number) => {
         lenis.raf(time * 1000);
@@ -71,6 +74,7 @@ function LenisScroll() {
       cleanup = () => {
         gsap.ticker.remove(onTick);
         document.removeEventListener("click", handleAnchorClick);
+        if (window.__lenis === lenis) delete window.__lenis;
         lenis.destroy();
       };
     });
