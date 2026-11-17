@@ -7,6 +7,7 @@ import joseph from "../assets/team/joseph.jpeg";
 import juan from "../assets/team/juan.jpeg";
 import kevin from "../assets/team/kevin.jpeg";
 import valeria from "../assets/team/valeria.jpeg";
+import pamela from "../assets/team/pamela.jpeg";
 
 export interface TeamMember {
   id: number;
@@ -63,5 +64,11 @@ export const TeamData: TeamMember[] = [
     name: "Kevin",
     role: "DIRECTOR DE OPERACIONES",
     image: kevin,
-  }
+  },
+  {
+    id: 9,
+    name: "Pamela",
+    role: "SOCIAL MEDIA",
+    image: pamela,
+  },
 ];
