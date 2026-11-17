@@ -45,6 +45,12 @@ const formatTime = (s: number) => {
 
 type WebkitVideo = HTMLVideoElement & { webkitEnterFullscreen?: () => void };
 
+// iOS Safari con preload="metadata" no pinta ningún fotograma hasta que se
+// reproduce: el video queda negro detrás del botón de play. Pedir un
+// instante (#t=0.001) lo obliga a decodificar y mostrar el primer cuadro.
+const withFirstFrame = (url: string) =>
+  url.includes("#") ? url : `${url}#t=0.001`;
+
 export default function VideoPlayer({
   src,
   poster,
@@ -66,6 +72,8 @@ export default function VideoPlayer({
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
+  // El navegador no puede decodificar el archivo (p. ej. HEVC en Android).
+  const [unsupported, setUnsupported] = useState(false);
 
   // Muestra los controles y programa su ocultamiento (sólo si reproduce).
   const poke = useCallback(() => {
@@ -173,7 +181,7 @@ export default function VideoPlayer({
     >
       <video
         ref={setRefs}
-        src={src}
+        src={withFirstFrame(src)}
         poster={poster}
         autoPlay={autoPlay}
         playsInline
@@ -193,6 +201,10 @@ export default function VideoPlayer({
           setPlaying(false);
           setControlsVisible(true);
         }}
+        onError={(e) => {
+          const code = e.currentTarget.error?.code;
+          if (code === 3 || code === 4) setUnsupported(true);
+        }}
         onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
         onLoadedMetadata={(e) => {
           setDuration(e.currentTarget.duration);
@@ -206,7 +218,13 @@ export default function VideoPlayer({
         }}
       />
 
-      {!playing && (
+      {unsupported && (
+        <p className="absolute inset-x-6 top-1/2 -translate-y-1/2 text-center text-sm text-white/85">
+          Este video no se puede reproducir en este dispositivo.
+        </p>
+      )}
+
+      {!playing && !unsupported && (
         <button
           type="button"
           aria-label="Reproducir video"
