@@ -32,7 +32,14 @@ const {
 // Repetimos la lista base varias veces por mitad para que la tira se sienta
 // llena incluso con pocos logos cargados; el loop sigue siendo perfecto
 // porque ambas mitades son idénticas entre sí.
-const REPEAT = 4;
+//
+// Cada logo ocupa ~200px (w-36 + gap-14; ~240px desde sm), así que con 2
+// repeticiones cada mitad ya mide 2000px+ — más que el contenedor más ancho
+// (max-w-360 = 1440px), la tira nunca se ve vacía. Antes eran 4 (40 logos
+// con filtro en el DOM, 20 sin necesidad). La duración se escala en
+// proporción (MARQUEE_SECONDS) para que la velocidad en px/s sea idéntica.
+const REPEAT = 2;
+const MARQUEE_SECONDS = 40 * (REPEAT / 4);
 const half = Array.from({ length: REPEAT }, () => brands).flat();
 const track = [...half, ...half];
 ---
@@ -45,6 +52,7 @@ const track = [...half, ...half];
   aria-label={title}
   data-reveal={!overlap}
   data-hero-overlap={overlap}
+  data-pause-offscreen
 >
   <div class="mb-10 text-center">
     <h2
@@ -59,7 +67,8 @@ const track = [...half, ...half];
 
   <div class="brand-marquee-mask relative overflow-hidden">
     <div
-      class="flex w-max items-center gap-14 animate-[marquee_40s_linear_infinite] sm:gap-20"
+      class="flex w-max items-center gap-14 animate-[marquee_var(--marquee-duration)_linear_infinite] sm:gap-20"
+      style={`--marquee-duration: ${MARQUEE_SECONDS}s;`}
       data-brand-track
     >
       {

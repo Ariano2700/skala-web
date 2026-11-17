@@ -1,7 +1,7 @@
 ---
 import Image from "astro/components/Image.astro";
 import { heroActions, heroSignals } from "../../data/hero";
-import SkalaWordmark from "../shared/SkalaWordmark.tsx";
+import SkalaWordmark from "../shared/SkalaWordmark.astro";
 import heroImage from "../../assets/hero_image.png";
 ---
 
@@ -25,7 +25,7 @@ import heroImage from "../../assets/hero_image.png";
         Tu marca,
         <br />
         en otra <span class="sr-only">Skala</span>
-        <SkalaWordmark client:idle />
+        <SkalaWordmark />
       </h1>
 
       <p
@@ -72,8 +72,6 @@ import heroImage from "../../assets/hero_image.png";
 
   <div
     class="hero-showcase relative grid min-h-155 items-stretch overflow-hidden rounded-[42px] xl:min-h-170"
-    data-reveal
-    style="--reveal-delay: 180ms;"
   >
     <div
       class="absolute inset-0 overflow-hidden rounded-[inherit] border border-skala-border bg-skala-bg shadow-(--shadow) contain-[layout_paint]"
@@ -96,6 +94,8 @@ import heroImage from "../../assets/hero_image.png";
           alt="Hero image"
           title="Hero image"
           class="absolute inset-0 h-full w-full object-cover object-bottom opacity-55 xl:opacity-50"
+          widths={[360, 480, 609]}
+          sizes="(min-width: 1280px) 609px, calc(100vw - 40px)"
           loading="eager"
           fetchpriority="high"
           quality={80}
@@ -236,13 +236,21 @@ import heroImage from "../../assets/hero_image.png";
   }
 
   /*
-    El fundido + pin al hacer scroll (HeroOverlapReveal.astro) sólo transforma
-    opacity/transform del propio .hero-pin — will-change queda fijo aquí porque
-    es una única sección por página, no una lista, así que el costo de memoria
-    es despreciable.
+    Sobreposición del hero al hacer scroll (HeroOverlapReveal.astro): el
+    hero queda "pegado" con position: sticky — lo resuelve el compositor del
+    navegador, así que no hay el salto que daba el pin de GSAP (que
+    alternaba relative/fixed desde JS, un frame por detrás del scroll nativo
+    en mobile). top = 100svh - alto del hero: se pega justo cuando su borde
+    inferior toca el fondo del viewport, así primero se recorre todo el
+    contenido del hero (incluido el showcase en mobile) y recién el último
+    viewport se congela mientras el panel siguiente sube y lo cubre. svh (y
+    no innerHeight) para que no cambie al mostrarse/ocultarse la barra del
+    navegador. La clase la agrega el script sólo si hay animación (no con
+    prefers-reduced-motion).
   */
-  .hero-pin {
-    will-change: opacity, transform;
+  .hero-pin.is-hero-sticky {
+    position: sticky;
+    top: min(0px, calc(100svh - var(--hero-h, 100svh)));
   }
 
   @keyframes heroShowcaseIn {

@@ -66,11 +66,9 @@ const homeStructuredData = [
 
 <style>
   /*
-    HeroOverlapReveal.astro le da a este wrapper un translateY constante
-    (== alto del hero) para que BrandsMarquee arranque oculto bajo el
-    viewport y el scroll nativo lo revele al subir — moviendo el wrapper
-    completo (no sólo BrandsMarquee) se evita que quede un hueco entre
-    BrandsMarquee y las secciones que le siguen.
+    El hero queda sticky (ver HeroOverlapReveal.astro) y este wrapper, que
+    viene justo después en el flujo normal, sube y lo cubre: el z-index lo
+    deja por encima del hero pegado.
   */
   .hero-overlap-wrapper {
     position: relative;

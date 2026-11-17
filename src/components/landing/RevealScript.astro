@@ -3,6 +3,18 @@
 ---
 
 <script>
+  // Pausa las animaciones infinitas marcadas con [data-pause-offscreen]
+  // mientras están fuera de pantalla (regla en global.css).
+  const pausables = document.querySelectorAll("[data-pause-offscreen]");
+  if (pausables.length) {
+    const pauseObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) =>
+        entry.target.toggleAttribute("data-offscreen", !entry.isIntersecting),
+      );
+    });
+    pausables.forEach((item) => pauseObserver.observe(item));
+  }
+
   const revealItems = document.querySelectorAll("[data-reveal]");
 
   if (revealItems.length) {
