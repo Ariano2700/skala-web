@@ -3,10 +3,8 @@ import { FiArrowUpRight, FiMail, FiSend } from "react-icons/fi";
 import Logotype from "../../icons/Logotype.astro";
 import { CONTACT_DATA } from "../../data/contact_data";
 import { ctaLinks } from "../../data/cta";
-import { buildDynamicNavLinks, getStaticNavLinks } from "../../data/navigation-dynamic";
+import { navLinks } from "../../data/navigation";
 import { marqueeItems } from "../../data/marquee";
-
-const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamicNavLinks();
 ---
 
 <footer

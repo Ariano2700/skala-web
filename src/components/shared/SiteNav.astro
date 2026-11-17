@@ -2,7 +2,7 @@
 import { FiArrowUpRight, FiMenu, FiX, FiChevronDown } from "react-icons/fi";
 import Logotype from "../../icons/Logotype.astro";
 import { CONTACT_DATA } from "../../data/contact_data";
-import { buildDynamicNavLinks, getStaticNavLinks } from "../../data/navigation-dynamic";
+import { navLinks } from "../../data/navigation";
 import RenderSubLinks from "./RenderSubLinks.astro";
 
 // En la home las anclas funcionan directo (#servicios). En otras páginas
@@ -10,9 +10,6 @@ import RenderSubLinks from "./RenderSubLinks.astro";
 const isHome = Astro.url.pathname === "/";
 const resolveHref = (href: string) =>
   href.startsWith("#") && !isHome ? `/${href}` : href;
-
-// Use dynamic nav links for SSR, static for SSG fallback
-const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamicNavLinks();
 ---
 
 <header
@@ -337,12 +334,20 @@ const navLinks = Astro.props.isStatic ? getStaticNavLinks() : await buildDynamic
 
     const nav = document.querySelector<HTMLElement>("[data-reveal]");
     const navBackground = nav?.querySelector<HTMLElement>(".site-nav-bg");
-    const updateNavBackground = () => {
-      navBackground?.toggleAttribute("data-scrolled", window.scrollY > 12);
-    };
-
-    updateNavBackground();
-    window.addEventListener("scroll", updateNavBackground, { passive: true });
+    // Fondo de la barra al bajar más de 12px. Antes era un listener de
+    // "scroll" (corre en el hilo principal en cada evento de scroll); un
+    // IntersectionObserver sobre un centinela de 13px pegado al tope del
+    // documento da el mismo resultado sin trabajo durante el scroll.
+    if (navBackground) {
+      const sentinel = document.createElement("div");
+      sentinel.setAttribute("aria-hidden", "true");
+      sentinel.style.cssText =
+        "position:absolute;top:0;left:0;width:1px;height:13px;pointer-events:none;visibility:hidden;";
+      document.body.prepend(sentinel);
+      new IntersectionObserver(([entry]) => {
+        navBackground.toggleAttribute("data-scrolled", !entry.isIntersecting);
+      }).observe(sentinel);
+    }
 
     toggleButton.addEventListener("click", () => {
       setMenuState(mobileNav.classList.contains("hidden"));
