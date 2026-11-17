@@ -26,6 +26,15 @@ export interface ProjectBeforeAfterPair {
   after?: ProjectImage;
 }
 
+/** Documento PDF del proyecto (campo `documents` del schema). */
+export interface ProjectDocument {
+  title?: string;
+  url: string;
+  filename?: string;
+  size?: number;
+  coverUrl?: string;
+}
+
 export interface ProjectSeo {
   metaTitle?: string;
   metaDescription?: string;
@@ -68,6 +77,7 @@ export interface ProjectSanitySchema extends SanityDocument {
   gallery?: ProjectMedia[];
   externalUrl?: string;
   beforeAfterGallery?: ProjectBeforeAfterPair[];
+  documents?: ProjectDocument[];
   seo?: ProjectSeo;
 }
 
@@ -92,6 +102,7 @@ export interface Project {
   gallery: ProjectMedia[];
   externalUrl?: string;
   beforeAfterGallery: ProjectBeforeAfterPair[];
+  documents: ProjectDocument[];
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
@@ -127,6 +138,7 @@ export const mapToProject = (raw: ProjectSanitySchema | null): Project => ({
   gallery: raw?.gallery ?? [],
   externalUrl: raw?.externalUrl,
   beforeAfterGallery: raw?.beforeAfterGallery ?? [],
+  documents: (raw?.documents ?? []).filter((d) => Boolean(d?.url)),
   seo: raw?.seo
     ? {
         metaTitle: raw.seo.metaTitle,

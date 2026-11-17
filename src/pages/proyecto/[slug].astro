@@ -21,6 +21,7 @@ import ProjectCta from "../../components/portfolio/ProjectCta.astro";
 import ProjectGallery from "../../components/portfolio/ProjectGallery.astro";
 import ProjectGalleryLightbox from "../../components/portfolio/ProjectGalleryLightbox";
 import BeforeAfterSlider from "../../components/portfolio/BeforeAfterSlider.astro";
+import ProjectDocuments from "../../components/portfolio/ProjectDocuments";
 import RelatedProjects from "../../components/portfolio/RelatedProjects.astro";
 import BrandsMarquee from "../../components/shared/BrandsMarquee.astro";
 
@@ -328,6 +329,29 @@ const structuredData = [
                 </div>
               ))}
             </div>
+          </div>
+        )
+      }
+
+      {
+        project.documents && project.documents.length > 0 && (
+          <div class="mt-14" data-reveal="fade">
+            <h2 class="m-0 mb-2 font-display text-2xl font-black tracking-[-0.04em] text-skala-text md:text-3xl">
+              {project.documents.length > 1 ? "Documentos" : "Documento"}
+            </h2>
+            <p class="m-0 mb-5 text-sm text-skala-muted">
+              Recorre las páginas aquí mismo o descárgalo en PDF.
+            </p>
+            {/*
+              client:visible: pdf.js (~1MB) solo se descarga si el visitante
+              llega hasta esta sección.
+            */}
+            <ProjectDocuments
+              client:visible
+              documents={project.documents}
+              title={project.title}
+              accent={project.accent}
+            />
           </div>
         )
       }

@@ -44,6 +44,14 @@ const PROJECT_BASE_QUERY = `{
     "caption": caption
   },
   externalUrl,
+  // Documentos PDF (brochures, catálogos) para el visor de la página de detalle.
+  "documents": documents[defined(file.asset)]{
+    title,
+    "url": file.asset->url,
+    "filename": file.asset->originalFilename,
+    "size": file.asset->size,
+    "coverUrl": cover.asset->url
+  },
   // Antes/Después (slider en la página de detalle): 0, 1 o varios pares.
   "beforeAfterGallery": beforeAfterGallery[]{
     title,
@@ -273,6 +281,9 @@ export async function getProjectsByClientId(clientId: string) {
 // (mainImage o el primer item de la galería, ver getCoverMedia), no la
 // galería completa ni el antes/después de cada proyecto.
 const PROJECT_CARD_QUERY = PROJECT_BASE_QUERY.replace(
+  /"documents": documents\[[^\]]*\]\{[\s\S]*?\r?\n  \},\r?\n/,
+  "",
+).replace(
   `"gallery": gallery[]{`,
   `"gallery": gallery[0...1]{`,
 ).replace(

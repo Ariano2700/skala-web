@@ -26,6 +26,15 @@ export interface PortfolioBeforeAfterPair {
   after: PortfolioBeforeAfterImage;
 }
 
+/** Documento PDF que se muestra con el visor en la página de detalle. */
+export interface PortfolioDocument {
+  title: string;
+  url: string;
+  filename?: string;
+  size?: number;
+  coverUrl?: string;
+}
+
 export interface PortfolioProject {
   id: string;
   title: string;
@@ -57,6 +66,8 @@ export interface PortfolioProject {
    * `beforeAfterGallery` en Sanity.
    */
   beforeAfterGallery?: PortfolioBeforeAfterPair[];
+  /** PDFs del proyecto (campo `documents` en Sanity). */
+  documents?: PortfolioDocument[];
   /** SEO editorial desde Sanity: si falta, la página cae a sus valores por defecto. */
   seo?: {
     metaTitle?: string;
@@ -167,7 +178,7 @@ const categoryAccent = (category?: Category): string =>
 
 /**
  * Adapta un `Project` de Sanity al modelo `PortfolioProject`.
- * Si el proyecto no tiene galería, devuelve `null` (se filtra en la capa de página).
+ * Si el proyecto no tiene galería ni documentos PDF, devuelve `null` (se filtra en la capa de página).
  *
  * Nota: la `mainImage` NO se incluye en `media` (es solo portada), por lo que
  * los KPIs de imágenes/videos solo cuentan la galería real del proyecto.
@@ -189,7 +200,14 @@ export const adaptSanityProject = (
   // Galería (imagen/video) — excluye la mainImage para no duplicar en los KPIs.
   const media = mapGalleryToMedia(project.gallery);
 
-  if (media.length === 0) return null;
+  // Un proyecto sin galería pero con PDFs (p.ej. solo un brochure) también
+  // se muestra; sin galería ni documentos se sigue ocultando.
+  // (la portada sale de mainImage, así que en ese caso es obligatoria).
+  if (
+    media.length === 0 &&
+    (project.documents.length === 0 || !project.mainImage?.url)
+  )
+    return null;
 
   // Antes/Después: cada par solo entra si trae las dos imágenes completas.
   const beforeAfterGallery = (project.beforeAfterGallery ?? [])
@@ -218,6 +236,19 @@ export const adaptSanityProject = (
     featured: project.featured,
     beforeAfterGallery:
       beforeAfterGallery.length > 0 ? beforeAfterGallery : undefined,
+    documents:
+      project.documents.length > 0
+        ? project.documents.map((doc) => ({
+            title:
+              doc.title ||
+              doc.filename?.replace(/\.pdf$/i, "") ||
+              "Documento",
+            url: doc.url,
+            filename: doc.filename,
+            size: doc.size,
+            coverUrl: doc.coverUrl,
+          }))
+        : undefined,
     seo: project.seo
       ? {
           metaTitle: project.seo.metaTitle,
