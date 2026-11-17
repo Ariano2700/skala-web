@@ -11,6 +11,8 @@ import isaacNewton from "../assets/brands/isaac_newton.png";
 import pucaraMarketing from "../assets/brands/pucara_marketing.png";
 import nocheEterna from "../assets/brands/noche_eterna.png";
 import lions from "../assets/brands/lions.png";
+import valerianka from "../assets/brands/valerianka.png";
+import laPlanicie from "../assets/brands/planicie.png";
 
 export interface Brand {
   name: string;
@@ -40,4 +42,14 @@ export const brands: Brand[] = [
     url: "https://www.tiktok.com/@nocheternaorq",
   },
   { name: "Lions", logo: lions, url: "https://www.instagram.com/lions_cti/" },
+  {
+    name: "Valerianka",
+    logo: valerianka,
+    url: "https://www.instagram.com/valeriankasalonspa/",
+  },
+  {
+    name: "La Planicie de Puerto Malabrigo",
+    logo: laPlanicie,
+    url: "https://www.instagram.com/laplaniciedepuertomalabrigo/"
+  }
 ];
