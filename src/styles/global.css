@@ -193,6 +193,12 @@ a {
 .is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* El clip-path sólo para la variante "clip": si fuera en .is-visible a secas,
+   inset(0) recortaría al borde de CUALQUIER elemento revelado, y lo que
+   sobresale a propósito (el badge de PlanCard en -top-3) quedaba cortado. */
+[data-reveal="clip"].is-visible {
   clip-path: inset(0 0 0 0);
 }
 
